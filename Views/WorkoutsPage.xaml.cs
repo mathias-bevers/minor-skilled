@@ -12,6 +12,7 @@ public partial class WorkoutsPage : ContentPage
     public WorkoutsPage()
     {
         InitializeComponent();
+        BindingContext = new ViewModels.WorkoutsViewModel();
     }
     private void OnCreateNewWorkout(object? sender, EventArgs e)
     {
