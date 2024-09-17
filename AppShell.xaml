@@ -1,15 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <Shell
     x:Class="minor_skilled.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:minor_skilled"
-    Shell.FlyoutBehavior="Disabled"
+    xmlns:local="clr-namespace:minor_skilled.Views"
+    Shell.FlyoutBehavior="Flyout"
     Title="minor_skilled">
-
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-
+    <ShellContent Title="Workouts" ContentTemplate="{DataTemplate local:WorkoutsPage}" Route="Workouts" />
+    <ShellContent Title="Profile" ContentTemplate="{DataTemplate local:ProfilePage}" Route="Profile" />
+    <ShellContent Title="Friends" ContentTemplate="{DataTemplate local:FriendsPage}" Route="Friends" />
 </Shell>

@@ -1,4 +1,6 @@
-﻿namespace minor_skilled;
+﻿using minor_skilled.Views;
+
+namespace minor_skilled;
 
 public partial class App : Application
 {
@@ -7,5 +9,6 @@ public partial class App : Application
 		InitializeComponent();
 
 		MainPage = new AppShell();
+		Routing.RegisterRoute("Workouts/Workout", typeof(WorkoutPage));
 	}
 }

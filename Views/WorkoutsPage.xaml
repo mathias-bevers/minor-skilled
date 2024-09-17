@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="minor_skilled.Views.WorkoutsPage">
+    <ContentPage.Content>
+        <Grid Margin="10" RowDefinitions="Auto, *">
+            <Button Text="Create a new workout" Clicked="OnCreateNewWorkout" Grid.Row="0"/>
+            <ScrollView Grid.Row="1">
+                <Label Text="This page will contain all the workouts"/>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
