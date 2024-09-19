@@ -4,6 +4,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitMate.App", "FitMate.App\FitMate.App.csproj", "{1F39DB43-1998-4339-96E9-D983AF1B8A17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitMate.DataBase", "FitMate.DataBase\FitMate.DataBase.csproj", "{9B0B842C-6E3F-416A-B826-E7C54D77DD24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,5 +19,9 @@ Global
 		{1F39DB43-1998-4339-96E9-D983AF1B8A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F39DB43-1998-4339-96E9-D983AF1B8A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F39DB43-1998-4339-96E9-D983AF1B8A17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B0B842C-6E3F-416A-B826-E7C54D77DD24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B0B842C-6E3F-416A-B826-E7C54D77DD24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B0B842C-6E3F-416A-B826-E7C54D77DD24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B0B842C-6E3F-416A-B826-E7C54D77DD24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

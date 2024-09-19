@@ -49,7 +49,7 @@
                             <Border Style="{StaticResource CardBorder}">
                                 <StackLayout Style="{StaticResource Card}">
                                     <Label Text="{Binding Name}" FontSize="22" />
-                                    <Label Text="{Binding FormattedString}" FontSize="15" />
+                                    <Label Text="{Binding ExerciseSet.FormattedString}" FontSize="15" />
                                 </StackLayout>
                             </Border>
                         </DataTemplate>

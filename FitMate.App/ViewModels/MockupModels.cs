@@ -11,21 +11,7 @@ public struct UserMockup
 public struct PersonalRecordMockup
 {
     public string Name { get; set; }
-    public int Measurement { get; set; }
-    public int Value { get; set; }
-    public int Type { get; set; }
-
-    public string FormattedString
-    {
-        get
-        {
-            if (Type == 0) { return $"{Measurement} KGS\t{Value} REPS"; }
-
-            TimeSpan ts = TimeSpan.FromSeconds(Value);
-            string formattedTime = $"{Convert.ToInt32(ts.TotalMinutes)}:{ts.Seconds:00}";
-            return $"{Measurement} MTR {formattedTime}\tMINS";
-        }
-    }
+    public Models.ExerciseSet ExerciseSet { get; set; }
 }
 public struct WorkoutMockup
 {

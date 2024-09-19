@@ -15,23 +15,17 @@ public class ProfileViewModel
             new PersonalRecordMockup()
             {
                 Name = "Bicep Curl",
-                Measurement = 14,
-                Value = 12,
-                Type = 0
+                ExerciseSet = new Models.ExerciseSet((int)Models.ExerciseSet.SetType.KiloReps, 14, 12),
             },
             new PersonalRecordMockup()
             {
                 Name = "Treadmill",
-                Measurement = 1320,
-                Value = 422,
-                Type = 1
+                ExerciseSet = new Models.ExerciseSet((int)Models.ExerciseSet.SetType.MeterMinutes, 1320, 422),
             },
             new PersonalRecordMockup()
             {
                 Name = "Leg Press",
-                Measurement = 160,
-                Value = 10,
-                Type = 0
+                ExerciseSet = new Models.ExerciseSet((int)Models.ExerciseSet.SetType.KiloReps, 160, 10),
             }
         ]);
     }
