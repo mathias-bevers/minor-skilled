@@ -2,8 +2,8 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:minor_skilled.ViewModels"
-             x:Class="minor_skilled.Views.FriendsPage">
+             xmlns:vm="clr-namespace:FitMate.ViewModels"
+             x:Class="FitMate.Views.FriendsPage">
     <ContentPage.Content>
         <Grid RowDefinitions="Auto, *" Margin="10" RowSpacing="20">
             <Border Grid.Column="0" Style="{StaticResource EntryBorder}">

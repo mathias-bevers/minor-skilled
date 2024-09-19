@@ -1,4 +1,4 @@
-namespace minor_skilled.Views;
+namespace FitMate.Views;
 
 public partial class WorkoutsPage : ContentPage
 {

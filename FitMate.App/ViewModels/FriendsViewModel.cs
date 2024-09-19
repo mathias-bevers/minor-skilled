@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace minor_skilled.ViewModels;
+namespace FitMate.ViewModels;
 
 public class FriendsViewModel
 {

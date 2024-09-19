@@ -1,6 +1,6 @@
-﻿using minor_skilled.Views;
+﻿using FitMate.Views;
 
-namespace minor_skilled;
+namespace FitMate;
 
 public partial class App : Application
 {

@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace minor_skilled;
+namespace FitMate;
 
 [Application]
 public class MainApplication : MauiApplication

@@ -1,4 +1,4 @@
-﻿namespace minor_skilled;
+﻿namespace FitMate;
 
 public partial class AppShell : Shell
 {

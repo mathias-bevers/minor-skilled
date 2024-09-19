@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace minor_skilled;
+namespace FitMate;
 
 public static class MauiProgram
 {

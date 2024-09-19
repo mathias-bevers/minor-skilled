@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace minor_skilled.ViewModels;
+namespace FitMate.ViewModels;
 
 public class WorkoutsViewModel : ObservableObject
 {
