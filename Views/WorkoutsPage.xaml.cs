@@ -1,19 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace minor_skilled.Views;
-
 
 public partial class WorkoutsPage : ContentPage
 {
+    private ViewModels.WorkoutsViewModel viewModel { get; }
+
     public WorkoutsPage()
     {
         InitializeComponent();
-        BindingContext = new ViewModels.WorkoutsViewModel();
+
+        viewModel = new ViewModels.WorkoutsViewModel();
+        BindingContext = viewModel;
     }
+
     private void OnCreateNewWorkout(object? sender, EventArgs e)
     {
         Shell.Current.GoToAsync("/Workout");

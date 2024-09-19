@@ -10,17 +10,9 @@ public class WorkoutsViewModel : ObservableObject
     public WorkoutsViewModel()
     {
         workouts = new ObservableCollection<WorkoutMockup>([
-            new WorkoutMockup { date = DateTime.Today, musclesWorked = "Chest, Biceps" },
-            new WorkoutMockup { date = DateTime.Today.AddDays(-2), musclesWorked = "Legs" },
-            new WorkoutMockup { date = DateTime.Today.AddDays(-5), musclesWorked = "Shoulders, Triceps" }
+            new WorkoutMockup { Date = DateTime.Today, MusclesWorked = "Chest, Biceps" },
+            new WorkoutMockup { Date = DateTime.Today.AddDays(-2), MusclesWorked = "Legs" },
+            new WorkoutMockup { Date = DateTime.Today.AddDays(-5), MusclesWorked = "Shoulders, Triceps" }
         ]);
     }
-}
-
-public struct WorkoutMockup
-{
-    public DateTime date { get; set; }
-    public string musclesWorked { get; set; }
-    
-    public string dateString => date.ToString("dddd - dd/MM/yyyy");
 }

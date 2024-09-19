@@ -2,8 +2,36 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:minor_skilled.ViewModels"
              x:Class="minor_skilled.Views.FriendsPage">
     <ContentPage.Content>
-        
+        <Grid RowDefinitions="Auto, *" Margin="10" RowSpacing="20">
+            <Border Grid.Column="0" Style="{StaticResource EntryBorder}">
+                <Entry x:Name="friendsEntry" Placeholder="Enter a username to add a friend..."
+                       ReturnType="Search" Completed="OnFriendSearch" />
+            </Border>
+            <ScrollView Grid.Row="1">
+                <CollectionView ItemsSource="{Binding Friends}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:UserMockup">
+                            <Border Style="{StaticResource CardBorder}">
+                                <StackLayout Style="{StaticResource Card}" Orientation="Horizontal" Spacing="25">
+                                    <Frame HeightRequest="60" WidthRequest="60" CornerRadius="30"
+                                           IsClippedToBounds="True">
+                                        <Image Aspect="AspectFit" HeightRequest="60" WidthRequest="60"
+                                               Source="user_placeholder.png" />
+                                    </Frame>
+                                    <Label Text="{Binding Username}" VerticalOptions="Center" FontSize="16" />
+                                </StackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>

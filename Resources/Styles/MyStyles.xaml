@@ -17,4 +17,15 @@
     <Style TargetType="Label" x:Key="ProfileTitleText" BasedOn="{StaticResource ProfileText}">
         <Setter Property="FontAttributes" Value="Bold"/>
     </Style>
+    
+    <Style TargetType="Entry">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+    </Style>
+    
+    <Style TargetType="Border" x:Key="EntryBorder">
+        <Setter Property="StrokeShape" Value="RoundRectangle 15"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="StrokeThickness" Value="0"/>
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+    </Style>
 </ResourceDictionary>
