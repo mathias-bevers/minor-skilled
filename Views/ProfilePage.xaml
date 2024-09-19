@@ -5,17 +5,17 @@
              xmlns:vm="clr-namespace:minor_skilled.ViewModels"
              x:Class="minor_skilled.Views.ProfilePage">
     <ContentPage.BindingContext>
-        <vm:ProfileViewModel/>
+        <vm:ProfileViewModel />
     </ContentPage.BindingContext>
-    
+
     <ContentPage.Content>
-        <Grid RowDefinitions="Auto, Auto, *" Margin="10" RowSpacing="10">
+        <Grid RowDefinitions="Auto, Auto, Auto, *" Margin="10" RowSpacing="10">
             <Grid ColumnDefinitions="Auto, *" ColumnSpacing="20">
                 <Frame Grid.Column="0" HeightRequest="125" WidthRequest="125" CornerRadius="65"
                        IsClippedToBounds="True">
                     <Image Aspect="AspectFit" Source="user_placeholder.png" HeightRequest="125" WidthRequest="125" />
                 </Frame>
-                <BoxView Color="Aqua" Grid.Column="1"/>
+                <BoxView Color="Aqua" Grid.Column="1" />
                 <StackLayout Grid.Column="1" BindableLayout.ItemsSource="{Binding UserPlaceholder}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate>
@@ -49,7 +49,25 @@
                 </StackLayout>
             </Grid>
             <BoxView Grid.Row="1" Color="{StaticResource Primary}" HeightRequest="2" />
-            <ScrollView Grid.Row="2" />
+            <Label Grid.Row="2" Text="Personal Records" Style="{StaticResource Headline}"/>
+            <ScrollView Grid.Row="3">
+                <CollectionView ItemsSource="{Binding PlaceholderPRs}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PersonalRecordMockup">
+                            <Border StrokeShape="RoundRectangle 15" Padding="10" Style="{StaticResource WorkoutCard}"
+                                    StrokeThickness="0">
+                                <StackLayout Style="{StaticResource WorkoutCard}">
+                                    <Label Text="{Binding Name}" FontSize="22" />
+                                    <Label Text="{Binding FormattedString}" FontSize="15" />
+                                </StackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -23,8 +23,8 @@ public class ProfileViewModel
             {
                 Name = "Treadmill",
                 Measurement = 1320,
-                Value = 420,
-                Type = 0
+                Value = 422,
+                Type = 1
             },
             new PersonalRecordMockup()
             {
@@ -50,4 +50,16 @@ public struct PersonalRecordMockup
     public int Measurement { get; set; }
     public int Value { get; set; }
     public int Type { get; set; }
+
+    public string FormattedString
+    {
+        get
+        {
+            if (Type == 0) { return $"{Measurement} KGS\t{Value} REPS"; }
+
+            TimeSpan ts = TimeSpan.FromSeconds(Value);
+            string formattedTime = $"{Convert.ToInt32(ts.TotalMinutes)}:{ts.Seconds:00}";
+            return $"{Measurement} MTR {formattedTime}\tMINS";
+        }
+    }
 }
