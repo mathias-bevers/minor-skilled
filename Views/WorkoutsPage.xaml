@@ -16,7 +16,8 @@
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="vm:WorkoutMockup">
-                            <Border StrokeShape="RoundRectangle 15" Padding="10" Background="#303030">
+                            <Border StrokeShape="RoundRectangle 15" Padding="10" Style="{StaticResource WorkoutCard}"
+                                    StrokeThickness="0">
                                 <StackLayout Style="{StaticResource WorkoutCard}">
                                     <Label Text="{Binding dateString}" FontSize="22" />
                                     <Label Text="{Binding musclesWorked}" FontSize="15" />

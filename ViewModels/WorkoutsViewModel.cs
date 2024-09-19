@@ -3,14 +3,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace minor_skilled.ViewModels;
 
-public struct WorkoutMockup
-{
-    public DateTime date { get; set; }
-    public string musclesWorked { get; set; }
-    
-    public string dateString => date.ToString("dddd - dd/MM/yyyy");
-}
-
 public class WorkoutsViewModel : ObservableObject
 {
     public ObservableCollection<WorkoutMockup> workouts { get; set; }
@@ -23,4 +15,12 @@ public class WorkoutsViewModel : ObservableObject
             new WorkoutMockup { date = DateTime.Today.AddDays(-5), musclesWorked = "Shoulders, Triceps" }
         ]);
     }
+}
+
+public struct WorkoutMockup
+{
+    public DateTime date { get; set; }
+    public string musclesWorked { get; set; }
+    
+    public string dateString => date.ToString("dddd - dd/MM/yyyy");
 }
