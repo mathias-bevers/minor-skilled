@@ -50,9 +50,8 @@
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="vm:PersonalRecordMockup">
-                            <Border StrokeShape="RoundRectangle 15" Padding="10" Style="{StaticResource WorkoutCard}"
-                                    StrokeThickness="0">
-                                <StackLayout Style="{StaticResource WorkoutCard}">
+                            <Border Style="{StaticResource CardBorder}">
+                                <StackLayout Style="{StaticResource Card}">
                                     <Label Text="{Binding Name}" FontSize="22" />
                                     <Label Text="{Binding FormattedString}" FontSize="15" />
                                 </StackLayout>

@@ -5,20 +5,18 @@
              xmlns:vm="clr-namespace:minor_skilled.ViewModels"
              x:Class="minor_skilled.Views.WorkoutsPage">
     <ContentPage.Content>
-        <Grid Margin="10" RowDefinitions="Auto, *">
+        <Grid Margin="10" RowDefinitions="Auto, *" RowSpacing="10">
             <Button Text="Create a new workout" Clicked="OnCreateNewWorkout" Grid.Row="0" />
             <ScrollView Grid.Row="1" x:DataType="vm:WorkoutsViewModel">
                 <CollectionView x:Name="workoutCollection"
-                                ItemsSource="{Binding workouts}"
-                                Margin="0,10, 5,0">
+                                ItemsSource="{Binding workouts}">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="vm:WorkoutMockup">
-                            <Border StrokeShape="RoundRectangle 15" Padding="10" Style="{StaticResource WorkoutCard}"
-                                    StrokeThickness="0">
-                                <StackLayout Style="{StaticResource WorkoutCard}">
+                            <Border Style="{StaticResource CardBorder}">
+                                <StackLayout Style="{StaticResource Card}">
                                     <Label Text="{Binding dateString}" FontSize="22" />
                                     <Label Text="{Binding musclesWorked}" FontSize="15" />
                                 </StackLayout>
