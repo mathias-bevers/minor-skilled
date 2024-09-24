@@ -6,15 +6,17 @@
              x:Class="FitMate.Views.WorkoutsPage">
     <ContentPage.Content>
         <Grid Margin="10" RowDefinitions="Auto, *" RowSpacing="10">
-            <Button Text="Create a new workout" Clicked="OnCreateNewWorkout" Grid.Row="0" />
+            <Button Grid.Row="0" Text="Create a new workout" Clicked="OnCreateNewWorkout"  />
             <ScrollView Grid.Row="1" x:DataType="vm:WorkoutsViewModel">
                 <CollectionView x:Name="workoutCollection"
-                                ItemsSource="{Binding workouts}">
+                                ItemsSource="{Binding workouts}"
+                                SelectionMode="Single"
+                                SelectionChanged="OnWorkoutSelected">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:WorkoutMockup">
+                        <DataTemplate x:DataType="vm:Mockups.WorkoutMockup">
                             <Border Style="{StaticResource CardBorder}">
                                 <StackLayout Style="{StaticResource Card}">
                                     <Label Text="{Binding DateString}" FontSize="22" />

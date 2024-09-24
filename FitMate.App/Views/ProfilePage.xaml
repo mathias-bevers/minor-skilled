@@ -45,7 +45,7 @@
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:PersonalRecordMockup">
+                        <DataTemplate x:DataType="vm:Mockups.PersonalRecordMockup">
                             <Border Style="{StaticResource CardBorder}">
                                 <StackLayout Style="{StaticResource Card}">
                                     <Label Text="{Binding Name}" FontSize="22" />

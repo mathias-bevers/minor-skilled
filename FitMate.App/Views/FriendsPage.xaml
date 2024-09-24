@@ -17,7 +17,7 @@
                     </CollectionView.ItemsLayout>
 
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:UserMockup">
+                        <DataTemplate x:DataType="vm:Mockups.UserMockup">
                             <Border Style="{StaticResource CardBorder}">
                                 <StackLayout Style="{StaticResource Card}" Orientation="Horizontal" Spacing="25">
                                     <Frame HeightRequest="60" WidthRequest="60" CornerRadius="30"

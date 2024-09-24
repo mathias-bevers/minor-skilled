@@ -1,4 +1,4 @@
-namespace FitMate.ViewModels;
+namespace FitMate.ViewModels.Mockups;
 
 
 public struct UserMockup
@@ -23,4 +23,30 @@ public struct WorkoutMockup
 public struct ExerciseMockup
 {
     public string Name { get; set; }
+    public Models.ExerciseSet ExerciseSet { get; set; }
+    public bool isPersonalRecord { get; set; }
+    public MuscleGroup MuscleGroup { get; set; }
+}
+
+//TODO: write a wrapper to generate groups from a list of exercises.
+public class ExerciseGroupMockup : List<ExerciseMockup> 
+{
+    public string Name { get; set; }
+
+    public ExerciseGroupMockup(string name, List<ExerciseMockup> exercises) : base(exercises)
+    {
+        Name = name;
+    }
+}
+
+public enum MuscleGroup
+{
+    Abdominal,
+    Back,
+    Biceps,
+    Cardio,
+    Chest,
+    Legs,
+    Shoulders,
+    Triceps
 }

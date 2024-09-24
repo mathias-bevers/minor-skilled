@@ -17,11 +17,11 @@ public struct ExerciseSet
         {
             if (Type == SetType.KiloReps)
             {
-                return $"{Measurement} KGS\t{Value} REPS";
+                return $"{Measurement} KGS \t{Value} REPS";
             }
             
             TimeSpan ts = TimeSpan.FromSeconds(Value);
-            return $"{Measurement}MTR \t{Convert.ToInt32(ts.TotalMinutes)}:{ts.Seconds:00}";
+            return $"{Measurement} MTR \t{Convert.ToInt32(ts.TotalMinutes)}:{ts.Seconds:00}";
         }
     }
 
