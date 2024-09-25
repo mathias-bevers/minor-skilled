@@ -17,9 +17,13 @@
                     </CollectionView.GroupHeaderTemplate>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="vm:Mockups.ExerciseMockup">
-                            <StackLayout Margin="10">
-                                <Label Text="{Binding ExerciseSet.FormattedString}" />
-                            </StackLayout>
+                            <Grid ColumnDefinitions="*, auto" Padding="10">
+                                <Grid.RowDefinitions>
+                                  <RowDefinition Height="25"/>  
+                                </Grid.RowDefinitions>
+                                <Label Grid.Column="0" Text="{Binding ExerciseSet.FormattedString}" VerticalOptions="Center" HorizontalOptions="Fill"/>
+                                <Image Grid.Column="1" IsVisible="{Binding IsPersonalRecord}" Source="trophy_placeholder.png" />
+                            </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>

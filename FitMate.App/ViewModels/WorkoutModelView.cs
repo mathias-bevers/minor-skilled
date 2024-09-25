@@ -17,7 +17,7 @@ public class WorkoutModelView : ObservableObject
                 {
                     ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.MeterMinutes, 1320, 421),
                     Name = "Treadmill",
-                    isPersonalRecord = false,
+                    IsPersonalRecord = true,
                     MuscleGroup = MuscleGroup.Cardio
                 }
             ]),
@@ -26,21 +26,21 @@ public class WorkoutModelView : ObservableObject
                 {
                     ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 12, 10),
                     Name = "Hammer Curl",
-                    isPersonalRecord = false,
+                    IsPersonalRecord = false,
                     MuscleGroup = MuscleGroup.Biceps
                 },
                 new ExerciseMockup
                 {
                     ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 12, 10),
                     Name = "Hammer Curl",
-                    isPersonalRecord = false,
+                    IsPersonalRecord = false,
                     MuscleGroup = MuscleGroup.Biceps
                 },
                 new ExerciseMockup
                 {
                     ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 14, 10),
                     Name = "Hammer Curl",
-                    isPersonalRecord = true,
+                    IsPersonalRecord = true,
                     MuscleGroup = MuscleGroup.Biceps
                 }
             ]),
@@ -49,21 +49,21 @@ public class WorkoutModelView : ObservableObject
                 {
                     ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 55, 10),
                     Name = "Incline Bench Press",
-                    isPersonalRecord = false,
-                    MuscleGroup = MuscleGroup.Chest
-                },
-                new ExerciseMockup
-                {
-                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 55, 10),
-                    Name = "Incline Bench Press",
-                    isPersonalRecord = false,
+                    IsPersonalRecord = false,
                     MuscleGroup = MuscleGroup.Chest
                 },
                 new ExerciseMockup
                 {
                     ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 60, 10),
                     Name = "Incline Bench Press",
-                    isPersonalRecord = false,
+                    IsPersonalRecord = true,
+                    MuscleGroup = MuscleGroup.Chest
+                },
+                new ExerciseMockup
+                {
+                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 55, 10),
+                    Name = "Incline Bench Press",
+                    IsPersonalRecord = false,
                     MuscleGroup = MuscleGroup.Chest
                 }
             ])

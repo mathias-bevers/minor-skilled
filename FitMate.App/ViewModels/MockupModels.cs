@@ -24,7 +24,7 @@ public struct ExerciseMockup
 {
     public string Name { get; set; }
     public Models.ExerciseSet ExerciseSet { get; set; }
-    public bool isPersonalRecord { get; set; }
+    public bool IsPersonalRecord { get; set; }
     public MuscleGroup MuscleGroup { get; set; }
 }
 
