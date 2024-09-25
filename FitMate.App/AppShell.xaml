@@ -9,7 +9,7 @@
     Title="FitMate">
     
     <!-- Pages shown in the flyout -->
-    <ShellContent Title="All Workouts" ContentTemplate="{DataTemplate local:WorkoutsPage}" Route="Workouts" />
+    <ShellContent Title="Workout History" ContentTemplate="{DataTemplate local:AllWorkoutsPage}" Route="AllWorkouts" />
     <ShellContent Title="Profile" ContentTemplate="{DataTemplate local:ProfilePage}" Route="Profile" />
     <ShellContent Title="Friends" ContentTemplate="{DataTemplate local:FriendsPage}" Route="Friends" />
 </Shell>

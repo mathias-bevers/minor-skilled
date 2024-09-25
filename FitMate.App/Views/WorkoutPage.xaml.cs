@@ -19,8 +19,14 @@ public partial class WorkoutPage : ContentPage
         await Shell.Current.GoToAsync("/AllExercises");
     }
 
-    private void OnExerciseSelected(object? sender, SelectionChangedEventArgs e)
+    private async void OnExerciseSelected(object sender, SelectionChangedEventArgs args)
     {
-        Shell.Current.GoToAsync("/Exercise");
+        CollectionView cv = (CollectionView)sender;
+        
+        if(args.CurrentSelection.Count == 0 || cv.SelectedItem == null) { return; }
+        
+        cv.SelectedItem = null;
+        
+        await Shell.Current.GoToAsync("/Exercise");
     }
 }

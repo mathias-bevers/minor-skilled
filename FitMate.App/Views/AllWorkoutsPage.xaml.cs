@@ -1,22 +1,17 @@
 namespace FitMate.Views;
 
-public partial class WorkoutsPage : ContentPage
+public partial class AllWorkoutsPage : ContentPage
 {
-    private ViewModels.WorkoutsViewModel viewModel { get; }
+    private ViewModels.AllWorkoutsViewModel viewModel { get; }
 
-    public WorkoutsPage()
+    public AllWorkoutsPage()
     {
         InitializeComponent();
 
-        viewModel = new ViewModels.WorkoutsViewModel();
+        viewModel = new ViewModels.AllWorkoutsViewModel();
         BindingContext = viewModel;
     }
-
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-    }
-
+    
     private void OnCreateNewWorkout(object? sender, EventArgs args)
     {
         Shell.Current.GoToAsync("/Workout"); //TODO: create a new workout entry.
@@ -24,7 +19,11 @@ public partial class WorkoutsPage : ContentPage
 
     private async void OnWorkoutSelected(object sender, SelectionChangedEventArgs args)
     {
-        if (args.CurrentSelection.Count == 0) { return; }
+        CollectionView cv = (CollectionView)sender;
+        
+        if (args.CurrentSelection.Count == 0 || ReferenceEquals(null, cv.SelectedItem)) { return; }
+        
+        cv.SelectedItem = null;
         
         await Shell.Current.GoToAsync($"/Workout"); //TODO: goto correct workout
     }

@@ -3,11 +3,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:FitMate.ViewModels"
-             x:Class="FitMate.Views.WorkoutsPage">
+             x:Class="FitMate.Views.AllWorkoutsPage">
     <ContentPage.Content>
         <Grid Margin="10" RowDefinitions="Auto, *" RowSpacing="10">
             <Button Grid.Row="0" Text="Create a new workout" Clicked="OnCreateNewWorkout"  />
-            <ScrollView Grid.Row="1" x:DataType="vm:WorkoutsViewModel">
+            <ScrollView Grid.Row="1" x:DataType="vm:AllWorkoutsViewModel">
                 <CollectionView x:Name="workoutCollection"
                                 ItemsSource="{Binding workouts}"
                                 SelectionMode="Single"

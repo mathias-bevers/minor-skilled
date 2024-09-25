@@ -3,11 +3,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace FitMate.ViewModels;
 
-public class WorkoutsViewModel : ObservableObject
+public class AllWorkoutsViewModel : ObservableObject
 {
     public ObservableCollection<Mockups.WorkoutMockup> workouts { get; set; }
 
-    public WorkoutsViewModel()
+    public AllWorkoutsViewModel()
     {
         workouts = new ObservableCollection<Mockups.WorkoutMockup>([
             new Mockups.WorkoutMockup { Date = DateTime.Today, MusclesWorked = "Chest, Biceps" },
