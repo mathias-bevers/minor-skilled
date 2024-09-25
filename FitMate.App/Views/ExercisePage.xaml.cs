@@ -46,4 +46,14 @@ public partial class ExercisePage : ContentPage
         DisplayAlert("Success", "Exercise has been added.", "OK");
         viewModel.KgsOrMtr = viewModel.RepsOrSecs = string.Empty;
     }
+
+    private void OnHistoryClicked(object sender, EventArgs args)
+    {
+        Shell.Current.GoToAsync($"/History");
+    }
+    
+    private void OnLeaderboardClicked(object sender, EventArgs args)
+    {
+        Shell.Current.GoToAsync($"/LeaderBoard");
+    }
 }

@@ -23,4 +23,9 @@ public partial class AllExercisesPage : ContentPage
     {
         Shell.Current.GoToAsync("../Exercise");
     }
+
+    private void OnCreateNewExercisePreset(object sender, EventArgs args)
+    {
+        Shell.Current.GoToAsync("/ExerciseType");
+    }
 }
