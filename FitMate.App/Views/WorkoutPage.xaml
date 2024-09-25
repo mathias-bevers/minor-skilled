@@ -6,9 +6,9 @@
              x:Class="FitMate.Views.WorkoutPage">
     <ContentPage.Content>
         <Grid RowDefinitions="Auto, *" RowSpacing="10" Margin="10">
-            <Button Grid.Row="0" Text="Add an exercise" />
+            <Button Grid.Row="0" Text="Add an exercise" Clicked="OnAddExerciseClicked"/>
             <ScrollView Grid.Row="1" x:DataType="vm:WorkoutModelView">
-                <CollectionView ItemsSource="{Binding Exercises}" IsGrouped="true">
+                <CollectionView ItemsSource="{Binding Exercises}" IsGrouped="true" SelectionMode="Single" SelectionChanged="OnExerciseSelected">
                     <CollectionView.GroupHeaderTemplate>
                         <DataTemplate x:DataType="vm:Mockups.ExerciseGroupMockup">
                             <Label Text="{Binding Name}" BackgroundColor="{StaticResource Primary}" Padding="5"

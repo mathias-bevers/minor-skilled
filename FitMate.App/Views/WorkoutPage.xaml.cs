@@ -2,8 +2,7 @@ namespace FitMate.Views;
 
 public partial class WorkoutPage : ContentPage
 {
-    private ViewModels.WorkoutModelView viewModel
-        ;
+    private ViewModels.WorkoutModelView viewModel;
     
     public WorkoutPage()
     {
@@ -12,5 +11,16 @@ public partial class WorkoutPage : ContentPage
         
         viewModel = new ViewModels.WorkoutModelView();
         BindingContext = viewModel;
+    }
+
+
+    private async void OnAddExerciseClicked(object? sender, EventArgs args)
+    {
+        await Shell.Current.GoToAsync("/AllExercises");
+    }
+
+    private void OnExerciseSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        Shell.Current.GoToAsync("/Exercise");
     }
 }

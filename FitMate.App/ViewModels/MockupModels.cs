@@ -1,3 +1,5 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace FitMate.ViewModels.Mockups;
 
 
@@ -29,10 +31,14 @@ public struct ExerciseMockup
 }
 
 //TODO: write a wrapper to generate groups from a list of exercises.
-public class ExerciseGroupMockup : List<ExerciseMockup> 
+[ObservableObject]
+public partial class ExerciseGroupMockup : List<ExerciseMockup>
 {
     public string Name { get; set; }
 
+    [ObservableProperty]
+    private string groupIcon = "arrow_down_placeholder.png";
+    
     public ExerciseGroupMockup(string name, List<ExerciseMockup> exercises) : base(exercises)
     {
         Name = name;

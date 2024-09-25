@@ -6,8 +6,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:FitMate.Views"
     Shell.FlyoutBehavior="Flyout"
-    Title="minor_skilled">
-    <ShellContent Title="Workouts" ContentTemplate="{DataTemplate local:WorkoutsPage}" Route="Workouts" />
+    Title="FitMate">
+    
+    <!-- Pages shown in the flyout -->
+    <ShellContent Title="All Workouts" ContentTemplate="{DataTemplate local:WorkoutsPage}" Route="Workouts" />
     <ShellContent Title="Profile" ContentTemplate="{DataTemplate local:ProfilePage}" Route="Profile" />
     <ShellContent Title="Friends" ContentTemplate="{DataTemplate local:FriendsPage}" Route="Friends" />
 </Shell>
