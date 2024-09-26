@@ -17,7 +17,7 @@
             <ScrollView Grid.Row="1">
                 <CollectionView ItemsSource="{Binding Exercises}" IsGrouped="True">
                     <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="5" />
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="5"  />
                     </CollectionView.ItemsLayout>
                     <CollectionView.GroupHeaderTemplate>
                         <DataTemplate x:DataType="vm:Mockups.ExerciseGroupMockup">
@@ -26,7 +26,7 @@
                     </CollectionView.GroupHeaderTemplate>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="vm:Mockups.ExerciseMockup">
-                            <!-- margin and padding are applied in left, top, right, bottom -->
+                            <!-- NOTE: margin and padding are applied in left, top, right, bottom -->
                             <StackLayout HorizontalOptions="Center">
                                 <Label Text="{Binding ExerciseSet.FormattedString}" FontSize="14"/>
                             </StackLayout>

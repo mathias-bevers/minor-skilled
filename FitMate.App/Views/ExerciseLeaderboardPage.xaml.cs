@@ -8,9 +8,14 @@ namespace FitMate.Views;
 
 public partial class ExerciseLeaderboardPage : ContentPage
 {
+    private ViewModels.ExerciseLeaderboardViewModel viewModel;
+    
     public ExerciseLeaderboardPage()
     {
         InitializeComponent();
         Title = "Leaderboard";
+        
+        viewModel = new ViewModels.ExerciseLeaderboardViewModel();
+        BindingContext = viewModel;
     }
 }

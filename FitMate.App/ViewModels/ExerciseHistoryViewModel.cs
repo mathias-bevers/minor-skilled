@@ -28,19 +28,19 @@ public class ExerciseHistoryViewModel : ObservableObject
                 }
             ]),
             
-            new ExerciseGroupMockup(DateTime.Today.ToShortDateString(), [
+            new ExerciseGroupMockup(DateTime.Today.AddDays(-3).ToShortDateString(), [
                 new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
                 new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
                 new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
             ]),
             
-            new ExerciseGroupMockup(DateTime.Today.ToShortDateString(), [
+            new ExerciseGroupMockup(DateTime.Today.AddDays(-5).ToShortDateString(), [
                 new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
                 new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
                 new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
             ]),
             
-            new ExerciseGroupMockup(DateTime.Today.ToShortDateString(), [
+            new ExerciseGroupMockup(DateTime.Today.AddDays(-7).ToShortDateString(), [
                 new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 8, 10) },
                 new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 8, 10) },
                 new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 8, 10) },
