@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FitMate.ViewModels"
+             x:Class="FitMate.Views.ExercisePage" 
+             x:DataType="vm:ExerciseViewModel">
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto, Auto, *, Auto" RowSpacing="10" Margin="10">
+            <Grid Grid.Row="0" ColumnDefinitions="*,*,*,*,*">
+                <Entry Grid.Column="0" Placeholder="" Text="{Binding KgsOrMtr}" Keyboard="Numeric"/>
+                <Label Grid.Column="1" Text="KGS" Padding="10,0,0,0" VerticalOptions="Center" FontSize="17" />
+                <Entry Grid.Column="2" Placeholder="" Text="{Binding RepsOrSecs}" Keyboard="Numeric"/>
+                <Label Grid.Column="3" Text="REPS" Padding="10,0,0,0" VerticalOptions="Center" FontSize="17" />
+                <Button Grid.Column="4" Text="ADD" Clicked="OnAddExercise"/>
+            </Grid>
+            <BoxView Grid.Row="1" HeightRequest="2" />
+            <ScrollView Grid.Row="2">
+                <CollectionView ItemsSource="{Binding Exercises}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:Mockups.ExerciseMockup">
+                            <Border>
+                                <FlexLayout JustifyContent="Center">
+                                    <Image Source="trophy_placeholder.png" HeightRequest="25" Margin="5"/>
+                                    <Label Text="{Binding ExerciseSet.FormattedString}" VerticalOptions="Center" />
+                                </FlexLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
+            <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="20">
+                <Button Grid.Column="0" Text="History" Clicked="OnHistoryClicked"/>
+                <Button Grid.Column="1" Text="Leaderboard" Clicked="OnLeaderboardClicked"/>
+            </Grid>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

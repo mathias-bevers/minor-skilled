@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Shell
+    x:Class="FitMate.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:FitMate.Views"
+    Shell.FlyoutBehavior="Flyout"
+    Title="FitMate">
+    
+    <!-- Pages shown in the flyout -->
+    <ShellContent Title="Workout History" ContentTemplate="{DataTemplate local:AllWorkoutsPage}" Route="AllWorkouts" />
+    <ShellContent Title="Profile" ContentTemplate="{DataTemplate local:ProfilePage}" Route="Profile" />
+    <ShellContent Title="Friends" ContentTemplate="{DataTemplate local:FriendsPage}" Route="Friends" />
+</Shell>
