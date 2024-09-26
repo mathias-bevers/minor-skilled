@@ -2,8 +2,19 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FitMate.ViewModels"
+             x:DataType="vm:ExerciseTypeViewModel"
              x:Class="FitMate.Views.ExerciseTypePage">
     <ContentPage.Content>
-        <Label>WIP</Label>
+        <StackLayout Spacing="10" Margin="10">
+            <Entry Placeholder="Enter exercise name..." Text="{Binding ExerciseName}"/>
+            <Picker Title="Select a muscle group" 
+                    ItemsSource="{Binding MuscleTypes}" 
+                    SelectedIndex="{Binding SelectedMuscleType}"/>
+            <Picker Title="Select a exercise measurement"
+                    ItemsSource="{Binding MeasurementTypes}"
+                    SelectedIndex="{Binding SelectedMeasurementType}"/>
+            <Button Text="Save new exercise" Clicked="OnSaveClicked"/>
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>
