@@ -1,0 +1,39 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Style TargetType="View" x:Key="Card">
+        <Setter Property="BackgroundColor"
+                Value="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Gray600}}" />
+    </Style>
+    
+    <Style TargetType="Border" x:Key="CardBorder" BasedOn="{StaticResource Card}">
+        <Setter Property="StrokeShape" Value="RoundRectangle 15"/>
+        <Setter Property="Padding" Value="10"/>
+        <Setter Property="StrokeThickness" Value="0"/>
+    </Style>
+    
+    <Style TargetType="Label" x:Key="ProfileText">
+        <Setter Property="FontSize" Value="18"/>
+    </Style>
+    <Style TargetType="Label" x:Key="ProfileTitleText" BasedOn="{StaticResource ProfileText}">
+        <Setter Property="FontAttributes" Value="Bold"/>
+    </Style>
+    
+    <Style TargetType="Entry">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+    </Style>
+    
+    <Style TargetType="Border" x:Key="EntryBorder">
+        <Setter Property="StrokeShape" Value="RoundRectangle 15"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="StrokeThickness" Value="0"/>
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+    </Style>
+    
+    <Style TargetType="Label" x:Key="GroupHeader">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" />
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
+</ResourceDictionary>

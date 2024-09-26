@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FitMate.ViewModels"
+             x:DataType="vm:ExerciseLeaderboardViewModel"
+             x:Class="FitMate.Views.ExerciseLeaderboardPage">
+    <ContentPage.Content>
+        <ScrollView>
+            <CollectionView ItemsSource="{Binding PRs}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:LeaderboardEntry">
+                        <Border Padding="5" Margin="10, 5">
+                            <Grid ColumnDefinitions="*, *, *">
+                                <Label Grid.Column="0" FontSize="17" Text="{Binding Placement}" />
+                                <Label Grid.Column="1" FontSize="17" Text="{Binding Record.Name}" />
+                                <Label Grid.Column="2" FontSize="17" Text="{Binding Record.ExerciseSet.FormattedString}"
+                                       HorizontalTextAlignment="End" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

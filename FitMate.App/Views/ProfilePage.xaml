@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FitMate.ViewModels"
+             x:Class="FitMate.Views.ProfilePage">
+    <ContentPage.Content>
+        <Grid RowDefinitions="Auto, Auto, Auto, *" Margin="10" RowSpacing="10">
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="20">
+                <Frame Grid.Column="0" HeightRequest="125" WidthRequest="125" CornerRadius="65"
+                       IsClippedToBounds="True">
+                    <Image Aspect="AspectFit" Source="user_placeholder.png" HeightRequest="125" WidthRequest="125" />
+                </Frame>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Text="Username"
+                           Style="{StaticResource ProfileTitleText }" />
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding UserPlaceholder.Username}"
+                           Style="{StaticResource ProfileText }" />
+
+                    <Label Grid.Row="1" Grid.Column="0" Text="Age"
+                           Style="{StaticResource ProfileTitleText }" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding UserPlaceholder.Age}"
+                           Style="{StaticResource ProfileText }" />
+
+                    <Label Grid.Row="2" Grid.Column="0" Text="Gender"
+                           Style="{StaticResource ProfileTitleText}" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding UserPlaceholder.Gender}"
+                           Style="{StaticResource ProfileText }" />
+                </Grid>
+            </Grid>
+            <BoxView Grid.Row="1" Color="{StaticResource Primary}" HeightRequest="2" />
+            <Label Grid.Row="2" Text="Personal Records" Style="{StaticResource Headline}" />
+            <ScrollView Grid.Row="3">
+                <CollectionView ItemsSource="{Binding PlaceholderPRs}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:Mockups.PersonalRecordMockup">
+                            <Border Style="{StaticResource CardBorder}">
+                                <StackLayout Style="{StaticResource Card}">
+                                    <Label Text="{Binding Name}" FontSize="22" />
+                                    <Label Text="{Binding ExerciseSet.FormattedString}" FontSize="15" />
+                                </StackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
