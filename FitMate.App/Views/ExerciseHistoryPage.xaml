@@ -2,8 +2,38 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FitMate.ViewModels"
+             x:DataType="vm:ExerciseHistoryViewModel"
              x:Class="FitMate.Views.ExerciseHistoryPage">
     <ContentPage.Content>
-        <Label>WIP</Label>
+        <Grid RowDefinitions="Auto, *" Margin="10" RowSpacing="10">
+            <Border Grid.Row="0">
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Padding="5">
+                    <Label Text="Current PR: " Style="{StaticResource ProfileTitleText}" />
+                    <Label Text="{Binding PR.ExerciseSet.FormattedString}" Style="{StaticResource ProfileTitleText}" />
+                </StackLayout>
+            </Border>
+
+            <ScrollView Grid.Row="1">
+                <CollectionView ItemsSource="{Binding Exercises}" IsGrouped="True">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="5" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.GroupHeaderTemplate>
+                        <DataTemplate x:DataType="vm:Mockups.ExerciseGroupMockup">
+                            <Label Text="{Binding Name}" Style="{StaticResource GroupHeader}"  />
+                        </DataTemplate>
+                    </CollectionView.GroupHeaderTemplate>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:Mockups.ExerciseMockup">
+                            <!-- margin and padding are applied in left, top, right, bottom -->
+                            <StackLayout HorizontalOptions="Center">
+                                <Label Text="{Binding ExerciseSet.FormattedString}" FontSize="14"/>
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
