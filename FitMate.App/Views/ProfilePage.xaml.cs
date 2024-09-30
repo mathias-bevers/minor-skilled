@@ -8,9 +8,9 @@ public partial class ProfilePage : ContentPage
     {
         InitializeComponent();
 
-        Title = "Profile"; //TODO: load name of current loaded user.
-
         viewModel = new ViewModels.ProfileViewModel();
         BindingContext = viewModel;
+
+        Title = ReferenceEquals(null, viewModel.User) ? "Not logged in..." : viewModel.User.UserName;
     }
 }

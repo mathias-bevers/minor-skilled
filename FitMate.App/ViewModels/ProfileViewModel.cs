@@ -1,16 +1,22 @@
 using System.Collections.ObjectModel;
+using FitMate.Models;
 using FitMate.ViewModels.Mockups;
 
 namespace FitMate.ViewModels;
 
 public class ProfileViewModel
 {
-    public UserMockup UserPlaceholder { get; set; }
+    public User? User { get; set; }
+    
     public ObservableCollection<PersonalRecordMockup> PlaceholderPRs { get; set; }
 
     public ProfileViewModel()
     {
-        UserPlaceholder = new UserMockup { Username = "John_Doe", Age = 21, Gender = "Male" };
+        using (DataBase.FitMateDB db = new())
+        {
+            User = db.Users.FirstOrDefault();
+        }
+        
 
         PlaceholderPRs = new ObservableCollection<PersonalRecordMockup>([
             new PersonalRecordMockup()

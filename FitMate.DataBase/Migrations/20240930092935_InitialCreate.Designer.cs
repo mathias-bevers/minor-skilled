@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FitMate.DataBase.Migrations
 {
-    [DbContext(typeof(AppContext))]
+    [DbContext(typeof(FitMateDB))]
     [Migration("20240930092935_InitialCreate")]
     partial class InitialCreate
     {
