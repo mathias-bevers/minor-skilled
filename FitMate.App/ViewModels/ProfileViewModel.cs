@@ -16,17 +16,17 @@ public class ProfileViewModel
             new PersonalRecordMockup()
             {
                 Name = "Bicep Curl",
-                ExerciseSet = new Models.ExerciseSet((int)Models.ExerciseSet.SetType.KiloReps, 14, 12),
+                ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 14, 12),
             },
             new PersonalRecordMockup()
             {
                 Name = "Treadmill",
-                ExerciseSet = new Models.ExerciseSet((int)Models.ExerciseSet.SetType.MeterMinutes, 1320, 422),
+                ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.MeterMinutes, 1320, 422),
             },
             new PersonalRecordMockup()
             {
                 Name = "Leg Press",
-                ExerciseSet = new Models.ExerciseSet((int)Models.ExerciseSet.SetType.KiloReps, 160, 10),
+                ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 160, 10),
             }
         ]);
     }

@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using FitMate.Models;
 
 namespace FitMate.ViewModels;
 
@@ -17,19 +16,19 @@ public partial class ExerciseViewModel : ObservableObject
             new Mockups.ExerciseMockup
             {
                 Name = "Hammer Curl",
-                ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 12),
+                ExerciseSet = new Mockups.ExerciseSet((int)Mockups.ExerciseSet.SetType.KiloReps, 10, 12),
                 IsPersonalRecord = false
             },
             new Mockups.ExerciseMockup
             {
                 Name = "Hammer Curl",
-                ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 12),
+                ExerciseSet = new Mockups.ExerciseSet((int)Mockups.ExerciseSet.SetType.KiloReps, 10, 12),
                 IsPersonalRecord = false
             },
             new Mockups.ExerciseMockup
             {
                 Name = "Hammer Curl",
-                ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 12, 12),
+                ExerciseSet = new Mockups.ExerciseSet((int)Mockups.ExerciseSet.SetType.KiloReps, 12, 12),
                 IsPersonalRecord = true
             }
         ]);

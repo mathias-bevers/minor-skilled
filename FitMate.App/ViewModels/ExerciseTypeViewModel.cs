@@ -14,6 +14,6 @@ public class ExerciseTypeViewModel : ObservableObject
     public ExerciseTypeViewModel()
     {
         MuscleTypes = [..Enum.GetNames<Mockups.MuscleGroup>()];
-        MeasurementTypes = [..Enum.GetNames<Models.ExerciseSet.SetType>()];
+        MeasurementTypes = [..Enum.GetNames<Mockups.ExerciseSet.SetType>()];
     }
 }

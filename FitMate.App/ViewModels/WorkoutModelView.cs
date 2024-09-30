@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using FitMate.Models;
 using FitMate.ViewModels.Mockups;
 
 namespace FitMate.ViewModels;
