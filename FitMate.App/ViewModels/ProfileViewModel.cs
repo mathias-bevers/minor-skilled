@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using FitMate.Models;
 using FitMate.ViewModels.Mockups;
+using Microsoft.Data.SqlClient;
 
 namespace FitMate.ViewModels;
 
@@ -12,11 +13,27 @@ public class ProfileViewModel
 
     public ProfileViewModel()
     {
-        using (DataBase.FitMateDB db = new())
-        {
-            User = db.Users.FirstOrDefault();
-        }
+        User = new User();
         
+        using (SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString))
+        {
+            connection.Open();
+            
+            using (SqlCommand command = new("select top 1 * from Users", connection))
+            {
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        User.UserName = reader["UserName"].ToString() ?? "ERROR";
+                    }
+                }
+            }
+            
+            connection.Close();
+        }
 
         PlaceholderPRs = new ObservableCollection<PersonalRecordMockup>([
             new PersonalRecordMockup()
