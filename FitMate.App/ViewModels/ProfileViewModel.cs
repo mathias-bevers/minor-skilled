@@ -20,7 +20,7 @@ public class ProfileViewModel
         {
             connection.Open();
 
-            using (SqlCommand command = new("select top 1 * from Users", connection))
+            using (SqlCommand command = new($"SELECT * FROM Users WHERE ID = {App.USER_ID}", connection))
             {
                 SqlDataReader reader = command.ExecuteReader();
 

@@ -6,6 +6,7 @@ namespace FitMate;
 public partial class App : Application
 {
     public static readonly ServerSettings SERVER_SETTINGS = new();
+    public static readonly int USER_ID = GetUserId();
 
     public App()
     {
@@ -18,6 +19,19 @@ public partial class App : Application
         Routing.RegisterRoute("AllWorkouts/Workout/Exercise/History", typeof(ExerciseHistoryPage));
         Routing.RegisterRoute("AllWorkouts/Workout/Exercise/LeaderBoard", typeof(ExerciseLeaderboardPage));
         Routing.RegisterRoute("AllWorkouts/Workout/AllExercises/ExerciseType", typeof(ExerciseTypePage));
+    }
+
+    private static int GetUserId()
+    {
+        string filePath = Path.Combine(FileSystem.AppDataDirectory, "tasks.json");
+        
+        if (!File.Exists(filePath))
+        {
+            //TODO: Remove and login 
+            File.WriteAllText(filePath, "1");
+        }
+        
+        return int.Parse(File.ReadAllText(filePath));
     }
 }
 

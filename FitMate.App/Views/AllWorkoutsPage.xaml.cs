@@ -1,3 +1,5 @@
+using FitMate.Models;
+
 namespace FitMate.Views;
 
 public partial class AllWorkoutsPage : ContentPage
@@ -23,8 +25,10 @@ public partial class AllWorkoutsPage : ContentPage
         
         if (args.CurrentSelection.Count == 0 || ReferenceEquals(null, cv.SelectedItem)) { return; }
         
+        int workoutID = ((Workout)cv.SelectedItem).ID;
+        
         cv.SelectedItem = null;
         
-        await Shell.Current.GoToAsync($"/Workout"); //TODO: goto correct workout
+        await Shell.Current.GoToAsync($"/Workout?id={workoutID}"); //TODO: goto correct workout
     }
 }

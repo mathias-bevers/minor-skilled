@@ -6,14 +6,19 @@ namespace FitMate.Models;
 [Table("Workouts")]
 public class Workout
 {
-    [Key] 
+    [Key]
     public int ID { get; set; }
-    
+
     [Required]
     public string CreatedOn { get; set; }
-    
-    [Required] 
+
+    [Required]
     public int UserID { get; set; }
     public User User { get; set; } = null!;
     public ICollection<Exercise> Exercises { get; }
+
+    [NotMapped]
+    public string DateString => DateTime
+        .ParseExact(CreatedOn, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)
+        .ToString("dddd - dd/MM/yyyy");
 }
