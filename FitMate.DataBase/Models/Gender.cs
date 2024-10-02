@@ -13,3 +13,11 @@ public class Gender
     [Required]
     public string Value { get; set; }
 }
+
+public enum GenderType
+{
+    Woman,
+    Man,
+    Other,
+    PreferNotToSay
+}

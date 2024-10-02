@@ -27,6 +27,7 @@ public class FitMateDB : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        // Unidirectional relationships. 
         builder.Entity<User>().HasOne(u => u.Gender).WithMany().HasForeignKey(u => u.GenderID).IsRequired();
         builder.Entity<ExerciseType>().HasOne(et => et.MuscleGroup).WithMany().HasForeignKey(et => et.MuscleGroupID)
             .IsRequired();

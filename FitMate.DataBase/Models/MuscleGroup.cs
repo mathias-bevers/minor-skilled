@@ -12,3 +12,15 @@ public class MuscleGroup
     [Required]
     public string Name { get; set; }
 }
+
+public enum MuscleGroupType
+{
+    Abs,
+    Back,
+    Biceps,
+    Cardio,
+    Chest,
+    Legs,
+    Shoulders,
+    Triceps
+}

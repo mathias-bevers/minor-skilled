@@ -12,3 +12,9 @@ public class MeasurementType
     [Required]
     public string Name { get; set; }
 }
+
+public enum Measurement
+{
+    KilosPerRepetition,
+    MetersPerSecond,
+}

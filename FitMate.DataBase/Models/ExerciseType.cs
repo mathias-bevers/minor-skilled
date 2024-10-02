@@ -18,4 +18,18 @@ public class ExerciseType
     [Required]
     public int MeasurementTypeID { get; set; }
     public MeasurementType Measurement { get; set; }
+
+    [NotMapped]
+    public MuscleGroupType MuscleGroupType
+    {
+        get => (MuscleGroupType)(MuscleGroupID - 1);
+        set => MuscleGroupID = (int)(value + 1);
+    }
+
+    [NotMapped]
+    public Measurement MeasurementType
+    {
+        get => (Measurement)(MeasurementTypeID - 1);
+        set => MeasurementTypeID = (int)(value + 1);
+    }
 }
