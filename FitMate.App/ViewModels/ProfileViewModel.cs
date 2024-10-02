@@ -7,18 +7,19 @@ namespace FitMate.ViewModels;
 
 public class ProfileViewModel
 {
-    public User? User { get; set; }
-    
+    public User User { get; }
+    public int Age { get; }
+
     public ObservableCollection<PersonalRecordMockup> PlaceholderPRs { get; set; }
 
     public ProfileViewModel()
     {
         User = new User();
-        
+
         using (SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString))
         {
             connection.Open();
-            
+
             using (SqlCommand command = new("select top 1 * from Users", connection))
             {
                 SqlDataReader reader = command.ExecuteReader();
@@ -28,12 +29,20 @@ public class ProfileViewModel
                     while (reader.Read())
                     {
                         User.UserName = reader["UserName"].ToString() ?? "ERROR";
+                        User.GenderID = (int)reader["GenderID"];
+                        User.DateOfBirth = reader["DateOfBirth"].ToString() ?? "ERROR";
                     }
                 }
             }
-            
+
             connection.Close();
         }
+
+        DateTime dob = DateTime.ParseExact(User.DateOfBirth, "yyyy-MM-dd",
+            System.Globalization.CultureInfo.InvariantCulture);
+
+        Age = DateTime.Today.Year - dob.Year;
+        if (DateTime.Today.DayOfYear < dob.DayOfYear) { --Age; }
 
         PlaceholderPRs = new ObservableCollection<PersonalRecordMockup>([
             new PersonalRecordMockup()

@@ -3,7 +3,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:FitMate.ViewModels"
-             x:Class="FitMate.Views.ProfilePage">
+             x:Class="FitMate.Views.ProfilePage" x:DataType="vm:ProfileViewModel">
     <ContentPage.Content>
         <Grid RowDefinitions="Auto, Auto, Auto, *" Margin="10" RowSpacing="10">
             <Grid ColumnDefinitions="Auto, *" ColumnSpacing="20">
@@ -23,17 +23,17 @@
                     </Grid.ColumnDefinitions>
                     <Label Grid.Row="0" Grid.Column="0" Text="Username"
                            Style="{StaticResource ProfileTitleText }" />
-                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding UserPlaceholder.Username}"
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding User.UserName}"
                            Style="{StaticResource ProfileText }" />
 
                     <Label Grid.Row="1" Grid.Column="0" Text="Age"
                            Style="{StaticResource ProfileTitleText }" />
-                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding UserPlaceholder.Age}"
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding Age}"   
                            Style="{StaticResource ProfileText }" />
 
                     <Label Grid.Row="2" Grid.Column="0" Text="Gender"
                            Style="{StaticResource ProfileTitleText}" />
-                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding UserPlaceholder.Gender}"
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding User.GenderType}"
                            Style="{StaticResource ProfileText }" />
                 </Grid>
             </Grid>
