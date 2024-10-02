@@ -13,7 +13,6 @@ public partial class WorkoutPage : ContentPage
         BindingContext = viewModel;
     }
 
-
     private async void OnAddExerciseClicked(object? sender, EventArgs args)
     {
         await Shell.Current.GoToAsync("/AllExercises");

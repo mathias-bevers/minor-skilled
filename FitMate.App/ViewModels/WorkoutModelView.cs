@@ -4,9 +4,11 @@ using FitMate.ViewModels.Mockups;
 
 namespace FitMate.ViewModels;
 
-public class WorkoutModelView : ObservableObject
+public class WorkoutModelView : ObservableObject, IQueryAttributable
 {
     public ObservableCollection<ExerciseGroupMockup> Exercises { get; set; }
+    
+    private int WorkoutID { get; set; }
 
     public WorkoutModelView()
     {
@@ -68,8 +70,15 @@ public class WorkoutModelView : ObservableObject
             ])
         ]);
     }
-}
 
-/*
-,
-*/
+    public void LoadFromDB(int workoutID)
+    {
+        System.Diagnostics.Debug.WriteLine($"Loading workout#{workoutID} from database...");
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        WorkoutID = (int)query["id"];
+        LoadFromDB(WorkoutID);
+    }
+}

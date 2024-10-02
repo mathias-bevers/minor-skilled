@@ -13,7 +13,7 @@ public partial class AllWorkoutsPage : ContentPage
         viewModel = new ViewModels.AllWorkoutsViewModel();
         BindingContext = viewModel;
     }
-    
+
     private void OnCreateNewWorkout(object? sender, EventArgs args)
     {
         Shell.Current.GoToAsync("/Workout"); //TODO: create a new workout entry.
@@ -22,13 +22,15 @@ public partial class AllWorkoutsPage : ContentPage
     private async void OnWorkoutSelected(object sender, SelectionChangedEventArgs args)
     {
         CollectionView cv = (CollectionView)sender;
-        
+
         if (args.CurrentSelection.Count == 0 || ReferenceEquals(null, cv.SelectedItem)) { return; }
-        
+
         int workoutID = ((Workout)cv.SelectedItem).ID;
-        
+
+        ShellNavigationQueryParameters navigationParameters = new() { { "id", workoutID } };
+
         cv.SelectedItem = null;
-        
-        await Shell.Current.GoToAsync($"/Workout?id={workoutID}"); //TODO: goto correct workout
+
+        await Shell.Current.GoToAsync($"/Workout", navigationParameters); //TODO: goto correct workout
     }
 }
