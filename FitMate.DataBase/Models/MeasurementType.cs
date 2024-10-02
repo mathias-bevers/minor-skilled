@@ -1,15 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
 
 namespace FitMate.Models;
 
-[Table("Genders")]
-public class Gender
+[Table("MeasurementTypes")]
+public class MeasurementType
 {
     [Key]
     public int ID { get; set; }
 
     [Required]
-    public string Value { get; set; }
+    public string Name { get; set; }
 }

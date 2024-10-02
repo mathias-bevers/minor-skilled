@@ -1,17 +1,29 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FitMate.Models;
 
+[Table("Users")]
 public class User
 {
-    [Key] public int ID { get; set; }
-    
-    public string UserName { get; set; } 
-    
+    [Key]
+    public int ID { get; set; }
+
+    [Required]
+    public string UserName { get; set; }
+    [Required]
     public string DateOfBirth { get; set; }
-    
-    public ICollection<Workout> Workouts { get; }
-    
-    //public int Gender { get; set; } . TODO: add gender through enum
-    
+
+    [ForeignKey("GenderID")]
+    public int GenderID { get; set; }
+    public Gender Gender { get; set; } = null!; //TODO: look at if this is necessary.
+    public ICollection<Workout> Workouts { get; } = null!;
+    //public ICollection<User> Friends  { get; } //TODO: search generate collection for friends.
+
+    [NotMapped]
+    public GenderType GenderType
+    {
+        get => (GenderType)(GenderID - 1);
+        set => GenderID = (int)(value + 1);
+    }
 }
