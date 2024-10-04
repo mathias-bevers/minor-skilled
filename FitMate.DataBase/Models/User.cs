@@ -26,4 +26,21 @@ public class User
         get => (GenderType)(GenderID - 1);
         set => GenderID = (int)(value + 1);
     }
+
+    [NotMapped]
+    public int Age
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(DateOfBirth)) { return -1; }
+            
+            DateTime dob = DateTime.ParseExact(DateOfBirth, "yyyy-MM-dd",
+                System.Globalization.CultureInfo.InvariantCulture);
+            
+            int age = DateTime.Today.Year - dob.Year;
+            if (DateTime.Today.DayOfYear < dob.DayOfYear) { --age; }
+
+            return age;
+        }
+    }
 }

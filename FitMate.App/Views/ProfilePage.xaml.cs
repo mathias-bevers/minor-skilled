@@ -11,6 +11,11 @@ public partial class ProfilePage : ContentPage
         viewModel = new ViewModels.ProfileViewModel();
         BindingContext = viewModel;
 
-        Title = ReferenceEquals(null, viewModel.User) ? "Not logged in..." : viewModel.User.UserName;
+        Title = "Profile";
+    }
+
+    protected override void OnAppearing()
+    {
+        viewModel.LoadUserFromDB();
     }
 }
