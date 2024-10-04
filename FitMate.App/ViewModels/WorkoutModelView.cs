@@ -1,84 +1,56 @@
 using System.Collections.ObjectModel;
+using System.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
-using FitMate.ViewModels.Mockups;
+using Microsoft.Data.SqlClient;
 
 namespace FitMate.ViewModels;
 
 public class WorkoutModelView : ObservableObject, IQueryAttributable
 {
-    public ObservableCollection<ExerciseGroupMockup> Exercises { get; set; }
-    
+    public ObservableCollection<ExerciseGroup> Exercises { get; set; } = [];
+
     private int WorkoutID { get; set; }
-
-    public WorkoutModelView()
-    {
-        Exercises = new ObservableCollection<ExerciseGroupMockup>([
-            new ExerciseGroupMockup("Treadmill", [
-                new ExerciseMockup
-                {
-                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.MeterMinutes, 1320, 421),
-                    Name = "Treadmill",
-                    IsPersonalRecord = true,
-                    MuscleGroup = MuscleGroup.Cardio
-                }
-            ]),
-            new ExerciseGroupMockup("Biceps", [
-                new ExerciseMockup
-                {
-                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 12, 10),
-                    Name = "Hammer Curl",
-                    IsPersonalRecord = false,
-                    MuscleGroup = MuscleGroup.Biceps
-                },
-                new ExerciseMockup
-                {
-                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 12, 10),
-                    Name = "Hammer Curl",
-                    IsPersonalRecord = false,
-                    MuscleGroup = MuscleGroup.Biceps
-                },
-                new ExerciseMockup
-                {
-                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 14, 10),
-                    Name = "Hammer Curl",
-                    IsPersonalRecord = true,
-                    MuscleGroup = MuscleGroup.Biceps
-                }
-            ]),
-            new ExerciseGroupMockup("Incline Bench Press", [
-                new ExerciseMockup
-                {
-                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 55, 10),
-                    Name = "Incline Bench Press",
-                    IsPersonalRecord = false,
-                    MuscleGroup = MuscleGroup.Chest
-                },
-                new ExerciseMockup
-                {
-                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 60, 10),
-                    Name = "Incline Bench Press",
-                    IsPersonalRecord = true,
-                    MuscleGroup = MuscleGroup.Chest
-                },
-                new ExerciseMockup
-                {
-                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 55, 10),
-                    Name = "Incline Bench Press",
-                    IsPersonalRecord = false,
-                    MuscleGroup = MuscleGroup.Chest
-                }
-            ])
-        ]);
-    }
-
-    public void LoadFromDB(int workoutID)
-    {
-        System.Diagnostics.Debug.WriteLine($"Loading workout#{workoutID} from database...");
-    }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         WorkoutID = (int)query["id"];
         LoadFromDB(WorkoutID);
+    }
+
+    public void LoadFromDB(int workoutID)
+    {
+        List<Models.Exercise> exercises = [];
+
+        using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+
+        connection.Open();
+
+        //TODO: rename this to Exercises when the next migration is applied.
+        using (SqlCommand command = new($"SELECT * FROM Exercise WHERE WorkoutID = {workoutID}", connection))
+        {
+            SqlDataReader reader = command.ExecuteReader();
+
+            if (!reader.HasRows)
+            {
+                connection.Close();
+                return;
+            }
+
+            while (reader.Read())
+            {
+                exercises.Add(new Models.Exercise
+                {
+                    KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
+                    RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
+                    IsPR = (bool)reader["IsPR"],
+                    ExerciseTypeID = Convert.ToInt32(reader["ExerciseTypeID"])
+                });
+            }
+        }
+
+        connection.Close();
+
+        foreach (ExerciseGroup group in exercises.GroupBy(e => e.ExerciseTypeID)
+                     .Select(g => new ExerciseGroup(g.Key.ToString(), g.ToList()))) { Exercises.Add(group); }
     }
 }
