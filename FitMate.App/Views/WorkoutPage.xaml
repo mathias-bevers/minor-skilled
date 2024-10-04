@@ -22,7 +22,7 @@
                                 <Grid.RowDefinitions>
                                   <RowDefinition Height="25"/>  
                                 </Grid.RowDefinitions>
-                                <Label Grid.Column="0" Text="{Binding KgsOrMtr}" VerticalOptions="Center" HorizontalOptions="Fill"/>
+                                <Label Grid.Column="0" Text="{Binding .}" VerticalOptions="Center" HorizontalOptions="Fill"/>
                                 <Image Grid.Column="1" IsVisible="{Binding IsPR}" Source="trophy_placeholder.png" />
                             </Grid>
                         </DataTemplate>

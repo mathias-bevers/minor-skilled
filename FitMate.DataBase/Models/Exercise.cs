@@ -24,7 +24,12 @@ public class Exercise
 
     public override string ToString()
     {
-        //TODO: Implement to_string method.
-        throw new NotImplementedException();
+        if (ExerciseType.MeasurementType == Measurement.KilosPerRepetition)
+        {
+            return $"{KgsOrMtr} KGS - {RepsOrSecs} REPS";
+        }
+
+        TimeSpan ts = TimeSpan.FromSeconds(RepsOrSecs);
+        return $"{KgsOrMtr} MTR - {Convert.ToInt32(ts.TotalMinutes)}:{ts.Seconds:00} MINS";
     }
 }
