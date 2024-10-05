@@ -3,6 +3,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:FitMate.ViewModels"
+             xmlns:m="clr-namespace:FitMate.Models;assembly=FitMate.DataBase"
              x:Class="FitMate.Views.ProfilePage" x:DataType="vm:ProfileViewModel">
     <ContentPage.Content>
         <Grid RowDefinitions="Auto, Auto, Auto, *" Margin="10" RowSpacing="10">
@@ -28,7 +29,7 @@
 
                     <Label Grid.Row="1" Grid.Column="0" Text="Age"
                            Style="{StaticResource ProfileTitleText }" />
-                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding User.Age}"   
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding User.Age}"
                            Style="{StaticResource ProfileText }" />
 
                     <Label Grid.Row="2" Grid.Column="0" Text="Gender"
@@ -40,16 +41,16 @@
             <BoxView Grid.Row="1" Color="{StaticResource Primary}" HeightRequest="2" />
             <Label Grid.Row="2" Text="Personal Records" Style="{StaticResource Headline}" />
             <ScrollView Grid.Row="3">
-                <CollectionView ItemsSource="{Binding PlaceholderPRs}">
+                <CollectionView ItemsSource="{Binding PersonalRecords}">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:Mockups.PersonalRecordMockup">
+                        <DataTemplate x:DataType="m:Exercise">
                             <Border Style="{StaticResource CardBorder}">
                                 <StackLayout Style="{StaticResource Card}">
-                                    <Label Text="{Binding Name}" FontSize="22" />
-                                    <Label Text="{Binding ExerciseSet.FormattedString}" FontSize="15" />
+                                    <Label Text="{Binding ExerciseType.Name}" FontSize="22" />
+                                    <Label Text="{Binding .}" FontSize="15" />
                                 </StackLayout>
                             </Border>
                         </DataTemplate>
