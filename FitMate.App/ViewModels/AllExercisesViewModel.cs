@@ -21,7 +21,11 @@ public partial class AllExercisesViewModel : ObservableObject
             using (SqlCommand command = new(GenerateAllExercisesQuery(), connection))
             {
                 SqlDataReader reader = command.ExecuteReader();
-                if (!reader.HasRows) { return; }
+                if (!reader.HasRows)
+                {
+                    connection.Close();
+                    return;
+                }
 
                 while (reader.Read())
                 {

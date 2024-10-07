@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:FitMate.ViewModels"
              xmlns:mockups="clr-namespace:FitMate.ViewModels.Mockups"
+             xmlns:m="clr-namespace:FitMate.Models;assembly=FitMate.DataBase"
              x:DataType="vm:ExerciseHistoryViewModel"
              x:Class="FitMate.Views.ExerciseHistoryPage">
     <ContentPage.Content>
@@ -11,7 +12,7 @@
             <Border Grid.Row="0">
                 <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Padding="5">
                     <Label Text="Current PR: " Style="{StaticResource ProfileTitleText}" />
-                    <Label Text="{Binding PR.ExerciseSet.FormattedString}" Style="{StaticResource ProfileTitleText}" />
+                    <Label Text="{Binding PersonalRecord}" Style="{StaticResource ProfileTitleText}" />
                 </StackLayout>
             </Border>
 
@@ -21,15 +22,15 @@
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="5" />
                     </CollectionView.ItemsLayout>
                     <CollectionView.GroupHeaderTemplate>
-                        <DataTemplate x:DataType="mockups:ExerciseGroupMockup">
+                        <DataTemplate x:DataType="vm:ExerciseGroup">
                             <Label Text="{Binding Name}" Style="{StaticResource GroupHeader}" />
                         </DataTemplate>
                     </CollectionView.GroupHeaderTemplate>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="mockups:ExerciseMockup">
+                        <DataTemplate x:DataType="m:Exercise">
                             <!-- NOTE: margin and padding are applied in left, top, right, bottom -->
                             <StackLayout HorizontalOptions="Center">
-                                <Label Text="{Binding ExerciseSet.FormattedString}" FontSize="14" />
+                                <Label Text="{Binding .}" FontSize="14" />
                             </StackLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

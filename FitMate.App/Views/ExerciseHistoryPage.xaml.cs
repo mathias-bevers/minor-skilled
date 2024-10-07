@@ -18,4 +18,10 @@ public partial class ExerciseHistoryPage : ContentPage
         viewModel = new ViewModels.ExerciseHistoryViewModel();
         BindingContext = viewModel;
     }
+
+    protected override void OnAppearing()
+    {
+        viewModel.LoadHistoryFromDB();
+        Title = $"{viewModel.PersonalRecord.ExerciseType.Name}'s History";
+    }
 }

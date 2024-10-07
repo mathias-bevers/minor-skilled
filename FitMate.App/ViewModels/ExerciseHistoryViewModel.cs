@@ -1,49 +1,74 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using FitMate.ViewModels.Mockups;
+using FitMate.Models;
+using Microsoft.Data.SqlClient;
 
 namespace FitMate.ViewModels;
 
-public class ExerciseHistoryViewModel : ObservableObject
+public partial class ExerciseHistoryViewModel : ObservableObject
 {
-    public ObservableCollection<ExerciseGroupMockup> Exercises { get; set; }
-    public PersonalRecordMockup PR { get; set; }
+    public ObservableCollection<ExerciseGroup> Exercises { get; set; } = [];
+    [ObservableProperty]
+    private Exercise personalRecord = null!;
+    private int exerciseTypeID = 1;
 
-    public ExerciseHistoryViewModel()
+    public void LoadHistoryFromDB()
     {
-        PR = new PersonalRecordMockup
+        List<Exercise> exercises = [];
+        using (SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString))
         {
-            ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 12, 10)
-        };
+            connection.Open();
+            using (SqlCommand command = new(GenerateHistoryQuery(), connection))
+            {
+                SqlDataReader reader = command.ExecuteReader();
 
-        Exercises = new ObservableCollection<ExerciseGroupMockup>([
-            new ExerciseGroupMockup(DateTime.Today.ToShortDateString(), [
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
-                new ExerciseMockup
+                if (!reader.HasRows)
                 {
-                    ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 12, 10),
-                    IsPersonalRecord = true
+                    connection.Close();
+                    return;
                 }
-            ]),
-            
-            new ExerciseGroupMockup(DateTime.Today.AddDays(-3).ToShortDateString(), [
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
-            ]),
-            
-            new ExerciseGroupMockup(DateTime.Today.AddDays(-5).ToShortDateString(), [
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 10, 10) },
-            ]),
-            
-            new ExerciseGroupMockup(DateTime.Today.AddDays(-7).ToShortDateString(), [
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 8, 10) },
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 8, 10) },
-                new ExerciseMockup { ExerciseSet = new ExerciseSet((int)ExerciseSet.SetType.KiloReps, 8, 10) },
-            ])
-        ]);
+
+                while (reader.Read())
+                {
+                    Exercise exercise = new()
+                    {
+                        KgsOrMtr = (int)reader["KgsOrMtr"],
+                        RepsOrSecs = (int)reader["RepsOrSecs"],
+                        IsPR = (bool)reader["IsPR"],
+                        Date = DateTime.Parse((string)reader["CreatedOn"]),
+                        ExerciseType = new ExerciseType
+                        {
+                            Name = (string)reader["Name"],
+                            MeasurementTypeID = (int)reader["MeasurementTypeID"]
+                        }
+                    };
+
+                    exercises.Add(exercise);
+
+                    if (!exercise.IsPR) { continue; }
+
+                    PersonalRecord = exercise;
+                }
+            }
+
+            connection.Close();
+        }
+
+        foreach (ExerciseGroup exerciseGroup in exercises.GroupBy(e => e.Date)
+                     .Select(g => new ExerciseGroup(g.Key.ToString("dddd - dd/MM/yyyy"), g.ToList())))
+        {
+            Exercises.Add(exerciseGroup);
+        }
     }
+
+    //TODO: Load correct exercise!
+    private string GenerateHistoryQuery() =>
+        "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, w.CreatedOn, et.MeasurementTypeID FROM Exercise e " +
+        "JOIN ExercisesTypes et ON e.ExerciseTypeID  = et.ID JOIN Workouts w ON e.WorkoutID = w.ID " +
+        $"JOIN Users u ON u.ID = {App.USER_ID} WHERE et.ID = {exerciseTypeID};";
+
+    private string GeneratePresonalRecordQuery() =>
+        "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name FROM Exercise e " +
+        "JOIN ExercisesTypes et ON e.ExerciseTypeID  = et.ID JOIN Workouts w ON e.WorkoutID = w.ID " +
+        $"JOIN Users u ON u.ID = {App.USER_ID} WHERE et.ID = {exerciseTypeID} AND e.IsPR = 1;";
 }

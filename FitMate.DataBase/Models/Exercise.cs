@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FitMate.Models;
 
@@ -17,9 +18,13 @@ public class Exercise
     [Required]
     public int WorkoutID { get; set; }
     public Workout Workout { get; set; } = null!;
+    
     [Required]
     public int ExerciseTypeID { get; set; }
     public ExerciseType ExerciseType { get; set; } = null!;
+
+    [NotMapped]
+    public DateTime Date { get; set; } = DateTime.MinValue;
 
 
     public override string ToString()
