@@ -1,75 +1,77 @@
 using System.Collections.ObjectModel;
-using Android.Content;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FitMate.Models;
 using FitMate.ViewModels.Mockups;
+using Microsoft.Data.SqlClient;
+using MuscleGroup = FitMate.ViewModels.Mockups.MuscleGroup;
 
 namespace FitMate.ViewModels;
 
 public partial class AllExercisesViewModel : ObservableObject
 {
-    public ObservableCollection<ExerciseGroupMockup> Exercises { get; set; }
-    private readonly List<ExerciseMockup> unsortedExercises;
+    public ObservableCollection<ExerciseTypeGroup> ExerciseTypes { get; set; } = [];
+    private readonly List<ExerciseType> unsortedTypes = [];
 
-
-    public AllExercisesViewModel()
+    public void LoadExercisesFromDB()
     {
-        unsortedExercises =
-        [
-            new ExerciseMockup { Name = "Treadmill", MuscleGroup = MuscleGroup.Cardio },
-            new ExerciseMockup { Name = "Hammer Curl", MuscleGroup = MuscleGroup.Biceps },
-            new ExerciseMockup { Name = "Close Grip Curl", MuscleGroup = MuscleGroup.Biceps },
-            new ExerciseMockup { Name = "Preacher Curl", MuscleGroup = MuscleGroup.Biceps },
-            new ExerciseMockup { Name = "Incline Bench Press", MuscleGroup = MuscleGroup.Chest },
-            new ExerciseMockup { Name = "Decline Bench Press", MuscleGroup = MuscleGroup.Chest },
-            new ExerciseMockup { Name = "Cable Fly", MuscleGroup = MuscleGroup.Chest }
-        ];
-
-        List<ExerciseGroupMockup> exercises = [];
-
-        for (int i = 0; i < unsortedExercises.Count; ++i)
+        unsortedTypes.Clear();
+        using (SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString))
         {
-            ExerciseMockup exercise = unsortedExercises[i];
-            bool isAdded = false;
+            connection.Open();
 
-            for (int ii = 0; ii < exercises.Count; ++ii)
+            using (SqlCommand command = new(GenerateAllExercisesQuery(), connection))
             {
-                ExerciseGroupMockup group = exercises[ii];
-                if (exercise.MuscleGroup.ToString() != group.Name) { continue; }
+                SqlDataReader reader = command.ExecuteReader();
+                if (!reader.HasRows) { return; }
 
-                isAdded = true;
-                group.Add(exercise);
-                break;
+                while (reader.Read())
+                {
+                    ExerciseType type = new()
+                    {
+                        Name = (string)reader["typeName"],
+                        MuscleGroup = new Models.MuscleGroup
+                        {
+                            Name = (string)reader["muscleGroupName"]
+                        }
+                    };
+
+                    unsortedTypes.Add(type);
+                }
             }
 
-            if (isAdded) { continue; }
-
-            exercises.Add(new ExerciseGroupMockup(exercise.MuscleGroup.ToString(), [exercise]));
+            connection.Close();
         }
-        
-        Exercises = new ObservableCollection<ExerciseGroupMockup>(exercises);
+
+        foreach (ExerciseTypeGroup group in unsortedTypes.GroupBy(t => t.MuscleGroup.Name)
+                     .Select(g => new ExerciseTypeGroup(g.Key, g.ToList()))) { ExerciseTypes.Add(group); }
     }
 
+    private string GenerateAllExercisesQuery() =>
+        "SELECT et.Name as typeName, et.MuscleGroupID, mg.Name as muscleGroupName FROM ExercisesTypes et " +
+        "JOIN MuscleGroups mg ON et.MuscleGroupID = mg.ID;";
+
     [RelayCommand]
-    private void ToggleGroupData(ExerciseGroupMockup group)
+    private void ToggleGroupData(ExerciseTypeGroup group)
     {
-        if (group.GroupIcon == "arrow_down_placeholder.png")
+        if (group.GroupIcon == ExerciseTypeGroup.DOWN)
         {
             group.Clear();
-            group.GroupIcon = "arrow_up_placeholder.png";
+            group.GroupIcon = ExerciseTypeGroup.UP;
         }
         else
         {
-            List<ExerciseMockup> toAdd = new();
-            for (int i = 0; i < unsortedExercises.Count; ++i)
+            List<ExerciseType> toAdd = new();
+            for (int i = 0; i < unsortedTypes.Count; ++i)
             {
-                ExerciseMockup exercise = unsortedExercises[i];
-                if(exercise.MuscleGroup.ToString() != group.Name) { continue; }
+                ExerciseType exercise = unsortedTypes[i];
+                if (exercise.MuscleGroup.Name != group.Name) { continue; }
+
                 toAdd.Add(exercise);
             }
-            
+
             group.AddRange(toAdd);
-            group.GroupIcon = "arrow_down_placeholder.png";
+            group.GroupIcon = ExerciseTypeGroup.DOWN;
         }
     }
 }

@@ -3,16 +3,16 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:FitMate.ViewModels"
-             xmlns:mockups="clr-namespace:FitMate.ViewModels.Mockups"
+             xmlns:m="clr-namespace:FitMate.Models;assembly=FitMate.DataBase"
              x:Class="FitMate.Views.AllExercisesPage">
     <ContentPage.Content>
         <Grid RowDefinitions="*, Auto" RowSpacing="10" Margin="10">
             <!-- TODO: add a search bar -->
             <ScrollView Grid.Row="0" x:DataType="vm:AllExercisesViewModel">
-                <CollectionView ItemsSource="{Binding Exercises}" IsGrouped="true" SelectionMode="Single"
+                <CollectionView ItemsSource="{Binding ExerciseTypes}" IsGrouped="true" SelectionMode="Single"
                                 SelectionChanged="OnExerciseSelected">
                     <CollectionView.GroupHeaderTemplate>
-                        <DataTemplate x:DataType="mockups:ExerciseGroupMockup">
+                        <DataTemplate x:DataType="vm:ExerciseTypeGroup">
                             <HorizontalStackLayout Spacing="20" BackgroundColor="{StaticResource Primary}" Padding="5">
                                 <Image Source="{Binding GroupIcon}" HeightRequest="20" />
                                 <Label Text="{Binding Name}" FontSize="17" />
@@ -26,7 +26,7 @@
                         </DataTemplate>
                     </CollectionView.GroupHeaderTemplate>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="mockups:ExerciseMockup">
+                        <DataTemplate x:DataType="m:ExerciseType">
                             <Label Text="{Binding Name}" VerticalOptions="Center" HorizontalOptions="Fill" Padding="5"
                                    FontSize="15" />
                         </DataTemplate>

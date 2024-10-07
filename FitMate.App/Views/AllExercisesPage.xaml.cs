@@ -19,6 +19,11 @@ public partial class AllExercisesPage : ContentPage
         BindingContext = viewModel;
     }
 
+    protected override void OnAppearing()
+    {
+        viewModel.LoadExercisesFromDB();
+    }
+
     private void OnExerciseSelected(object? sender, SelectionChangedEventArgs e)
     {
         Shell.Current.GoToAsync("../Exercise");
