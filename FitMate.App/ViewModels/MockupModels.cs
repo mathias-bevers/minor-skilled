@@ -15,19 +15,12 @@ public struct PersonalRecordMockup
     public string Name { get; set; }
     public ExerciseSet ExerciseSet { get; set; }
 }
-public struct WorkoutMockup
-{
-    public DateTime Date { get; set; }
-    public string MusclesWorked { get; set; }
-    public string DateString => Date.ToString("dddd - dd/MM/yyyy");
-}
 
 public struct ExerciseMockup
 {
     public string Name { get; set; }
     public ExerciseSet ExerciseSet { get; set; }
     public bool IsPersonalRecord { get; set; }
-    public MuscleGroup MuscleGroup { get; set; }
 }
 
 //TODO: write a wrapper to generate groups from a list of exercises.
@@ -43,18 +36,6 @@ public partial class ExerciseGroupMockup : List<ExerciseMockup>
     {
         Name = name;
     }
-}
-
-public enum MuscleGroup
-{
-    Abdominal,
-    Back,
-    Biceps,
-    Cardio,
-    Chest,
-    Legs,
-    Shoulders,
-    Triceps
 }
 
 public struct ExerciseSet : IComparable<ExerciseSet>

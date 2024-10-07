@@ -2,9 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FitMate.Models;
-using FitMate.ViewModels.Mockups;
 using Microsoft.Data.SqlClient;
-using MuscleGroup = FitMate.ViewModels.Mockups.MuscleGroup;
 
 namespace FitMate.ViewModels;
 
