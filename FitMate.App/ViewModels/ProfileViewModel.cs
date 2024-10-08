@@ -12,69 +12,84 @@ public partial class ProfileViewModel : ObservableObject
     [ObservableProperty]
     private User user = new();
 
-    public void LoadUserFromDB()
+    public void LoadFromDbAsync()
     {
-        User tmp = new();
-        List<Exercise> tmpList = [];
         PersonalRecords.Clear();
+        Task.Run(LoadUserAsync);
+        Task.Run(LoadPersonalRecordsAsync);
+    }
 
-        using (SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString))
+
+    private async Task LoadPersonalRecordsAsync()
+    {
+        List<Exercise> loadedList = [];
+
+        System.Diagnostics.Debug.WriteLine("start pr");
+
+        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        connection.Open();
+
+        await using (SqlCommand command = new(GetPersonalRecordsQuery(), connection))
         {
-            connection.Open();
+            SqlDataReader reader = await command.ExecuteReaderAsync();
 
-
-            using (SqlCommand command = new(GetUserQuery(), connection))
+            if (reader.HasRows)
             {
-                SqlDataReader reader = command.ExecuteReader();
-
-                if (reader.HasRows)
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        tmp.UserName = reader["UserName"].ToString() ?? "ERROR";
-                        tmp.GenderID = (int)reader["GenderID"];
-                        tmp.DateOfBirth = reader["DateOfBirth"].ToString() ?? "ERROR";
-                    }
-                }
-            }
+                    int kgsOrMtr = (int)reader["KgsOrMtr"];
+                    int repsOrSecs = (int)reader["RepsOrSecs"];
+                    string name = reader["Name"].ToString() ?? "ERROR";
+                    int measurement = (int)reader["MeasurementTypeID"];
 
-            using (SqlCommand command = new(GetPersonalRecordsQuery(), connection))
-            {
-                SqlDataReader reader = command.ExecuteReader();
-
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
+                    Exercise exercise = new()
                     {
-                        int kgsOrMtr = (int)reader["KgsOrMtr"];
-                        int repsOrSecs = (int)reader["RepsOrSecs"];
-                        string name = reader["Name"].ToString() ?? "ERROR";
-                        int measurement = (int)reader["MeasurementTypeID"];
-                        
-                        Exercise exercise = new()
+                        KgsOrMtr = kgsOrMtr,
+                        RepsOrSecs = repsOrSecs,
+                        ExerciseType = new ExerciseType
                         {
-                            KgsOrMtr = kgsOrMtr,
-                            RepsOrSecs = repsOrSecs,
-                            ExerciseType = new ExerciseType
-                            {
-                                Name = name,
-                                MeasurementTypeID = measurement
-                            }
-                        };
-                        tmpList.Add(exercise);
-                    }
+                            Name = name,
+                            MeasurementTypeID = measurement
+                        }
+                    };
+                    loadedList.Add(exercise);
                 }
             }
-
-            connection.Close();
         }
-        
-        User = tmp;
 
-        for (int i = 0; i < tmpList.Count; ++i)
+        connection.Close();
+
+        foreach (Exercise e in loadedList) { PersonalRecords.Add(e); }
+        System.Diagnostics.Debug.WriteLine("end pr");
+    }
+
+    private async Task LoadUserAsync()
+    {
+        System.Diagnostics.Debug.WriteLine("start user");
+        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+
+        connection.Open();
+
+        await using (SqlCommand command = new(GetUserQuery(), connection))
         {
-            PersonalRecords.Add(tmpList[i]);
+            SqlDataReader reader = await command.ExecuteReaderAsync();
+
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    User = new User
+                    {
+                        UserName = reader["UserName"].ToString() ?? "ERROR",
+                        GenderID = (int)reader["GenderID"],
+                        DateOfBirth = reader["DateOfBirth"].ToString() ?? "ERROR"
+                    };
+                }
+            }
         }
+
+        connection.Close();
+        System.Diagnostics.Debug.WriteLine("end user");
     }
 
     private static string GetUserQuery() =>

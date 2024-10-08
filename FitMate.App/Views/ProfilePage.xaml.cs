@@ -16,6 +16,6 @@ public partial class ProfilePage : ContentPage
 
     protected override void OnAppearing()
     {
-        viewModel.LoadUserFromDB();
+        viewModel.LoadFromDbAsync();
     }
 }
