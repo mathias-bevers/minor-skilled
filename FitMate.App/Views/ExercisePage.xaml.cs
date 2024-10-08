@@ -14,8 +14,11 @@ public partial class ExercisePage : ContentPage
         Title = "Exercise";
 
         viewModel = new ExerciseViewModel();
+        viewModel.UpdateTitleEvent += OnUpdateTitle;
         BindingContext = viewModel;
     }
+
+    private void OnUpdateTitle(string newTitle) => Title = newTitle;
 
     private bool HasOnlyDigits(string source)
     {

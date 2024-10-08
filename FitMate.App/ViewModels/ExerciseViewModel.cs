@@ -8,6 +8,7 @@ namespace FitMate.ViewModels;
 public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
 {
     public ObservableCollection<Models.Exercise> Exercises { get; set; } = [];
+    public event Action<string> UpdateTitleEvent; 
 
     private int ExerciseTypeID { get; set; } = -1;
     private int WorkoutID { get; set; } = -1;
@@ -69,6 +70,8 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
         }
 
         connection.Close();
+        
+        UpdateTitleEvent.Invoke(Exercises.Count >= 1 ? Exercises[0].ExerciseType.Name : "Unknown exercise");
     }
 
     private string GenerateExercisesQuery() =>

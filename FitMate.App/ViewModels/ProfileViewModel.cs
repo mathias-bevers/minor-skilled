@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Data.SqlTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
 using Microsoft.Data.SqlClient;
@@ -14,7 +15,6 @@ public partial class ProfileViewModel : ObservableObject
 
     public void LoadFromDbAsync()
     {
-        PersonalRecords.Clear();
         Task.Run(LoadUserAsync);
         Task.Run(LoadPersonalRecordsAsync);
     }
@@ -22,9 +22,7 @@ public partial class ProfileViewModel : ObservableObject
 
     private async Task LoadPersonalRecordsAsync()
     {
-        List<Exercise> loadedList = [];
-
-        System.Diagnostics.Debug.WriteLine("start pr");
+        PersonalRecords.Clear();
 
         await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
         connection.Open();
@@ -37,35 +35,26 @@ public partial class ProfileViewModel : ObservableObject
             {
                 while (reader.Read())
                 {
-                    int kgsOrMtr = (int)reader["KgsOrMtr"];
-                    int repsOrSecs = (int)reader["RepsOrSecs"];
-                    string name = reader["Name"].ToString() ?? "ERROR";
-                    int measurement = (int)reader["MeasurementTypeID"];
-
-                    Exercise exercise = new()
+                    PersonalRecords.Add(new Exercise
                     {
-                        KgsOrMtr = kgsOrMtr,
-                        RepsOrSecs = repsOrSecs,
+                        KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
+                        RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
                         ExerciseType = new ExerciseType
                         {
-                            Name = name,
-                            MeasurementTypeID = measurement
+                            Name = Convert.ToString(reader["Name"]) ??
+                                   throw new SqlNullValueException("reader[\"Name\"]"),
+                            MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
                         }
-                    };
-                    loadedList.Add(exercise);
+                    });
                 }
             }
         }
 
         connection.Close();
-
-        foreach (Exercise e in loadedList) { PersonalRecords.Add(e); }
-        System.Diagnostics.Debug.WriteLine("end pr");
     }
 
     private async Task LoadUserAsync()
     {
-        System.Diagnostics.Debug.WriteLine("start user");
         await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
 
         connection.Open();
@@ -89,7 +78,6 @@ public partial class ProfileViewModel : ObservableObject
         }
 
         connection.Close();
-        System.Diagnostics.Debug.WriteLine("end user");
     }
 
     private static string GetUserQuery() =>
