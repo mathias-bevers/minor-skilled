@@ -14,6 +14,12 @@ public partial class AllWorkoutsPage : ContentPage
         BindingContext = viewModel;
     }
 
+    protected override void OnAppearing()
+    {
+        viewModel.OnAppearing();
+        base.OnAppearing();
+    }
+
     private void OnCreateNewWorkout(object? sender, EventArgs args)
     {
         Shell.Current.GoToAsync("/Workout"); //TODO: create a new workout entry.

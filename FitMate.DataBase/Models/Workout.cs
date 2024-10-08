@@ -21,4 +21,7 @@ public class Workout
     public string DateString => DateTime
         .ParseExact(CreatedOn, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)
         .ToString("dddd - dd/MM/yyyy");
+    
+    [NotMapped]
+    public string MusclesWorked { get; set; }
 }
