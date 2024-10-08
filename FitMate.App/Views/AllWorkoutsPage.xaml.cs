@@ -31,6 +31,6 @@ public partial class AllWorkoutsPage : ContentPage
 
         cv.SelectedItem = null;
 
-        await Shell.Current.GoToAsync($"/Workout", navigationParameters); //TODO: goto correct workout
+        await Shell.Current.GoToAsync($"/Workout", navigationParameters);
     }
 }

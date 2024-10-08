@@ -1,34 +1,36 @@
 using System.Collections.ObjectModel;
-using System.Text;
+using System.Data.SqlTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Primitives;
 
 namespace FitMate.ViewModels;
 
 public class WorkoutModelView : ObservableObject, IQueryAttributable
 {
     public ObservableCollection<ExerciseGroup> Exercises { get; set; } = [];
-    private int WorkoutID { get; set; }
+    public int WorkoutID { get; private set; } = -1;
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        WorkoutID = (int)query["id"];
-        LoadFromDB();
+        if (query.TryGetValue("id", out object? value)) { WorkoutID = (int)value; }
+
+        if (WorkoutID < 0) { throw new InvalidOperationException("Workout ID needs to be set at least once!"); }
+
+        Exercises.Clear();
+        Task.Run(LoadWorkoutAsync);
     }
 
-    public void LoadFromDB()
+    public async Task LoadWorkoutAsync()
     {
         List<Models.Exercise> exercises = [];
 
-        using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
 
         connection.Open();
-
-        //TODO: rename this to Exercises when the next migration is applied.
-        using (SqlCommand command = new(GetQuery(), connection))
+        
+        await using (SqlCommand command = new(GenerateLoadWorkoutQuery(), connection))
         {
-            SqlDataReader reader = command.ExecuteReader();
+            SqlDataReader reader = await command.ExecuteReaderAsync();
 
             if (!reader.HasRows)
             {
@@ -42,11 +44,13 @@ public class WorkoutModelView : ObservableObject, IQueryAttributable
                 {
                     KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
                     RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
-                    IsPR = (bool)reader["IsPR"],
+                    IsPR = Convert.ToBoolean(reader["IsPR"]),
                     ExerciseType = new Models.ExerciseType
                     {
-                        Name = reader["Name"].ToString() ?? "ERROR",
-                        MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
+                        Name = Convert.ToString(reader["Name"]) ??
+                               throw new SqlNullValueException("The ExerciseType.Name is null!"),
+                        MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"]),
+                        ID = Convert.ToInt32(reader["ID"])
                     }
                 });
             }
@@ -58,18 +62,7 @@ public class WorkoutModelView : ObservableObject, IQueryAttributable
                      .Select(g => new ExerciseGroup(g.Key.ToString(), g.ToList()))) { Exercises.Add(group); }
     }
 
-    public string GetQuery()
-    {
-        StringBuilder sb = new();
-        
-        sb.Append("SELECT ");
-        sb.Append("e.KgsOrMtr, e.RepsOrSecs, e.IsPR,");
-        sb.Append("et.Name, et.MeasurementTypeID ");
-        sb.Append("FROM Exercise e JOIN ExercisesTypes et ");
-        sb.Append("ON e.ExerciseTypeID = et.ID ");
-        sb.Append("WHERE WorkoutID = ");
-        sb.Append(WorkoutID);
-
-        return sb.ToString();
-    }
+    private string GenerateLoadWorkoutQuery() =>
+        "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, et.MeasurementTypeID, et.ID " +
+        "FROM Exercise e JOIN ExercisesTypes et ON e.ExerciseTypeID = et.ID WHERE WorkoutID = " + WorkoutID;
 }
