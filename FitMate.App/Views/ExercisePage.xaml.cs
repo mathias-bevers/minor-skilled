@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using FitMate.ViewModels;
 
@@ -6,7 +5,7 @@ namespace FitMate.Views;
 
 public partial class ExercisePage : ContentPage
 {
-    private ExerciseViewModel ViewModel { get; }= new ();
+    private ExerciseViewModel ViewModel { get; } = new();
 
     public ExercisePage()
     {
@@ -44,18 +43,28 @@ public partial class ExercisePage : ContentPage
             DisplayAlert("Invalid Input", "Make sure both fields only contain numbers or a \',\'", "OK");
             return;
         }
-        
+
         DisplayAlert("Success", "Exercise has been added.", "OK");
         ViewModel.KgsOrMtr = ViewModel.RepsOrSecs = string.Empty;
     }
 
     private void OnHistoryClicked(object sender, EventArgs args)
     {
-        Shell.Current.GoToAsync($"/History");
+        ShellNavigationQueryParameters navigationQueryParameters = new()
+        {
+            { "exercise_id", ViewModel.ExerciseTypeID }
+        };
+        
+        Shell.Current.GoToAsync("/History", navigationQueryParameters);
     }
-    
+
     private void OnLeaderboardClicked(object sender, EventArgs args)
     {
-        Shell.Current.GoToAsync($"/LeaderBoard");
+        ShellNavigationQueryParameters navigationQueryParameters = new()
+        {
+            { "exercise_id", ViewModel.ExerciseTypeID }
+        };
+        
+        Shell.Current.GoToAsync("/LeaderBoard", navigationQueryParameters);
     }
 }

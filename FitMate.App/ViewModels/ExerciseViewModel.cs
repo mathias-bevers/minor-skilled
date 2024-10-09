@@ -10,7 +10,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
     public ObservableCollection<Models.Exercise> Exercises { get; set; } = [];
     public event Action<string> UpdateTitleEvent; 
 
-    private int ExerciseTypeID { get; set; } = -1;
+    public int ExerciseTypeID { get; private set; } = -1;
     private int WorkoutID { get; set; } = -1;
 
     [ObservableProperty]

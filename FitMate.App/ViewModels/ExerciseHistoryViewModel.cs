@@ -5,12 +5,18 @@ using Microsoft.Data.SqlClient;
 
 namespace FitMate.ViewModels;
 
-public partial class ExerciseHistoryViewModel : ObservableObject
+public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttributable
 {
     public ObservableCollection<ExerciseGroup> Exercises { get; set; } = [];
     [ObservableProperty]
     private Exercise personalRecord = null!;
-    private int exerciseTypeID = 1;
+    
+    private int exerciseTypeID = -1;
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("exercise_id", out object? value)) { exerciseTypeID = Convert.ToInt32(value); }
+    }
 
     public void LoadHistoryFromDB()
     {
@@ -60,15 +66,9 @@ public partial class ExerciseHistoryViewModel : ObservableObject
             Exercises.Add(exerciseGroup);
         }
     }
-
-    //TODO: Load correct exercise!
+    
     private string GenerateHistoryQuery() =>
         "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, w.CreatedOn, et.MeasurementTypeID FROM Exercise e " +
         "JOIN ExercisesTypes et ON e.ExerciseTypeID  = et.ID JOIN Workouts w ON e.WorkoutID = w.ID " +
         $"JOIN Users u ON u.ID = {App.USER_ID} WHERE et.ID = {exerciseTypeID};";
-
-    private string GeneratePresonalRecordQuery() =>
-        "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name FROM Exercise e " +
-        "JOIN ExercisesTypes et ON e.ExerciseTypeID  = et.ID JOIN Workouts w ON e.WorkoutID = w.ID " +
-        $"JOIN Users u ON u.ID = {App.USER_ID} WHERE et.ID = {exerciseTypeID} AND e.IsPR = 1;";
 }
