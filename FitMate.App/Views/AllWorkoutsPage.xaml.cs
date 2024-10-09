@@ -4,19 +4,17 @@ namespace FitMate.Views;
 
 public partial class AllWorkoutsPage : ContentPage
 {
-    private ViewModels.AllWorkoutsViewModel viewModel { get; }
+    private ViewModels.AllWorkoutsViewModel ViewModel { get; } = new();
 
     public AllWorkoutsPage()
     {
+        BindingContext = ViewModel;
         InitializeComponent();
-
-        viewModel = new ViewModels.AllWorkoutsViewModel();
-        BindingContext = viewModel;
     }
 
     protected override void OnAppearing()
     {
-        viewModel.OnAppearing();
+        ViewModel.OnAppearing();
         base.OnAppearing();
     }
 

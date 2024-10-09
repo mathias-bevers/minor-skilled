@@ -1,21 +1,19 @@
+
 namespace FitMate.Views;
 
 public partial class ProfilePage : ContentPage
 {
-    public ViewModels.ProfileViewModel viewModel { get; }
+    public ViewModels.ProfileViewModel ViewModel { get; } = new();
 
     public ProfilePage()
     {
-        InitializeComponent();
-
-        viewModel = new ViewModels.ProfileViewModel();
-        BindingContext = viewModel;
-
         Title = "Profile";
+        BindingContext = ViewModel;
+        InitializeComponent();
     }
 
     protected override void OnAppearing()
     {
-        viewModel.LoadFromDbAsync();
+        ViewModel.LoadFromDbAsync();
     }
 }

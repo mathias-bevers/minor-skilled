@@ -3,20 +3,24 @@ namespace FitMate.Views;
 
 public partial class WorkoutPage : ContentPage
 {
-    private readonly ViewModels.WorkoutModelView viewModel;
+    private ViewModels.WorkoutModelView ViewModel { get; } = new();
 
     public WorkoutPage()
     {
-        InitializeComponent();
         Title = "Workout";
+        BindingContext = ViewModel;
 
-        viewModel = new ViewModels.WorkoutModelView();
-        BindingContext = viewModel;
+        InitializeComponent();
     }
 
     private async void OnAddExerciseClicked(object? sender, EventArgs args)
     {
-        await Shell.Current.GoToAsync("/AllExercises");
+        ShellNavigationQueryParameters navigationQueryParameters = new()
+        {
+            { "workout_id", ViewModel.WorkoutID }
+        };
+        
+        await Shell.Current.GoToAsync("/AllExercises", navigationQueryParameters);
     }
 
     private async void OnExerciseSelected(object sender, SelectionChangedEventArgs args)
@@ -30,7 +34,7 @@ public partial class WorkoutPage : ContentPage
         ShellNavigationQueryParameters navigationParameters = new()
         {
             {"exercise_type_id", exercise.ExerciseType.ID},
-            {"workout_id", viewModel.WorkoutID},
+            {"workout_id", ViewModel.WorkoutID},
         };
 
         cv.SelectedItem = null;

@@ -1,32 +1,39 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace FitMate.Views;
 
 public partial class AllExercisesPage : ContentPage
 {
-    private ViewModels.AllExercisesViewModel viewModel;
-    
+    private ViewModels.AllExercisesViewModel ViewModel { get; } = new();
+
     public AllExercisesPage()
     {
-        InitializeComponent();
+        BindingContext = ViewModel;
         Title = "All Exercises";
-        
-        viewModel = new ViewModels.AllExercisesViewModel();
-        BindingContext = viewModel;
+
+        InitializeComponent();
     }
 
     protected override void OnAppearing()
     {
-        viewModel.LoadExercisesFromDB();
+        ViewModel.LoadExercisesFromDB();
     }
 
-    private void OnExerciseSelected(object? sender, SelectionChangedEventArgs e)
+    private async void OnExerciseSelected(object? sender, SelectionChangedEventArgs args)
     {
-        Shell.Current.GoToAsync("../Exercise");
+        CollectionView cv = (CollectionView)sender;
+
+        if (args.CurrentSelection.Count == 0 || cv.SelectedItem == null) { return; }
+
+        Models.ExerciseType exerciseType = (Models.ExerciseType)cv.SelectedItem;
+
+        ShellNavigationQueryParameters navigationParameters = new()
+        {
+            {"exercise_type_id", exerciseType.ID},
+            {"workout_id", ViewModel.WorkoutID},
+        };
+
+        cv.SelectedItem = null;
+
+        await Shell.Current.GoToAsync("/Exercise", navigationParameters);
     }
 
     private void OnCreateNewExercisePreset(object sender, EventArgs args)
