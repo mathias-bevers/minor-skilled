@@ -12,7 +12,7 @@ public partial class ExerciseTypeGroup(string name, List<ExerciseType> items) : 
     public const string UP = "arrow_up_placeholder.png";
     
     [ObservableProperty]
-    private string groupIcon = DOWN;
+    private string groupIcon = UP;
 }
 
 public abstract class ModelGroup<T> : List<T>

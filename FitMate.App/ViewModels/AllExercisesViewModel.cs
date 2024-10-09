@@ -57,7 +57,7 @@ public partial class AllExercisesViewModel : ObservableObject, IQueryAttributabl
         }
 
         foreach (ExerciseTypeGroup group in unsortedTypes.GroupBy(t => t.MuscleGroup.Name)
-                     .Select(g => new ExerciseTypeGroup(g.Key, g.ToList()))) { ExerciseTypes.Add(group); }
+                     .Select(g => new ExerciseTypeGroup(g.Key, []))) { ExerciseTypes.Add(group); }
     }
 
     private string GenerateAllExercisesQuery() =>
@@ -74,7 +74,7 @@ public partial class AllExercisesViewModel : ObservableObject, IQueryAttributabl
         }
         else
         {
-            List<ExerciseType> toAdd = new();
+            List<ExerciseType> toAdd = [];
             for (int i = 0; i < unsortedTypes.Count; ++i)
             {
                 ExerciseType exercise = unsortedTypes[i];
