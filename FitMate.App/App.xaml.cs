@@ -1,16 +1,21 @@
 ﻿using FitMate.DataBase;
 using FitMate.Views;
+using Microsoft.Extensions.Configuration;
 
 namespace FitMate;
 
 public partial class App : Application
 {
-    public static readonly ServerSettings SERVER_SETTINGS = new();
     public static readonly int USER_ID = GetUserId();
+    internal static ServerSettings SERVER_SETTINGS { get; private set; } = new();
+    private IConfiguration configuration;
 
-    public App()
+    public App(IConfiguration configuration)
     {
         InitializeComponent();
+
+        this.configuration = configuration;
+        SetServerSettings(configuration);
 
         MainPage = new AppShell();
         Routing.RegisterRoute("AllWorkouts/Workout", typeof(WorkoutPage));
@@ -33,13 +38,9 @@ public partial class App : Application
         
         return int.Parse(File.ReadAllText(filePath));
     }
-}
 
-public class ServerSettings : IServerSettings
-{
-    public string ConnectionString => $"Server={Server};Database=FitMate;User Id={UserName};" +
-                                      $"Password={Password};MultipleActiveResultSets=true;Encrypt=false;";
-    public string Server => "192.168.1.135";
-    public string UserName => "application";
-    public string Password => "P@$$w0rd";
+    private static void SetServerSettings(IConfiguration configuration)
+    { 
+        SERVER_SETTINGS = configuration.GetSection("Settings:Server").Get<ServerSettings>();
+    }
 }
