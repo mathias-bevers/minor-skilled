@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using FitMate.ViewModels;
 
@@ -6,16 +5,18 @@ namespace FitMate.Views;
 
 public partial class ExercisePage : ContentPage
 {
-    private ExerciseViewModel viewModel;
+    private ExerciseViewModel ViewModel { get; } = new();
 
     public ExercisePage()
     {
-        InitializeComponent();
         Title = "Exercise";
+        ViewModel.UpdateTitleEvent += OnUpdateTitle;
+        BindingContext = ViewModel;
 
-        viewModel = new ExerciseViewModel();
-        BindingContext = viewModel;
+        InitializeComponent();
     }
+
+    private void OnUpdateTitle(string newTitle) => Title = newTitle;
 
     private bool HasOnlyDigits(string source)
     {
@@ -29,31 +30,41 @@ public partial class ExercisePage : ContentPage
 
     private void OnAddExercise(object sender, EventArgs args)
     {
-        if (string.IsNullOrEmpty(viewModel.KgsOrMtr) || string.IsNullOrEmpty(viewModel.RepsOrSecs))
+        if (string.IsNullOrEmpty(ViewModel.KgsOrMtr) || string.IsNullOrEmpty(ViewModel.RepsOrSecs))
         {
             DisplayAlert("Invalid Input", "Make sure both fields are not empty.", "OK");
             return;
         }
 
         // Regex replaces all comma's with an empty string. 
-        if (!HasOnlyDigits(viewModel.KgsOrMtr) ||
-            !HasOnlyDigits(Regex.Replace(viewModel.RepsOrSecs, "[,]", string.Empty)))
+        if (!HasOnlyDigits(ViewModel.KgsOrMtr) ||
+            !HasOnlyDigits(Regex.Replace(ViewModel.RepsOrSecs, "[,]", string.Empty)))
         {
             DisplayAlert("Invalid Input", "Make sure both fields only contain numbers or a \',\'", "OK");
             return;
         }
-        
+
         DisplayAlert("Success", "Exercise has been added.", "OK");
-        viewModel.KgsOrMtr = viewModel.RepsOrSecs = string.Empty;
+        ViewModel.KgsOrMtr = ViewModel.RepsOrSecs = string.Empty;
     }
 
     private void OnHistoryClicked(object sender, EventArgs args)
     {
-        Shell.Current.GoToAsync($"/History");
+        ShellNavigationQueryParameters navigationQueryParameters = new()
+        {
+            { "exercise_name", ViewModel.ExerciseTypeName }
+        };
+        
+        Shell.Current.GoToAsync("/History", navigationQueryParameters);
     }
-    
+
     private void OnLeaderboardClicked(object sender, EventArgs args)
     {
-        Shell.Current.GoToAsync($"/LeaderBoard");
+        ShellNavigationQueryParameters navigationQueryParameters = new()
+        {
+            { "exercise_name", ViewModel.ExerciseTypeName }
+        };
+        
+        Shell.Current.GoToAsync("/LeaderBoard", navigationQueryParameters);
     }
 }

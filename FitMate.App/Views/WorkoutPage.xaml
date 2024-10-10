@@ -3,26 +3,31 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:FitMate.ViewModels"
+             xmlns:m="clr-namespace:FitMate.Models;assembly=FitMate.DataBase"
              x:Class="FitMate.Views.WorkoutPage">
     <ContentPage.Content>
         <Grid RowDefinitions="Auto, *" RowSpacing="10" Margin="10">
             <Button Grid.Row="0" Text="Add an exercise" Clicked="OnAddExerciseClicked"/>
             <ScrollView Grid.Row="1" x:DataType="vm:WorkoutModelView">
-                <CollectionView ItemsSource="{Binding Exercises}" IsGrouped="true" SelectionMode="Single" SelectionChanged="OnExerciseSelected">
+                <CollectionView ItemsSource="{Binding Exercises}" 
+                                IsGrouped="true"
+                                SelectionMode="Single" 
+                                SelectionChanged="OnExerciseSelected"
+                                EmptyView="{Binding EmptyWorkoutMessage}">
                     <CollectionView.GroupHeaderTemplate>
-                        <DataTemplate x:DataType="vm:Mockups.ExerciseGroupMockup">
+                        <DataTemplate x:DataType="vm:ExerciseGroup">
                             <Label Text="{Binding Name}" BackgroundColor="{StaticResource Primary}" Padding="5"
                                    FontSize="17" />
                         </DataTemplate>
                     </CollectionView.GroupHeaderTemplate>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:Mockups.ExerciseMockup">
+                        <DataTemplate x:DataType="m:Exercise">
                             <Grid ColumnDefinitions="*, auto" Padding="10">
                                 <Grid.RowDefinitions>
                                   <RowDefinition Height="25"/>  
                                 </Grid.RowDefinitions>
-                                <Label Grid.Column="0" Text="{Binding ExerciseSet.FormattedString}" VerticalOptions="Center" HorizontalOptions="Fill"/>
-                                <Image Grid.Column="1" IsVisible="{Binding IsPersonalRecord}" Source="trophy_placeholder.png" />
+                                <Label Grid.Column="0" Text="{Binding .}" VerticalOptions="Center" HorizontalOptions="Fill"/>
+                                <Image Grid.Column="1" IsVisible="{Binding IsPR}" Source="trophy_placeholder.png" />
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

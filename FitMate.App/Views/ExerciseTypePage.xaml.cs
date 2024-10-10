@@ -21,12 +21,12 @@ public partial class ExerciseTypePage : ContentPage
             DisplayAlert("Invalid Input", "Make sure all fields are filled.", "OK");
             return;
         }
-        
+
         string output = $"Successfully created \'{viewModel.ExerciseName}\'";
-        output += $" of muscle group \'{((ViewModels.Mockups.MuscleGroup)viewModel.SelectedMuscleType).ToString()}\'";
+        output += $" of muscle group \'{viewModel.SelectedMuscleType.ToString()}\'";
         output += $" of measurement type \'{(viewModel.SelectedMeasurementType == 0 ?
             "kg per repetition" : "meter per second")}\'.";
-        
+
         DisplayAlert("Success", output, "OK");
     }
 }

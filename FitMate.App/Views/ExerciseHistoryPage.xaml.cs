@@ -1,21 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace FitMate.Views;
 
 public partial class ExerciseHistoryPage : ContentPage
 {
-    ViewModels.ExerciseHistoryViewModel viewModel;
+    private ViewModels.ExerciseHistoryViewModel ViewModel { get; } = new();
     
     public ExerciseHistoryPage()
     {
-        InitializeComponent();
+        BindingContext = ViewModel;
         Title = "History";
+        ViewModel.UpdateTitleEvent += title => Title = title;
         
-        viewModel = new ViewModels.ExerciseHistoryViewModel();
-        BindingContext = viewModel;
+        InitializeComponent();
     }
 }

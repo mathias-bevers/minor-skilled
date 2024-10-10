@@ -13,7 +13,7 @@ public class ExerciseTypeViewModel : ObservableObject
 
     public ExerciseTypeViewModel()
     {
-        MuscleTypes = [..Enum.GetNames<Mockups.MuscleGroup>()];
+        // MuscleTypes = [..Enum.GetNames<Mockups.MuscleGroup>()]; //TODO: load names from db.
         MeasurementTypes = [..Enum.GetNames<Mockups.ExerciseSet.SetType>()];
     }
 }
