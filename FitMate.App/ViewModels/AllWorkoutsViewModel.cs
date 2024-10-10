@@ -34,27 +34,26 @@ public class AllWorkoutsViewModel : ObservableObject
                     {
                         CreatedOn = Convert.ToString(reader["CreatedOn"]) ??
                                     throw new SqlNullValueException("reader[\"CreatedOn\"]"),
-                        ID = Convert.ToInt32(reader["wID"]),
-                        MusclesWorked = Convert.ToString(reader["MusclesWorked"]) ?? string.Empty
+                        ID = Convert.ToInt32(reader["ID"]),
+                        MusclesWorked = "Muscles Worked: " + (Convert.ToString(reader["MusclesWorked"]) ??
+                                                              throw new SqlNullValueException(
+                                                                  "reader[\"MusclesWorked\"]"))
                     };
-
-                    if (!string.IsNullOrEmpty(workout.MusclesWorked))
-                    {
-                        workout.MusclesWorked = "Muscles Worked: " + workout.MusclesWorked;
-                    }
 
                     Workouts.Add(workout);
                 }
             }
+            
+            reader.Close();
         }
 
         connection.Close();
     }
 
     private string GenerateWorkoutQuery() =>
-        "SELECT w.CreatedOn, STRING_AGG(MG.Name, ', ') AS MusclesWorked, w.ID as wID FROM Workouts w " +
-        "INNER JOIN (Select DISTINCT mg.Name, e.WorkoutID FROM Exercise e " +
-        "JOIN ExercisesTypes et ON e.ExerciseTypeID = et.ID " +
-        "JOIN MuscleGroups mg ON et.MuscleGroupID = mg.ID) MG " +
-        $"ON MG.WorkoutID = w.ID WHERE w.UserID = {App.USER_ID} GROUP BY w.CreatedOn, w.ID;";
+        "SELECT w.CreatedOn, w.ID, COALESCE(STRING_AGG(MG.Name,\t', '), 'No Exercises logged') AS MusclesWorked " +
+        "FROM Workouts w LEFT JOIN ( Select DISTINCT mg.Name, e.WorkoutID " +
+        "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeName = et.Name " +
+        "JOIN MuscleGroups mg ON et.MuscleGroupID = mg.ID) MG ON MG.WorkoutID = w.ID " +
+        $"WHERE w.UserID = {App.USER_ID} GROUP BY w.CreatedOn, w.ID;";
 }

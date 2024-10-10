@@ -7,10 +7,10 @@ namespace FitMate.ViewModels;
 
 public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
 {
-    public ObservableCollection<Models.Exercise> Exercises { get; set; } = [];
-    public event Action<string> UpdateTitleEvent; 
+    public event Action<string> UpdateTitleEvent;
 
-    public int ExerciseTypeID { get; private set; } = -1;
+    public ObservableCollection<Models.Exercise> Exercises { get; set; } = [];
+    public string ExerciseTypeName { get; private set; } = string.Empty;
     private int WorkoutID { get; set; } = -1;
 
     [ObservableProperty]
@@ -20,16 +20,20 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("exercise_type_id", out object? value)) { ExerciseTypeID = (int)value; }
+        if (query.TryGetValue("exercise_type_name", out object? typeName))
+        {
+            ExerciseTypeName = Convert.ToString(typeName) ?? string.Empty;
+        }
 
-        if (query.TryGetValue("workout_id", out value)) { WorkoutID = (int)value; }
+        if (query.TryGetValue("workout_id", out object? woID)) { WorkoutID = Convert.ToInt32(woID); }
 
-        if (WorkoutID < 0 || ExerciseTypeID < 0)
+
+        if (WorkoutID < 0 || string.IsNullOrEmpty(ExerciseTypeName))
         {
             throw new Exception(
-                $"Both {nameof(WorkoutID)} and {nameof(ExerciseTypeID)} are expected to be initalized!");
+                $"Both {nameof(WorkoutID)} and {nameof(ExerciseTypeName)} are expected to be initialized!");
         }
-        
+
         LoadFromDb();
     }
 
@@ -47,36 +51,33 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
         await using (SqlCommand command = new(GenerateExercisesQuery(), connection))
         {
             SqlDataReader reader = await command.ExecuteReaderAsync();
-            if (!reader.HasRows)
+            if (reader.HasRows)
             {
-                connection.Close();
-                return;
-            }
-
-            while (reader.Read())
-            {
-                Exercises.Add(new Models.Exercise
+                while (reader.Read())
                 {
-                    KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
-                    RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
-                    IsPR = Convert.ToBoolean(reader["IsPR"]),
-                    ExerciseType = new Models.ExerciseType
+                    Exercises.Add(new Models.Exercise
                     {
-                        Name = Convert.ToString(reader["Name"]) ?? throw new SqlNullValueException(),
-                        MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
-                    }
-                });
+                        KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
+                        RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
+                        IsPR = Convert.ToBoolean(reader["IsPR"]),
+                        ExerciseType = new Models.ExerciseType
+                        {
+                            Name = Convert.ToString(reader["Name"]) ?? throw new SqlNullValueException(),
+                            MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
+                        }
+                    });
+                }
             }
         }
 
         connection.Close();
-        
-        UpdateTitleEvent.Invoke(Exercises.Count >= 1 ? Exercises[0].ExerciseType.Name : "Unknown exercise");
+
+        UpdateTitleEvent.Invoke(ExerciseTypeName);
     }
 
     private string GenerateExercisesQuery() =>
         "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, et.MeasurementTypeID " +
-        "FROM Exercise e JOIN Workouts w ON e.WorkoutID = w.ID " +
-        "JOIN ExercisesTypes et ON e.ExerciseTypeID = et.ID " +
-        $"WHERE w.ID = {WorkoutID} AND et.ID = {ExerciseTypeID}";
+        "FROM Exercises e JOIN Workouts w ON e.WorkoutID = w.ID " +
+        "JOIN ExerciseTypes et ON e.ExerciseTypeName = et.Name " +
+        $"WHERE w.ID = {WorkoutID} AND et.Name = '{ExerciseTypeName}'";
 }

@@ -52,7 +52,7 @@ public partial class ExercisePage : ContentPage
     {
         ShellNavigationQueryParameters navigationQueryParameters = new()
         {
-            { "exercise_id", ViewModel.ExerciseTypeID }
+            { "exercise_name", ViewModel.ExerciseTypeName }
         };
         
         Shell.Current.GoToAsync("/History", navigationQueryParameters);
@@ -62,7 +62,7 @@ public partial class ExercisePage : ContentPage
     {
         ShellNavigationQueryParameters navigationQueryParameters = new()
         {
-            { "exercise_id", ViewModel.ExerciseTypeID }
+            { "exercise_name", ViewModel.ExerciseTypeName }
         };
         
         Shell.Current.GoToAsync("/LeaderBoard", navigationQueryParameters);

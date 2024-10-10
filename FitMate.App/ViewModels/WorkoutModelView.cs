@@ -5,14 +5,19 @@ using Microsoft.Data.SqlClient;
 
 namespace FitMate.ViewModels;
 
-public class WorkoutModelView : ObservableObject, IQueryAttributable
+public partial class WorkoutModelView : ObservableObject, IQueryAttributable
 {
     public ObservableCollection<ExerciseGroup> Exercises { get; set; } = [];
     public int WorkoutID { get; private set; } = -1;
+    
+    [ObservableProperty]
+    public string emptyWorkoutMessage = "Loading ...";
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("id", out object? value)) { WorkoutID = (int)value; }
+        
+        //TODO: add create workout tab.
 
         if (WorkoutID < 0) { throw new InvalidOperationException("Workout ID needs to be set at least once!"); }
 
@@ -23,6 +28,7 @@ public class WorkoutModelView : ObservableObject, IQueryAttributable
     public async Task LoadWorkoutAsync()
     {
         List<Models.Exercise> exercises = [];
+        EmptyWorkoutMessage = "Loading ...";
 
         await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
 
@@ -34,6 +40,7 @@ public class WorkoutModelView : ObservableObject, IQueryAttributable
 
             if (!reader.HasRows)
             {
+                EmptyWorkoutMessage = "No exercises logged!";
                 connection.Close();
                 return;
             }
@@ -49,8 +56,7 @@ public class WorkoutModelView : ObservableObject, IQueryAttributable
                     {
                         Name = Convert.ToString(reader["Name"]) ??
                                throw new SqlNullValueException("The ExerciseType.Name is null!"),
-                        MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"]),
-                        ID = Convert.ToInt32(reader["ID"])
+                        MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
                     }
                 });
             }
@@ -63,6 +69,6 @@ public class WorkoutModelView : ObservableObject, IQueryAttributable
     }
 
     private string GenerateLoadWorkoutQuery() =>
-        "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, et.MeasurementTypeID, et.ID " +
-        "FROM Exercise e JOIN ExercisesTypes et ON e.ExerciseTypeID = et.ID WHERE WorkoutID = " + WorkoutID;
+        "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, et.MeasurementTypeID " +
+        "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeName = et.Name WHERE WorkoutID = " + WorkoutID;
 }

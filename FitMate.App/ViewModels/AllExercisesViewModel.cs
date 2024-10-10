@@ -16,19 +16,21 @@ public partial class AllExercisesViewModel : ObservableObject, IQueryAttributabl
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("workout_id", out object? value)) { WorkoutID = Convert.ToInt32(value); }
+
+        Task.Run(LoadExercisesFromDB);
     }
 
-    public void LoadExercisesFromDB()
+    private async Task LoadExercisesFromDB()
     {
         unsortedTypes.Clear();
         ExerciseTypes.Clear();
-        using (SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString))
+        await using (SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString))
         {
             connection.Open();
 
-            using (SqlCommand command = new(GenerateAllExercisesQuery(), connection))
+            await using (SqlCommand command = new(GenerateAllExercisesQuery(), connection))
             {
-                SqlDataReader reader = command.ExecuteReader();
+                SqlDataReader reader = await command.ExecuteReaderAsync();
                 if (!reader.HasRows)
                 {
                     connection.Close();
@@ -41,11 +43,10 @@ public partial class AllExercisesViewModel : ObservableObject, IQueryAttributabl
                     {
                         Name = Convert.ToString(reader["typeName"]) ??
                                throw new SqlNullValueException("reader[\"typeName\"]"),
-                        ID = Convert.ToInt32(reader["ID"]),
                         MuscleGroup = new MuscleGroup
                         {
                             Name = Convert.ToString(reader["muscleGroupName"]) ??
-                                    throw new SqlNullValueException("reader[\"muscleGroupName\"]")
+                                   throw new SqlNullValueException("reader[\"muscleGroupName\"]")
                         }
                     };
 
@@ -61,7 +62,7 @@ public partial class AllExercisesViewModel : ObservableObject, IQueryAttributabl
     }
 
     private string GenerateAllExercisesQuery() =>
-        "SELECT et.Name as typeName, et.ID, mg.Name as muscleGroupName FROM ExercisesTypes et " +
+        "SELECT et.Name as typeName, mg.Name as muscleGroupName FROM ExerciseTypes et " +
         "JOIN MuscleGroups mg ON et.MuscleGroupID = mg.ID;";
 
     [RelayCommand]

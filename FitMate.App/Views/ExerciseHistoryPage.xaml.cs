@@ -2,20 +2,14 @@ namespace FitMate.Views;
 
 public partial class ExerciseHistoryPage : ContentPage
 {
-    ViewModels.ExerciseHistoryViewModel viewModel;
+    private ViewModels.ExerciseHistoryViewModel ViewModel { get; } = new();
     
     public ExerciseHistoryPage()
     {
-        InitializeComponent();
+        BindingContext = ViewModel;
         Title = "History";
+        ViewModel.UpdateTitleEvent += title => Title = title;
         
-        viewModel = new ViewModels.ExerciseHistoryViewModel();
-        BindingContext = viewModel;
-    }
-
-    protected override void OnAppearing()
-    {
-        viewModel.LoadHistoryFromDB();
-        Title = $"{viewModel.PersonalRecord.ExerciseType.Name}'s History";
+        InitializeComponent();
     }
 }

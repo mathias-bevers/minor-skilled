@@ -7,53 +7,61 @@ namespace FitMate.ViewModels;
 
 public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttributable
 {
+    public event Action<string> UpdateTitleEvent;
+
     public ObservableCollection<ExerciseGroup> Exercises { get; set; } = [];
+
     [ObservableProperty]
     private Exercise personalRecord = null!;
-    
-    private int exerciseTypeID = -1;
+    private string exerciseName = string.Empty;
+
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("exercise_id", out object? value)) { exerciseTypeID = Convert.ToInt32(value); }
+        if (query.TryGetValue("exercise_name", out object? value))
+        {
+            exerciseName = Convert.ToString(value) ?? string.Empty;
+        }
+
+        if (string.IsNullOrEmpty(exerciseName)) { throw new Exception("'exerciseName' cannot be null or empty!"); }
+
+        Task.Run(LoadHistoryFromDB);
+        UpdateTitleEvent?.Invoke($"{exerciseName}'s History");
     }
 
-    public void LoadHistoryFromDB()
+    public async Task LoadHistoryFromDB()
     {
         List<Exercise> exercises = [];
-        using (SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString))
+        await using (SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString))
         {
             connection.Open();
-            using (SqlCommand command = new(GenerateHistoryQuery(), connection))
+            await using (SqlCommand command = new(GenerateHistoryQuery(), connection))
             {
                 SqlDataReader reader = command.ExecuteReader();
 
-                if (!reader.HasRows)
+                if (reader.HasRows)
                 {
-                    connection.Close();
-                    return;
-                }
-
-                while (reader.Read())
-                {
-                    Exercise exercise = new()
+                    while (reader.Read())
                     {
-                        KgsOrMtr = (int)reader["KgsOrMtr"],
-                        RepsOrSecs = (int)reader["RepsOrSecs"],
-                        IsPR = (bool)reader["IsPR"],
-                        Date = DateTime.Parse((string)reader["CreatedOn"]),
-                        ExerciseType = new ExerciseType
+                        Exercise exercise = new()
                         {
-                            Name = (string)reader["Name"],
-                            MeasurementTypeID = (int)reader["MeasurementTypeID"]
-                        }
-                    };
+                            KgsOrMtr = (int)reader["KgsOrMtr"],
+                            RepsOrSecs = (int)reader["RepsOrSecs"],
+                            IsPR = (bool)reader["IsPR"],
+                            Date = DateTime.Parse((string)reader["CreatedOn"]),
+                            ExerciseType = new ExerciseType
+                            {
+                                Name = (string)reader["Name"],
+                                MeasurementTypeID = (int)reader["MeasurementTypeID"]
+                            }
+                        };
 
-                    exercises.Add(exercise);
+                        exercises.Add(exercise);
 
-                    if (!exercise.IsPR) { continue; }
+                        if (!exercise.IsPR) { continue; }
 
-                    PersonalRecord = exercise;
+                        PersonalRecord = exercise;
+                    }
                 }
             }
 
@@ -66,9 +74,9 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
             Exercises.Add(exerciseGroup);
         }
     }
-    
+
     private string GenerateHistoryQuery() =>
         "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, w.CreatedOn, et.MeasurementTypeID FROM Exercise e " +
-        "JOIN ExercisesTypes et ON e.ExerciseTypeID  = et.ID JOIN Workouts w ON e.WorkoutID = w.ID " +
-        $"JOIN Users u ON u.ID = {App.USER_ID} WHERE et.ID = {exerciseTypeID};";
+        "JOIN ExerciseTypes et ON e.ExerciseTypeName  = et.Name JOIN Workouts w ON e.WorkoutID = w.ID " +
+        $"JOIN Users u ON u.ID = {App.USER_ID} WHERE et.Name = {exerciseName};";
 }

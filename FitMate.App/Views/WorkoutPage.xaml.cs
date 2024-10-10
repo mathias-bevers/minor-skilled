@@ -33,7 +33,7 @@ public partial class WorkoutPage : ContentPage
 
         ShellNavigationQueryParameters navigationParameters = new()
         {
-            {"exercise_type_id", exercise.ExerciseType.ID},
+            {"exercise_type_name", exercise.ExerciseType.Name},
             {"workout_id", ViewModel.WorkoutID},
         };
 

@@ -11,12 +11,7 @@ public partial class AllExercisesPage : ContentPage
 
         InitializeComponent();
     }
-
-    protected override void OnAppearing()
-    {
-        ViewModel.LoadExercisesFromDB();
-    }
-
+    
     private async void OnExerciseSelected(object? sender, SelectionChangedEventArgs args)
     {
         CollectionView cv = (CollectionView)sender;
@@ -25,9 +20,11 @@ public partial class AllExercisesPage : ContentPage
 
         Models.ExerciseType exerciseType = (Models.ExerciseType)cv.SelectedItem;
 
+        if (string.IsNullOrEmpty(exerciseType.Name) || ViewModel.WorkoutID <= 0) { throw new InvalidDataException(); }
+
         ShellNavigationQueryParameters navigationParameters = new()
         {
-            {"exercise_type_id", exerciseType.ID},
+            {"exercise_type_name", exerciseType.Name},
             {"workout_id", ViewModel.WorkoutID},
         };
 

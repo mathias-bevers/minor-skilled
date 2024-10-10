@@ -9,7 +9,11 @@
         <Grid RowDefinitions="Auto, *" RowSpacing="10" Margin="10">
             <Button Grid.Row="0" Text="Add an exercise" Clicked="OnAddExerciseClicked"/>
             <ScrollView Grid.Row="1" x:DataType="vm:WorkoutModelView">
-                <CollectionView ItemsSource="{Binding Exercises}" IsGrouped="true" SelectionMode="Single" SelectionChanged="OnExerciseSelected">
+                <CollectionView ItemsSource="{Binding Exercises}" 
+                                IsGrouped="true"
+                                SelectionMode="Single" 
+                                SelectionChanged="OnExerciseSelected"
+                                EmptyView="{Binding EmptyWorkoutMessage}">
                     <CollectionView.GroupHeaderTemplate>
                         <DataTemplate x:DataType="vm:ExerciseGroup">
                             <Label Text="{Binding Name}" BackgroundColor="{StaticResource Primary}" Padding="5"

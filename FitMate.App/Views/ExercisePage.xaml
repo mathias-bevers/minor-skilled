@@ -39,7 +39,8 @@
             </ScrollView>
             <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="20">
                 <Button Grid.Column="0" Text="History" Clicked="OnHistoryClicked" />
-                <Button Grid.Column="1" Text="Leaderboard" Clicked="OnLeaderboardClicked" />
+                <!-- TODO: Enable this button when friends are added -->
+                <Button Grid.Column="1" Text="Leaderboard" Clicked="OnLeaderboardClicked" IsEnabled="False"/>
             </Grid>
         </Grid>
     </ContentPage.Content>
