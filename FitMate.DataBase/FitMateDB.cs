@@ -33,7 +33,7 @@ public class FitMateDB : DbContext
             .IsRequired();
         builder.Entity<ExerciseType>().HasOne(et => et.Measurement).WithMany().HasForeignKey(et => et.MeasurementTypeID)
             .IsRequired();
-        builder.Entity<Exercise>().HasOne(e => e.ExerciseType).WithMany().HasForeignKey(et => et.ExerciseTypeID)
+        builder.Entity<Exercise>().HasOne(e => e.ExerciseType).WithMany().HasForeignKey(et => et.ExerciseTypeName)
             .IsRequired();
         
         base.OnModelCreating(builder);

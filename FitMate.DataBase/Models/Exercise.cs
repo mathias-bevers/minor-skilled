@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FitMate.Models;
 
+[Table("Exercises")]
 public class Exercise
 {
     [Key]
@@ -20,7 +21,7 @@ public class Exercise
     public Workout Workout { get; set; } = null!;
     
     [Required]
-    public int ExerciseTypeID { get; set; }
+    public string ExerciseTypeName { get; set; }
     public ExerciseType ExerciseType { get; set; } = null!;
 
     [NotMapped]
