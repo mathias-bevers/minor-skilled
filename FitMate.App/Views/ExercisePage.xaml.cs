@@ -44,8 +44,13 @@ public partial class ExercisePage : ContentPage
             return;
         }
 
-        DisplayAlert("Success", "Exercise has been added.", "OK");
-        ViewModel.KgsOrMtr = ViewModel.RepsOrSecs = string.Empty;
+
+        int kgsOrMtr = Convert.ToInt32(ViewModel.KgsOrMtr);
+        int repsOrSecs = Convert.ToInt32(ViewModel.RepsOrSecs);
+        string? errorMessage = Task.Run(() => ViewModel.AddExerciseAsync(kgsOrMtr, repsOrSecs)).Result;
+
+        if (string.IsNullOrEmpty(errorMessage)) { ViewModel.KgsOrMtr = ViewModel.RepsOrSecs = string.Empty; }
+        else { DisplayAlert("Database error", errorMessage, "OK"); }
     }
 
     private void OnHistoryClicked(object sender, EventArgs args)
@@ -54,7 +59,7 @@ public partial class ExercisePage : ContentPage
         {
             { "exercise_name", ViewModel.ExerciseTypeName }
         };
-        
+
         Shell.Current.GoToAsync("/History", navigationQueryParameters);
     }
 
@@ -64,7 +69,7 @@ public partial class ExercisePage : ContentPage
         {
             { "exercise_name", ViewModel.ExerciseTypeName }
         };
-        
+
         Shell.Current.GoToAsync("/LeaderBoard", navigationQueryParameters);
     }
 }

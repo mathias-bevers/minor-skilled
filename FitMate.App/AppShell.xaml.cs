@@ -13,6 +13,6 @@ public partial class AppShell : Shell
 		
 		if(args.Target == null) { return; }
 		
-		System.Diagnostics.Debug.WriteLine(args.Target.Location);
+		// System.Diagnostics.Debug.WriteLine(args.Target.Location);
 	}
 }
