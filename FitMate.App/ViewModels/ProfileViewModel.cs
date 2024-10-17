@@ -24,7 +24,7 @@ public partial class ProfileViewModel : ObservableObject
     {
         PersonalRecords.Clear();
 
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
         connection.Open();
 
         await using (SqlCommand command = new(GetPersonalRecordsQuery(), connection))
@@ -55,7 +55,7 @@ public partial class ProfileViewModel : ObservableObject
 
     private async Task LoadUserAsync()
     {
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
 
         connection.Open();
 

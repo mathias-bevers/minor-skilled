@@ -1,5 +1,6 @@
-using System.Text.RegularExpressions;
+using System.Diagnostics;
 using FitMate.ViewModels;
+using Syncfusion.Maui.Picker;
 
 namespace FitMate.Views;
 
@@ -30,26 +31,33 @@ public partial class ExercisePage : ContentPage
 
     private void OnAddExercise(object sender, EventArgs args)
     {
-        if (string.IsNullOrEmpty(ViewModel.KgsOrMtr) || string.IsNullOrEmpty(ViewModel.RepsOrSecs))
+        int kgsOrMtr;
+        int repsOrSecs;
+        
+        if (ViewModel.IsInKgs)
         {
-            DisplayAlert("Invalid Input", "Make sure both fields are not empty.", "OK");
-            return;
+            if (string.IsNullOrEmpty(ViewModel.KgsOrMtr) || string.IsNullOrEmpty(ViewModel.Repetitions))
+            {
+                DisplayAlert("Invalid Input", "Make sure both fields are not empty!", "OK");
+                return;
+            }
+            
+            repsOrSecs = Convert.ToInt32(ViewModel.Repetitions);
         }
-
-        // Regex replaces all comma's with an empty string. 
-        if (!HasOnlyDigits(ViewModel.KgsOrMtr) ||
-            !HasOnlyDigits(Regex.Replace(ViewModel.RepsOrSecs, "[,]", string.Empty)))
+        else
         {
-            DisplayAlert("Invalid Input", "Make sure both fields only contain numbers or a \',\'", "OK");
-            return;
+            if (string.IsNullOrEmpty(ViewModel.KgsOrMtr) || ViewModel.Seconds == TimeSpan.Zero)
+            {
+                DisplayAlert("Invalid Input", "Make sure both fields are not empty!", "OK");
+                return;
+            }
+            repsOrSecs = Convert.ToInt32(Math.Round(ViewModel.Seconds.TotalSeconds));
         }
-
-
-        int kgsOrMtr = Convert.ToInt32(ViewModel.KgsOrMtr);
-        int repsOrSecs = Convert.ToInt32(ViewModel.RepsOrSecs);
+        
+        kgsOrMtr = Convert.ToInt32(ViewModel.KgsOrMtr);
         string? errorMessage = Task.Run(() => ViewModel.AddExerciseAsync(kgsOrMtr, repsOrSecs)).Result;
 
-        if (string.IsNullOrEmpty(errorMessage)) { ViewModel.KgsOrMtr = ViewModel.RepsOrSecs = string.Empty; }
+        if (string.IsNullOrEmpty(errorMessage)) { ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty; }
         else { DisplayAlert("Database error", errorMessage, "OK"); }
     }
 
@@ -71,5 +79,23 @@ public partial class ExercisePage : ContentPage
         };
 
         Shell.Current.GoToAsync("/LeaderBoard", navigationQueryParameters);
+    }
+
+    private void OnSelectTimeClicked(object sender, EventArgs args) => ViewModel.IsTimePickerOpened = true;
+
+    private void OnTimePickerOk(object sender, EventArgs args)
+    {
+        //NOTE: the sync-fusion library does not seem to work with observable properties.
+        SfTimePicker timePicker = (SfTimePicker)sender;
+        Debug.Assert(timePicker.SelectedTime != null, "timePicker.SelectedTime != null");
+        ViewModel.Seconds = timePicker.SelectedTime.Value;
+        ViewModel.TimeButton = ViewModel.Seconds.ToString(@"hh\:mm\:ss");
+        ViewModel.IsTimePickerOpened = false;
+    }
+
+    private void OnTimePickerCancel(object sender, EventArgs args)
+    {
+        ViewModel.Seconds = TimeSpan.Zero;
+        ViewModel.IsTimePickerOpened = false;
     }
 }

@@ -13,11 +13,20 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
     public ObservableCollection<Exercise> Exercises { get; set; } = [];
     public string ExerciseTypeName { get; private set; } = string.Empty;
     private int WorkoutID { get; set; } = -1;
+    public TimeSpan Seconds { get; set; }
 
+    [ObservableProperty]
+    private bool isInKgs;
+    [ObservableProperty]
+    private bool isTimePickerOpened;
     [ObservableProperty]
     private string? kgsOrMtr;
     [ObservableProperty]
-    private string? repsOrSecs;
+    private string? repetitions;
+    [ObservableProperty]
+    private string? timeButton = "Set Time";
+   
+    
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
@@ -46,34 +55,54 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
 
     private async Task LoadExercisesAsync()
     {
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        UpdateTitleEvent.Invoke(ExerciseTypeName);
+
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
         connection.Open();
 
-        await using (SqlCommand command = new(GetExercisesQuery(), connection))
+        await using SqlCommand command = new(GetExercisesQuery(), connection);
+
+        SqlDataReader reader = await command.ExecuteReaderAsync();
+
+        if (!reader.HasRows)
         {
-            SqlDataReader reader = await command.ExecuteReaderAsync();
-            if (reader.HasRows)
-            {
-                while (reader.Read())
-                {
-                    Exercises.Add(new Exercise
-                    {
-                        KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
-                        RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
-                        IsPR = Convert.ToBoolean(reader["IsPR"]),
-                        ExerciseType = new ExerciseType
-                        {
-                            Name = Convert.ToString(reader["Name"]) ?? throw new SqlNullValueException(),
-                            MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
-                        }
-                    });
-                }
-            }
+            reader.Close();
+
+            command.CommandText = "SELECT ID FROM MeasurementTypes mt " +
+                                  "JOIN ExerciseTypes et ON ID = et.MeasurementTypeID " + "WHERE et.Name = @etName";
+            command.Parameters.AddWithValue("@etName", ExerciseTypeName);
+
+            reader = await command.ExecuteReaderAsync();
+
+            int measurementID = -1;
+            while (reader.Read()) { measurementID = Convert.ToInt32(reader["ID"]); }
+
+            IsInKgs = measurementID == 1;
+
+            reader.Close();
+            connection.Close();
+            return;
         }
 
-        connection.Close();
+        while (reader.Read())
+        {
+            Exercises.Add(new Exercise
+            {
+                KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
+                RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
+                IsPR = Convert.ToBoolean(reader["IsPR"]),
+                ExerciseType = new ExerciseType
+                {
+                    Name = Convert.ToString(reader["Name"]) ?? throw new SqlNullValueException(),
+                    MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
+                }
+            });
+        }
 
-        UpdateTitleEvent.Invoke(ExerciseTypeName);
+        IsInKgs = Exercises[0].ExerciseType.MeasurementType == Measurement.KilosPerRepetition;
+
+        reader.Close();
+        connection.Close();
     }
 
     public async Task<string?> AddExerciseAsync(int kgsOrMtr, int repsOrSecs)
@@ -86,7 +115,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
             return "Could not determine if the exercise is a new pr, try again.";
         }
 
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
         await using SqlCommand command = new();
         command.Connection = connection;
 
@@ -147,7 +176,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
 
     private async Task<bool> DetermineIfNewPR(int kgsOrMtr, int repsOrSecs)
     {
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
         await using SqlCommand command = new();
         command.Connection = connection;
 
@@ -203,7 +232,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
         command.Parameters.AddWithValue("@eID", pr.ID);
 
         command.ExecuteNonQuery();
-        
+
         connection.Close();
         return true;
     }

@@ -32,7 +32,7 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
     public async Task LoadHistoryFromDB()
     {
         List<Exercise> exercises = [];
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
         await using SqlCommand command = new(GenerateHistoryQuery(), connection);
 
         try

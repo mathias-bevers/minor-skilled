@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Data.SqlTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
@@ -18,12 +19,12 @@ public class AllWorkoutsViewModel : ObservableObject
     private async Task LoadFromDbAsync()
     {
         Workouts.Clear();
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
         await using SqlCommand command = new(GenerateWorkoutQuery(), connection);
 
         try
         {
-            connection.Open();
+            if (connection.State != ConnectionState.Open) { connection.Open(); }
 
             SqlDataReader reader = await command.ExecuteReaderAsync();
 
