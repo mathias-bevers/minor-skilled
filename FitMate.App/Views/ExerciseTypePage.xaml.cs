@@ -1,16 +1,24 @@
+using System.Text.RegularExpressions;
+using FitMate.Utils;
+
 namespace FitMate.Views;
 
 public partial class ExerciseTypePage : ContentPage
 {
-    private readonly ViewModels.ExerciseTypeViewModel viewModel;
+    private readonly ViewModels.ExerciseTypeViewModel viewModel = new();
+    private readonly Regex regex = new(@"^[A-Za-z\s]+$");
 
     public ExerciseTypePage()
     {
         InitializeComponent();
         Title = "New Exercise Preset";
 
-        viewModel = new ViewModels.ExerciseTypeViewModel();
         BindingContext = viewModel;
+    }
+
+    protected override void OnAppearing()
+    {
+        Task.Run(viewModel.LoadTypesFromDb);
     }
 
     private void OnSaveClicked(object sender, EventArgs eventArgs)
@@ -21,12 +29,18 @@ public partial class ExerciseTypePage : ContentPage
             DisplayAlert("Invalid Input", "Make sure all fields are filled.", "OK");
             return;
         }
-        
-        string output = $"Successfully created \'{viewModel.ExerciseName}\'";
-        output += $" of muscle group \'{((ViewModels.Mockups.MuscleGroup)viewModel.SelectedMuscleType).ToString()}\'";
-        output += $" of measurement type \'{(viewModel.SelectedMeasurementType == 0 ?
-            "kg per repetition" : "meter per second")}\'.";
-        
-        DisplayAlert("Success", output, "OK");
+
+        if (!regex.IsMatch(viewModel.ExerciseName))
+        {
+            DisplayAlert("Invalid Input", "The exercise name can only contain letters and spaces", "OK");
+            return;
+        }
+
+        try
+        {
+            string result = Task.Run(viewModel.InsertExerciseType).Result;
+            DisplayAlert("Success", result, "OK");
+        }
+        catch (PopupException exception) { DisplayAlert(exception.Title, exception.Message, "OK"); }
     }
 }

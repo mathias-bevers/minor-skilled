@@ -13,21 +13,14 @@ public struct UserMockup
 public struct PersonalRecordMockup
 {
     public string Name { get; set; }
-    public Models.ExerciseSet ExerciseSet { get; set; }
-}
-public struct WorkoutMockup
-{
-    public DateTime Date { get; set; }
-    public string MusclesWorked { get; set; }
-    public string DateString => Date.ToString("dddd - dd/MM/yyyy");
+    public ExerciseSet ExerciseSet { get; set; }
 }
 
 public struct ExerciseMockup
 {
     public string Name { get; set; }
-    public Models.ExerciseSet ExerciseSet { get; set; }
+    public ExerciseSet ExerciseSet { get; set; }
     public bool IsPersonalRecord { get; set; }
-    public MuscleGroup MuscleGroup { get; set; }
 }
 
 //TODO: write a wrapper to generate groups from a list of exercises.
@@ -45,14 +38,41 @@ public partial class ExerciseGroupMockup : List<ExerciseMockup>
     }
 }
 
-public enum MuscleGroup
+public struct ExerciseSet : IComparable<ExerciseSet>
 {
-    Abdominal,
-    Back,
-    Biceps,
-    Cardio,
-    Chest,
-    Legs,
-    Shoulders,
-    Triceps
+    public enum SetType { KiloReps, MeterMinutes }
+
+    public SetType Type { get; set; }
+    public int Measurement { get; set; }
+    public int Value { get; set; }
+
+    public string FormattedString
+    {
+        get
+        {
+            if (Type == SetType.KiloReps) { return $"{Measurement} KGS \t{Value} REPS"; }
+
+            TimeSpan ts = TimeSpan.FromSeconds(Value);
+            return $"{Measurement} MTR \t{Convert.ToInt32(ts.TotalMinutes)}:{ts.Seconds:00}";
+        }
+    }
+
+    public ExerciseSet(int type, int measurement, int value)
+    {
+        Type = (SetType)type;
+        Measurement = measurement;
+        Value = value;
+    }
+
+    public int CompareTo(ExerciseSet other)
+    {
+        int total = Measurement * Value;
+        int otherTotal = other.Measurement * other.Value;
+
+        if (total == otherTotal) { return 0; }
+
+        if (total > otherTotal) { return 1; }
+
+        return -1;
+    }
 }

@@ -2,7 +2,7 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:FitMate.ViewModels"
+             xmlns:mockups="clr-namespace:FitMate.ViewModels.Mockups"
              x:Class="FitMate.Views.FriendsPage">
     <ContentPage.Content>
         <Grid RowDefinitions="Auto, *" Margin="10" RowSpacing="20">
@@ -17,7 +17,7 @@
                     </CollectionView.ItemsLayout>
 
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="vm:Mockups.UserMockup">
+                        <DataTemplate x:DataType="mockups:UserMockup">
                             <Border Style="{StaticResource CardBorder}">
                                 <StackLayout Style="{StaticResource Card}" Orientation="Horizontal" Spacing="25">
                                     <Frame HeightRequest="60" WidthRequest="60" CornerRadius="30"

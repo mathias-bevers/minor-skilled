@@ -1,33 +1,91 @@
 using System.Collections.ObjectModel;
-using FitMate.ViewModels.Mockups;
+using System.Data.SqlTypes;
+using CommunityToolkit.Mvvm.ComponentModel;
+using FitMate.Models;
+using Microsoft.Data.SqlClient;
 
 namespace FitMate.ViewModels;
 
-public class ProfileViewModel
+public partial class ProfileViewModel : ObservableObject
 {
-    public UserMockup UserPlaceholder { get; set; }
-    public ObservableCollection<PersonalRecordMockup> PlaceholderPRs { get; set; }
+    public ObservableCollection<Exercise> PersonalRecords { get; set; } = [];
 
-    public ProfileViewModel()
+    [ObservableProperty]
+    private User user = new();
+
+    public void LoadFromDbAsync()
     {
-        UserPlaceholder = new UserMockup { Username = "John_Doe", Age = 21, Gender = "Male" };
-
-        PlaceholderPRs = new ObservableCollection<PersonalRecordMockup>([
-            new PersonalRecordMockup()
-            {
-                Name = "Bicep Curl",
-                ExerciseSet = new Models.ExerciseSet((int)Models.ExerciseSet.SetType.KiloReps, 14, 12),
-            },
-            new PersonalRecordMockup()
-            {
-                Name = "Treadmill",
-                ExerciseSet = new Models.ExerciseSet((int)Models.ExerciseSet.SetType.MeterMinutes, 1320, 422),
-            },
-            new PersonalRecordMockup()
-            {
-                Name = "Leg Press",
-                ExerciseSet = new Models.ExerciseSet((int)Models.ExerciseSet.SetType.KiloReps, 160, 10),
-            }
-        ]);
+        Task.Run(LoadUserAsync);
+        Task.Run(LoadPersonalRecordsAsync);
     }
+
+
+    private async Task LoadPersonalRecordsAsync()
+    {
+        PersonalRecords.Clear();
+
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
+        connection.Open();
+
+        await using (SqlCommand command = new(GetPersonalRecordsQuery(), connection))
+        {
+            SqlDataReader reader = await command.ExecuteReaderAsync();
+
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    PersonalRecords.Add(new Exercise
+                    {
+                        KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
+                        RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
+                        ExerciseType = new ExerciseType
+                        {
+                            Name = Convert.ToString(reader["Name"]) ??
+                                   throw new SqlNullValueException("reader[\"Name\"]"),
+                            MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
+                        }
+                    });
+                }
+            }
+        }
+
+        connection.Close();
+    }
+
+    private async Task LoadUserAsync()
+    {
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
+
+        connection.Open();
+
+        await using (SqlCommand command = new(GetUserQuery(), connection))
+        {
+            SqlDataReader reader = await command.ExecuteReaderAsync();
+
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    User = new User
+                    {
+                        UserName = reader["UserName"].ToString() ?? "ERROR",
+                        GenderID = (int)reader["GenderID"],
+                        DateOfBirth = reader["DateOfBirth"].ToString() ?? "ERROR"
+                    };
+                }
+            }
+        }
+
+        connection.Close();
+    }
+
+    private static string GetUserQuery() =>
+        $"SELECT u.UserName, u.GenderID, u.DateOfBirth FROM Users u WHERE ID = {App.USER_ID}";
+
+    private static string GetPersonalRecordsQuery() =>
+        "SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, et.MeasurementTypeID " +
+        "FROM Exercises e JOIN Workouts w ON e.WorkoutID  = w.ID " +
+        "JOIN Users u ON u.ID = w.UserID JOIN ExerciseTypes et ON " +
+        $"e.ExerciseTypeName = et.Name WHERE u.ID = {App.USER_ID} AND e.IsPR = 1;";
 }
