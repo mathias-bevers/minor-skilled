@@ -2,15 +2,19 @@ namespace FitMate.Views;
 
 public partial class ExerciseTypePage : ContentPage
 {
-    private readonly ViewModels.ExerciseTypeViewModel viewModel;
+    private readonly ViewModels.ExerciseTypeViewModel viewModel = new();
 
     public ExerciseTypePage()
     {
         InitializeComponent();
         Title = "New Exercise Preset";
-
-        viewModel = new ViewModels.ExerciseTypeViewModel();
+        
         BindingContext = viewModel;
+    }
+
+    protected override void OnAppearing()
+    {
+        Task.Run(viewModel.LoadTypesFromDb);
     }
 
     private void OnSaveClicked(object sender, EventArgs eventArgs)
