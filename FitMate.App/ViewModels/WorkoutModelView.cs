@@ -30,7 +30,7 @@ public partial class WorkoutModelView : ObservableObject, IQueryAttributable
         List<Models.Exercise> exercises = [];
         EmptyWorkoutMessage = "Loading ...";
 
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
 
         connection.Open();
         

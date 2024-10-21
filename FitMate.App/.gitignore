@@ -379,3 +379,5 @@ snapshots-diff/
 
 # Keystore
 *.keystore
+
+appsettings.json

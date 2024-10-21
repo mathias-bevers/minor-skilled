@@ -1,16 +1,20 @@
-﻿using FitMate.DataBase;
-using FitMate.Views;
+﻿using FitMate.Views;
+using Microsoft.Extensions.Configuration;
 
 namespace FitMate;
 
 public partial class App : Application
 {
-    public static readonly ServerSettings SERVER_SETTINGS = new();
     public static readonly int USER_ID = GetUserId();
+    internal static Settings SETTINGS { get; set; } = new();
 
-    public App()
+    public App(IConfiguration configuration)
     {
         InitializeComponent();
+        
+        SetSettings(configuration);
+
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(SETTINGS.SyncfusionAPI);
 
         MainPage = new AppShell();
         Routing.RegisterRoute("AllWorkouts/Workout", typeof(WorkoutPage));
@@ -24,22 +28,16 @@ public partial class App : Application
     private static int GetUserId()
     {
         string filePath = Path.Combine(FileSystem.AppDataDirectory, "tasks.json");
-        
+
         if (!File.Exists(filePath))
         {
             //TODO: Remove and login 
             File.WriteAllText(filePath, "1");
         }
-        
+
         return int.Parse(File.ReadAllText(filePath));
     }
-}
 
-public class ServerSettings : IServerSettings
-{
-    public string ConnectionString => $"Server={Server};Database=FitMate;User Id={UserName};" +
-                                      $"Password={Password};MultipleActiveResultSets=true;Encrypt=false;";
-    public string Server => "192.168.1.135";
-    public string UserName => "application";
-    public string Password => "P@$$w0rd";
+    private static void SetSettings(IConfiguration configuration) =>
+        SETTINGS = configuration.GetSection("Settings").Get<Settings>();
 }

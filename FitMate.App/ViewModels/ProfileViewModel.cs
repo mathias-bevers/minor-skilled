@@ -24,7 +24,7 @@ public partial class ProfileViewModel : ObservableObject
     {
         PersonalRecords.Clear();
 
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
         connection.Open();
 
         await using (SqlCommand command = new(GetPersonalRecordsQuery(), connection))
@@ -55,7 +55,7 @@ public partial class ProfileViewModel : ObservableObject
 
     private async Task LoadUserAsync()
     {
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
 
         connection.Open();
 
@@ -85,7 +85,7 @@ public partial class ProfileViewModel : ObservableObject
 
     private static string GetPersonalRecordsQuery() =>
         "SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, et.MeasurementTypeID " +
-        "FROM Exercise e JOIN Workouts w ON e.WorkoutID  = w.ID " +
+        "FROM Exercises e JOIN Workouts w ON e.WorkoutID  = w.ID " +
         "JOIN Users u ON u.ID = w.UserID JOIN ExerciseTypes et ON " +
-        $"e.ExerciseTypeID = et.ID WHERE u.ID = {App.USER_ID} AND e.IsPR = 1;";
+        $"e.ExerciseTypeName = et.Name WHERE u.ID = {App.USER_ID} AND e.IsPR = 1;";
 }

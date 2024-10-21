@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Data.SqlTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
@@ -18,12 +19,13 @@ public class AllWorkoutsViewModel : ObservableObject
     private async Task LoadFromDbAsync()
     {
         Workouts.Clear();
-        await using SqlConnection connection = new(App.SERVER_SETTINGS.ConnectionString);
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
+        await using SqlCommand command = new(GenerateWorkoutQuery(), connection);
 
-        connection.Open();
-
-        await using (SqlCommand command = new(GenerateWorkoutQuery(), connection))
+        try
         {
+            if (connection.State != ConnectionState.Open) { connection.Open(); }
+
             SqlDataReader reader = await command.ExecuteReaderAsync();
 
             if (reader.HasRows)
@@ -35,17 +37,17 @@ public class AllWorkoutsViewModel : ObservableObject
                         CreatedOn = Convert.ToString(reader["CreatedOn"]) ??
                                     throw new SqlNullValueException("reader[\"CreatedOn\"]"),
                         ID = Convert.ToInt32(reader["ID"]),
-                        MusclesWorked = "Muscles Worked: " + (Convert.ToString(reader["MusclesWorked"]) ??
-                                                              throw new SqlNullValueException(
-                                                                  "reader[\"MusclesWorked\"]"))
+                        MusclesWorked = Convert.ToString(reader["MusclesWorked"]) ??
+                                        throw new SqlNullValueException("reader[\"MusclesWorked\"]")
                     };
 
+
+                    workout.MusclesWorked = "Muscles Worked: " + workout.MusclesWorked;
                     Workouts.Add(workout);
                 }
             }
-            
-            reader.Close();
         }
+        catch (Exception e) { System.Diagnostics.Debug.WriteLine(e.Message); }
 
         connection.Close();
     }

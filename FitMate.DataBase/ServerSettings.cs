@@ -2,7 +2,7 @@ using System.Text;
 
 namespace FitMate.DataBase;
 
-public class ServerSettings : IServerSettings
+internal class ServerSettings : IServerSettings
 {
     private static string ReadPassword()
     {
