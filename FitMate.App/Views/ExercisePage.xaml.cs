@@ -19,16 +19,6 @@ public partial class ExercisePage : ContentPage
 
     private void OnUpdateTitle(string newTitle) => Title = newTitle;
 
-    private bool HasOnlyDigits(string source)
-    {
-        for (int i = 0; i < source.Length; ++i)
-        {
-            if (!char.IsDigit(source[i])) { return false; }
-        }
-
-        return true;
-    }
-
     private void OnAddExercise(object sender, EventArgs args)
     {
         int kgsOrMtr;
@@ -57,7 +47,12 @@ public partial class ExercisePage : ContentPage
         kgsOrMtr = Convert.ToInt32(ViewModel.KgsOrMtr);
         string? errorMessage = Task.Run(() => ViewModel.AddExerciseAsync(kgsOrMtr, repsOrSecs)).Result;
 
-        if (string.IsNullOrEmpty(errorMessage)) { ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty; }
+        if (string.IsNullOrEmpty(errorMessage))
+        {
+            ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty; 
+            ViewModel.Seconds = TimeSpan.Zero;
+            ViewModel.TimeButton = "Set Time";
+        }
         else { DisplayAlert("Database error", errorMessage, "OK"); }
     }
 

@@ -46,9 +46,10 @@ internal class ServerSettings
 {
     public bool TrustedConnection { get; set; }
     public string ConnectionString =>
-        $"Server={Name};Database={Database};User Id={UserID};Password={Password};MultipleActiveResultSets=true;Encrypt=false";
+        $"Server={Name},{Port};Database={Database};User Id={UserID};Password={Password};MultipleActiveResultSets=true;Encrypt=false";
     public string Database { get; set; } = null!;
     public string Name { get; set; } = null!;
     public string Password { get; set; } = null!;
+    public string Port { get; set; } = null!;
     public string UserID { get; set; } = null!;
 }
