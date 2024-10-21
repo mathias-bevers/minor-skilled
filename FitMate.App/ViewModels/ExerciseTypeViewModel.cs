@@ -9,11 +9,13 @@ namespace FitMate.ViewModels;
 
 public partial class ExerciseTypeViewModel : ObservableObject
 {
-    public int SelectedMeasurementType { get; set; } = -1;
-    public int SelectedMuscleType { get; set; } = -1;
     public ObservableCollection<string> MeasurementTypes { get; set; } = [];
     public ObservableCollection<string> MuscleTypes { get; set; } = [];
 
+    [ObservableProperty]
+    private int selectedMeasurementType = -1;
+    [ObservableProperty]
+    private int selectedMuscleType = -1;
     [ObservableProperty]
     private string? exerciseName;
 
@@ -27,7 +29,7 @@ public partial class ExerciseTypeViewModel : ObservableObject
         try
         {
             connection.Open();
-            
+
             MuscleTypes.Clear();
             command.CommandText = "SELECT Name FROM MuscleGroups";
             reader = await command.ExecuteReaderAsync();
@@ -87,5 +89,35 @@ public partial class ExerciseTypeViewModel : ObservableObject
         }
 
         connection.Close();
+    }
+
+    public async Task<string> InsertExerciseType()
+    {
+        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
+        await using SqlCommand command = new();
+        command.Connection = connection;
+
+        command.CommandText = "INSERT INTO ExerciseTypes (Name, MuscleGroupID, MeasurementTypeID) " +
+                              "VALUES(@name, @mgID, @mtID)";
+        command.Parameters.AddWithValue("@name", ExerciseName);
+        command.Parameters.AddWithValue("@mgID", SelectedMuscleType + 1);
+        command.Parameters.AddWithValue("@mtID", SelectedMeasurementType + 1);
+
+        try
+        {
+            connection.Open();
+            command.ExecuteNonQuery();
+
+            string result = $"Successfully created a new exercise preset with name '{ExerciseName}'";
+
+            ExerciseName = string.Empty;
+            SelectedMeasurementType = SelectedMuscleType = -1;
+            return result;
+        }
+        catch (Exception exception)
+        {
+            connection.Close();
+            throw new PopupException("Something went wrong while saving try again later!");
+        }
     }
 }

@@ -1,14 +1,18 @@
+using System.Text.RegularExpressions;
+using FitMate.Utils;
+
 namespace FitMate.Views;
 
 public partial class ExerciseTypePage : ContentPage
 {
     private readonly ViewModels.ExerciseTypeViewModel viewModel = new();
+    private readonly Regex regex = new(@"^[A-Za-z\s]+$");
 
     public ExerciseTypePage()
     {
         InitializeComponent();
         Title = "New Exercise Preset";
-        
+
         BindingContext = viewModel;
     }
 
@@ -26,11 +30,17 @@ public partial class ExerciseTypePage : ContentPage
             return;
         }
 
-        string output = $"Successfully created \'{viewModel.ExerciseName}\'";
-        output += $" of muscle group \'{viewModel.SelectedMuscleType.ToString()}\'";
-        output += $" of measurement type \'{(viewModel.SelectedMeasurementType == 0 ?
-            "kg per repetition" : "meter per second")}\'.";
+        if (!regex.IsMatch(viewModel.ExerciseName))
+        {
+            DisplayAlert("Invalid Input", "The exercise name can only contain letters and spaces", "OK");
+            return;
+        }
 
-        DisplayAlert("Success", output, "OK");
+        try
+        {
+            string result = Task.Run(viewModel.InsertExerciseType).Result;
+            DisplayAlert("Success", result, "OK");
+        }
+        catch (PopupException exception) { DisplayAlert(exception.Title, exception.Message, "OK"); }
     }
 }

@@ -2,5 +2,12 @@ namespace FitMate.Utils;
 
 public class PopupException : Exception
 {
-    public PopupException(string message, string title = "ERROR") : base(message) { }
+    public override string Message { get; }
+    public string Title { get; }
+
+    public PopupException(string message, string title = "ERROR")
+    {
+        Message = message;
+        Title = title;
+    }
 }
