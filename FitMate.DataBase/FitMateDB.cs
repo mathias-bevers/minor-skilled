@@ -5,7 +5,6 @@ namespace FitMate.DataBase;
 
 public class FitMateDB : DbContext
 {
-    public DbSet<User> Users { get; set; }
     private readonly IServerSettings serverSettings;
 
     public FitMateDB(IServerSettings? serverSettings = null)
