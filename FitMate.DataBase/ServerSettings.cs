@@ -1,10 +1,14 @@
+using Microsoft.Data.SqlClient;
+
 namespace FitMate.DataBase;
 
 internal class ServerSettings : IServerSettings
 {
-    public string Server => "localhost";
+    public string Server => "tcp:fit-mate.database.windows.net,1433";
     public string UserName => "mathias";
-    
+    public string InitialCatalog => "FitMate";
+    public int ConnectionTimeout => 30;
+
     public string Password
     {
         get

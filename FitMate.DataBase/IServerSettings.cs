@@ -5,4 +5,6 @@ public interface IServerSettings
     public string Server { get; }
     public string UserName { get; }
     public string Password { get; }
+    public string InitialCatalog { get; }
+    public int ConnectionTimeout { get; }
 }

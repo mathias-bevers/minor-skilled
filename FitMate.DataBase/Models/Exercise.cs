@@ -21,7 +21,7 @@ public class Exercise
     public Workout Workout { get; set; } = null!;
     
     [Required]
-    public string ExerciseTypeName { get; set; }
+    public int ExerciseTypeID { get; set; }
     public ExerciseType ExerciseType { get; set; } = null!;
 
     [NotMapped]
