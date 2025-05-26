@@ -70,9 +70,8 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
         {
             reader.Close();
 
-            command.CommandText = "SELECT ID FROM MeasurementTypes mt " +
-                                  "JOIN ExerciseTypes et ON ID = et.MeasurementTypeID WHERE et.ID = @etID";
-            command.Parameters.AddWithValue("@etID", ExerciseTypeID);
+            command.CommandText = "SELECT mt.ID FROM MeasurementTypes mt " +
+                                  $"JOIN ExerciseTypes et ON mt.ID = et.MeasurementTypeID WHERE et.ID = {ExerciseTypeID}";
 
             reader = await command.ExecuteReaderAsync();
 
@@ -178,10 +177,8 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
 
         command.CommandText = "SELECT e.ID, e.KgsOrMtr, e.RepsOrSecs, et.MeasurementTypeID FROM Exercises e " +
                               "JOIN Workouts w ON e.WorkoutID = w.ID JOIN Users u ON u.ID = w.UserID " +
-                              "JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID WHERE u.ID = @uID " +
-                              "AND e.IsPR = 1 AND et.Name = @etName;";
-        command.Parameters.AddWithValue("@uID", App.USER_ID);
-        command.Parameters.AddWithValue("@etName", ExerciseTypeID);
+                              $"JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID WHERE u.ID = {App.USER_ID} " +
+                              $"AND e.IsPR = 1 AND et.ID = {ExerciseTypeID};";
 
         connection.Open();
 
@@ -224,7 +221,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
             return false;
         }
 
-        command.CommandText = "UPDATE Exercises SET IsPR = 0 WHERE ID = @eID";
+        command.CommandText = $"UPDATE Exercises SET IsPR = 0 WHERE ID = {pr.ID}";
         command.Parameters.AddWithValue("@eID", pr.ID);
 
         command.ExecuteNonQuery();
@@ -236,6 +233,5 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
     private string GetExercisesQuery() =>
         "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, et.MeasurementTypeID " +
         "FROM Exercises e JOIN Workouts w ON e.WorkoutID = w.ID " +
-        "JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
-        $"WHERE w.ID = {WorkoutID} AND et.ID = {ExerciseTypeID}";
+        "JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " + $"WHERE w.ID = {WorkoutID} AND et.ID = {ExerciseTypeID}";
 }
