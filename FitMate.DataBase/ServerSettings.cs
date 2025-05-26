@@ -2,7 +2,7 @@ using Microsoft.Data.SqlClient;
 
 namespace FitMate.DataBase;
 
-internal class ServerSettings : IServerSettings
+public class ServerSettings
 {
     public string Server => "tcp:fit-mate.database.windows.net,1433";
     public string UserName => "mathias";

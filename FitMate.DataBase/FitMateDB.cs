@@ -8,7 +8,7 @@ public class FitMateDB : DbContext
 {
     private readonly SqlConnectionStringBuilder connectionStringBuilder;
 
-    public FitMateDB(IServerSettings? serverSettings = null)
+    public FitMateDB(ServerSettings? serverSettings = null)
     {
         serverSettings ??= new ServerSettings();
         
