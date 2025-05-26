@@ -9,14 +9,14 @@ public partial class WorkoutModelView : ObservableObject, IQueryAttributable
 {
     public ObservableCollection<ExerciseGroup> Exercises { get; set; } = [];
     public int WorkoutID { get; private set; } = -1;
-    
+
     [ObservableProperty]
     public string emptyWorkoutMessage = "Loading ...";
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query.TryGetValue("id", out object? value)) { WorkoutID = (int)value; }
-        
+
         //TODO: add create workout tab.
 
         if (WorkoutID < 0) { throw new InvalidOperationException("Workout ID needs to be set at least once!"); }
@@ -33,7 +33,7 @@ public partial class WorkoutModelView : ObservableObject, IQueryAttributable
         await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
 
         connection.Open();
-        
+
         await using (SqlCommand command = new(GenerateLoadWorkoutQuery(), connection))
         {
             SqlDataReader reader = await command.ExecuteReaderAsync();
@@ -54,6 +54,7 @@ public partial class WorkoutModelView : ObservableObject, IQueryAttributable
                     IsPR = Convert.ToBoolean(reader["IsPR"]),
                     ExerciseType = new Models.ExerciseType
                     {
+                        ID = Convert.ToInt32(reader["ID"]),
                         Name = Convert.ToString(reader["Name"]) ??
                                throw new SqlNullValueException("The ExerciseType.Name is null!"),
                         MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
@@ -69,6 +70,6 @@ public partial class WorkoutModelView : ObservableObject, IQueryAttributable
     }
 
     private string GenerateLoadWorkoutQuery() =>
-        "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, et.MeasurementTypeID " +
-        "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeName = et.Name WHERE WorkoutID = " + WorkoutID;
+        "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.ID, et.Name, et.MeasurementTypeID " +
+        "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID WHERE WorkoutID = " + WorkoutID;
 }

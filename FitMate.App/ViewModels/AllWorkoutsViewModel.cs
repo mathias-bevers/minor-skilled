@@ -56,7 +56,7 @@ public class AllWorkoutsViewModel : ObservableObject
     private string GenerateWorkoutQuery() =>
         "SELECT w.CreatedOn, w.ID, COALESCE(STRING_AGG(MG.Name,\t', '), 'No Exercises logged') AS MusclesWorked " +
         "FROM Workouts w LEFT JOIN ( Select DISTINCT mg.Name, e.WorkoutID " +
-        "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeName = et.Name " +
+        "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
         "JOIN MuscleGroups mg ON et.MuscleGroupID = mg.ID) MG ON MG.WorkoutID = w.ID " +
         $"WHERE w.UserID = {App.USER_ID} GROUP BY w.CreatedOn, w.ID;";
 }

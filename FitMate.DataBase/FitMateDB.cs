@@ -11,7 +11,7 @@ public class FitMateDB : DbContext
     public FitMateDB(ServerSettings? serverSettings = null)
     {
         serverSettings ??= new ServerSettings();
-        
+
         connectionStringBuilder = new SqlConnectionStringBuilder
         {
             DataSource = serverSettings.Server,
@@ -36,9 +36,9 @@ public class FitMateDB : DbContext
             .IsRequired();
         builder.Entity<ExerciseType>().HasOne(et => et.Measurement).WithMany().HasForeignKey(et => et.MeasurementTypeID)
             .IsRequired();
-        builder.Entity<Exercise>().HasOne(e => e.ExerciseType).WithMany().HasForeignKey(et => et.ID)
+        builder.Entity<Exercise>().HasOne(e => e.ExerciseType).WithMany().HasForeignKey(e => e.ExerciseTypeID)
             .IsRequired();
-        
+
         base.OnModelCreating(builder);
     }
 }
