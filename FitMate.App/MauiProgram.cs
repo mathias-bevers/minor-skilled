@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using CommunityToolkit.Maui;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
@@ -44,12 +45,21 @@ internal class Settings
 
 internal class ServerSettings
 {
-    public bool TrustedConnection { get; set; }
-    public string ConnectionString =>
-        $"Server={Name},{Port};Database={Database};User Id={UserID};Password={Password};MultipleActiveResultSets=true;Encrypt=false";
     public string Database { get; set; } = null!;
     public string Name { get; set; } = null!;
     public string Password { get; set; } = null!;
-    public string Port { get; set; } = null!;
     public string UserID { get; set; } = null!;
+    public int ConnectionTimeout { get; set; } = 30;
+    
+    private string? connectionString = null;
+
+    public string ConnectionString => connectionString ??= new SqlConnectionStringBuilder()
+        {
+            DataSource = Name,
+            InitialCatalog = Database,
+            UserID = UserID,
+            Password = Password,
+            ConnectTimeout = ConnectionTimeout,
+            Encrypt = true
+        }.ConnectionString;
 }

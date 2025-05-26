@@ -19,7 +19,8 @@ public class AllWorkoutsViewModel : ObservableObject
     private async Task LoadFromDbAsync()
     {
         Workouts.Clear();
-        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
+        string serverConnectionString = App.SETTINGS.Server.ConnectionString;   
+        await using SqlConnection connection = new(serverConnectionString);
         await using SqlCommand command = new(GenerateWorkoutQuery(), connection);
 
         try
