@@ -25,6 +25,7 @@ public partial class AllExercisesPage : ContentPage
         ShellNavigationQueryParameters navigationParameters = new()
         {
             {"exercise_type_name", exerciseType.Name},
+            {"exercise_type_id", exerciseType.ID},
             {"workout_id", ViewModel.WorkoutID},
         };
 

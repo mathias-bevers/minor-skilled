@@ -9,39 +9,41 @@ namespace FitMate.ViewModels;
 public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
 {
     public event Action<string> UpdateTitleEvent;
-
+    public int ExerciseTypeID { get; private set; } = -1;
     public ObservableCollection<Exercise> Exercises { get; set; } = [];
-    public string ExerciseTypeName { get; private set; } = string.Empty;
-    private int WorkoutID { get; set; } = -1;
     public TimeSpan Seconds { get; set; }
+    private int WorkoutID { get; set; } = -1;
 
     [ObservableProperty]
     private bool isInKgs;
     [ObservableProperty]
     private bool isTimePickerOpened;
+
+    private string exerciseTypeName = null!;
     [ObservableProperty]
     private string? kgsOrMtr;
     [ObservableProperty]
     private string? repetitions;
     [ObservableProperty]
     private string? timeButton = "Set Time";
-   
-    
+
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("exercise_type_name", out object? typeName))
+        if (query.TryGetValue("exercise_type_id", out object? etID)) { ExerciseTypeID = Convert.ToInt32(etID); }
+
+        if (query.TryGetValue("exercise_type_name", out object? etName))
         {
-            ExerciseTypeName = Convert.ToString(typeName) ?? string.Empty;
+            exerciseTypeName = Convert.ToString(etName) ?? "name not found";
         }
 
         if (query.TryGetValue("workout_id", out object? woID)) { WorkoutID = Convert.ToInt32(woID); }
 
 
-        if (WorkoutID < 0 || string.IsNullOrEmpty(ExerciseTypeName))
+        if (WorkoutID < 0 || ExerciseTypeID <= 0)
         {
             throw new Exception(
-                $"Both {nameof(WorkoutID)} and {nameof(ExerciseTypeName)} are expected to be initialized!");
+                $"Both {nameof(WorkoutID)} and {nameof(ExerciseTypeID)} are expected to be initialized!");
         }
 
         LoadFromDb();
@@ -55,7 +57,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
 
     private async Task LoadExercisesAsync()
     {
-        UpdateTitleEvent.Invoke(ExerciseTypeName);
+        UpdateTitleEvent.Invoke(exerciseTypeName);
 
         await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
         connection.Open();
@@ -69,8 +71,8 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
             reader.Close();
 
             command.CommandText = "SELECT ID FROM MeasurementTypes mt " +
-                                  "JOIN ExerciseTypes et ON ID = et.MeasurementTypeID " + "WHERE et.Name = @etName";
-            command.Parameters.AddWithValue("@etName", ExerciseTypeName);
+                                  "JOIN ExerciseTypes et ON ID = et.MeasurementTypeID WHERE et.ID = @etID";
+            command.Parameters.AddWithValue("@etID", ExerciseTypeID);
 
             reader = await command.ExecuteReaderAsync();
 
@@ -118,14 +120,8 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
         await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
         await using SqlCommand command = new();
         command.Connection = connection;
-
-        command.CommandText = "INSERT INTO Exercises (KgsOrMtr, RepsOrSecs, IsPR, WorkoutID, ExerciseTypeName) " +
-                              "VALUES (@kgsOrMtr, @repsOrSecs, @isPR, @wID, @etName)";
-        command.Parameters.AddWithValue("@kgsOrMtr", kgsOrMtr);
-        command.Parameters.AddWithValue("@repsOrSecs", repsOrSecs);
-        command.Parameters.AddWithValue("@isPR", isPR);
-        command.Parameters.AddWithValue("@wID", WorkoutID);
-        command.Parameters.AddWithValue("@etName", ExerciseTypeName);
+        command.CommandText = "INSERT INTO Exercises(KgsOrMtr, RepsOrSecs, IsPR, WorkoutID, ExerciseTypeID) " +
+                              $"VALUES({kgsOrMtr}, {repsOrSecs}, {Convert.ToInt32(isPR)}, {WorkoutID}, {ExerciseTypeID})";
 
         try
         {
@@ -182,10 +178,10 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
 
         command.CommandText = "SELECT e.ID, e.KgsOrMtr, e.RepsOrSecs, et.MeasurementTypeID FROM Exercises e " +
                               "JOIN Workouts w ON e.WorkoutID = w.ID JOIN Users u ON u.ID = w.UserID " +
-                              "JOIN ExerciseTypes et ON e.ExerciseTypeName = et.Name WHERE u.ID = @uID " +
+                              "JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID WHERE u.ID = @uID " +
                               "AND e.IsPR = 1 AND et.Name = @etName;";
         command.Parameters.AddWithValue("@uID", App.USER_ID);
-        command.Parameters.AddWithValue("@etName", ExerciseTypeName);
+        command.Parameters.AddWithValue("@etName", ExerciseTypeID);
 
         connection.Open();
 
@@ -240,6 +236,6 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
     private string GetExercisesQuery() =>
         "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, et.MeasurementTypeID " +
         "FROM Exercises e JOIN Workouts w ON e.WorkoutID = w.ID " +
-        "JOIN ExerciseTypes et ON e.ExerciseTypeName = et.Name " +
-        $"WHERE w.ID = {WorkoutID} AND et.Name = '{ExerciseTypeName}'";
+        "JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
+        $"WHERE w.ID = {WorkoutID} AND et.ID = {ExerciseTypeID}";
 }

@@ -41,6 +41,7 @@ public partial class AllExercisesViewModel : ObservableObject, IQueryAttributabl
                 {
                     ExerciseType type = new()
                     {
+                        ID = Convert.ToInt32(reader["ID"]),
                         Name = Convert.ToString(reader["typeName"]) ??
                                throw new SqlNullValueException("reader[\"typeName\"]"),
                         MuscleGroup = new MuscleGroup
@@ -62,7 +63,7 @@ public partial class AllExercisesViewModel : ObservableObject, IQueryAttributabl
     }
 
     private string GenerateAllExercisesQuery() =>
-        "SELECT et.Name as typeName, mg.Name as muscleGroupName FROM ExerciseTypes et " +
+        "SELECT et.ID, et.Name as typeName, mg.Name as muscleGroupName FROM ExerciseTypes et " +
         "JOIN MuscleGroups mg ON et.MuscleGroupID = mg.ID;";
 
     [RelayCommand]
