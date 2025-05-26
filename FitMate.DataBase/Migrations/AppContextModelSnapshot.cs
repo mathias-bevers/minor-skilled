@@ -29,9 +29,8 @@ namespace FitMate.DataBase.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<string>("ExerciseTypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("ExerciseTypeID")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsPR")
                         .HasColumnType("bit");
@@ -47,7 +46,7 @@ namespace FitMate.DataBase.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ExerciseTypeName");
+                    b.HasIndex("ExerciseTypeID");
 
                     b.HasIndex("WorkoutID");
 
@@ -56,8 +55,11 @@ namespace FitMate.DataBase.Migrations
 
             modelBuilder.Entity("FitMate.Models.ExerciseType", b =>
                 {
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<int>("MeasurementTypeID")
                         .HasColumnType("int");
@@ -65,7 +67,11 @@ namespace FitMate.DataBase.Migrations
                     b.Property<int>("MuscleGroupID")
                         .HasColumnType("int");
 
-                    b.HasKey("Name");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
 
                     b.HasIndex("MeasurementTypeID");
 
@@ -177,7 +183,7 @@ namespace FitMate.DataBase.Migrations
                 {
                     b.HasOne("FitMate.Models.ExerciseType", "ExerciseType")
                         .WithMany()
-                        .HasForeignKey("ExerciseTypeName")
+                        .HasForeignKey("ExerciseTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
