@@ -1,28 +1,31 @@
 using FitMate.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitMate.DataBase;
 
 public class FitMateDB : DbContext
 {
-    public DbSet<User> Users { get; set; }
-    private readonly IServerSettings serverSettings;
+    private readonly SqlConnectionStringBuilder connectionStringBuilder;
 
-    public FitMateDB(IServerSettings? serverSettings = null)
+    public FitMateDB(ServerSettings? serverSettings = null)
     {
-        if (ReferenceEquals(null, serverSettings))
-        {
-            this.serverSettings = new ServerSettings();
-            return;
-        }
+        serverSettings ??= new ServerSettings();
 
-        this.serverSettings = serverSettings;
+        connectionStringBuilder = new SqlConnectionStringBuilder
+        {
+            DataSource = serverSettings.Server,
+            InitialCatalog = serverSettings.InitialCatalog,
+            UserID = serverSettings.UserName,
+            Password = serverSettings.Password,
+            ConnectTimeout = serverSettings.ConnectionTimeout,
+            Encrypt = true
+        };
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlServer($"Server={serverSettings.Server};Database=FitMate;User Id={serverSettings.UserName};" +
-                             $"Password={serverSettings.Password};MultipleActiveResultSets=true;Encrypt=false");
+        options.UseSqlServer(connectionStringBuilder.ConnectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -33,9 +36,9 @@ public class FitMateDB : DbContext
             .IsRequired();
         builder.Entity<ExerciseType>().HasOne(et => et.Measurement).WithMany().HasForeignKey(et => et.MeasurementTypeID)
             .IsRequired();
-        builder.Entity<Exercise>().HasOne(e => e.ExerciseType).WithMany().HasForeignKey(et => et.ExerciseTypeName)
+        builder.Entity<Exercise>().HasOne(e => e.ExerciseType).WithMany().HasForeignKey(e => e.ExerciseTypeID)
             .IsRequired();
-        
+
         base.OnModelCreating(builder);
     }
 }

@@ -20,11 +20,12 @@ public partial class AllExercisesPage : ContentPage
 
         Models.ExerciseType exerciseType = (Models.ExerciseType)cv.SelectedItem;
 
-        if (string.IsNullOrEmpty(exerciseType.Name) || ViewModel.WorkoutID <= 0) { throw new InvalidDataException(); }
+        if (exerciseType.ID <= 0 || ViewModel.WorkoutID <= 0) { throw new InvalidDataException(); }
 
         ShellNavigationQueryParameters navigationParameters = new()
         {
             {"exercise_type_name", exerciseType.Name},
+            {"exercise_type_id", exerciseType.ID},
             {"workout_id", ViewModel.WorkoutID},
         };
 
