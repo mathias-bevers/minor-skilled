@@ -401,5 +401,5 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/csharp
 
-# Localy saved db password
-*.password
+# Localy saved db password and ip
+server-info.json

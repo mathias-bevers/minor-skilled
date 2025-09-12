@@ -19,6 +19,7 @@ public class FitMateDB : DbContext
             UserID = serverSettings.UserName,
             Password = serverSettings.Password,
             ConnectTimeout = serverSettings.ConnectionTimeout,
+            TrustServerCertificate = true,
             Encrypt = true
         };
     }

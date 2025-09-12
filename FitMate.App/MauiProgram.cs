@@ -60,6 +60,7 @@ internal class ServerSettings
             UserID = UserID,
             Password = Password,
             ConnectTimeout = ConnectionTimeout,
+            TrustServerCertificate = true,
             Encrypt = true
         }.ConnectionString;
 }
