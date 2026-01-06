@@ -8,10 +8,9 @@
     <ContentPage.Content>
         <Grid Margin="10" RowDefinitions="Auto, *" RowSpacing="10">
             <!-- TODO: Enable this button when data can be added to DB -->
-            <Button Grid.Row="0" Text="Create a new workout" Clicked="OnCreateNewWorkout"  IsEnabled="False"/> 
+            <Button Grid.Row="0" Text="Create a new workout" Clicked="OnCreateNewWorkout" />
             <ScrollView Grid.Row="1" x:DataType="vm:AllWorkoutsViewModel">
-                <CollectionView x:Name="workoutCollection"
-                                ItemsSource="{Binding Workouts}"
+                <CollectionView ItemsSource="{Binding Workouts}"
                                 SelectionMode="Single"
                                 SelectionChanged="OnWorkoutSelected">
                     <CollectionView.ItemsLayout>

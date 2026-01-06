@@ -11,12 +11,11 @@ public partial class App : Application
     public App(IConfiguration configuration)
     {
         InitializeComponent();
-        
+
         SetSettings(configuration);
 
         Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(SETTINGS.SyncfusionAPI);
-
-        MainPage = new AppShell();
+        
         Routing.RegisterRoute("AllWorkouts/Workout", typeof(WorkoutPage));
         Routing.RegisterRoute("AllWorkouts/Workout/AllExercises", typeof(AllExercisesPage));
         Routing.RegisterRoute("AllWorkouts/Workout/Exercise", typeof(ExercisePage));
@@ -37,6 +36,9 @@ public partial class App : Application
 
         return int.Parse(File.ReadAllText(filePath));
     }
+
+    protected override Window CreateWindow(IActivationState? activationState) => new(new AppShell());
+
 
     private static void SetSettings(IConfiguration configuration) =>
         SETTINGS = configuration.GetSection("Settings").Get<Settings>();
