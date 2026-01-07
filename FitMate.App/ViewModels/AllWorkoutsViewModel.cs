@@ -3,6 +3,7 @@ using System.Data.SqlTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
 using FitMate.Utils;
+using Microsoft.Data.SqlClient;
 using Debug = System.Diagnostics.Debug;
 
 namespace FitMate.ViewModels;
@@ -32,7 +33,7 @@ public class AllWorkoutsViewModel : ObservableObject
         sb.Append(App.USER_ID);
         sb.Append(" GROUP BY w.CreatedOn, w.ID");
 
-        await SqlCommunicator.Select(sb.ToString(), reader =>
+        await SqlCommunicator.Select(new SqlCommand(sb.ToString()), reader =>
         {
             Workout workout = new()
             {
@@ -50,9 +51,11 @@ public class AllWorkoutsViewModel : ObservableObject
 
     public async Task<int> InsertWorkoutAsync()
     {
-        string dateString = DateTime.Now.ToString("yyyy-MM-dd");
-        string query = $"INSERT INTO Workouts (CreatedOn, UserID) VALUES(\'{dateString}\', {App.USER_ID})";
-        int workoutID = await SqlCommunicator.Insert(query, "could not create workout");
+        SqlCommand command = new("INSERT INTO Workouts (CreatedOn, UserID) VALUES(@date, @userID)");
+        command.Parameters.AddWithValue("@date", DateTime.Now.ToString("yyyy-MM-dd"));
+        command.Parameters.AddWithValue("@userID", App.USER_ID);
+        
+        int workoutID = await SqlCommunicator.Insert(command, "could not create workout");
         return workoutID;
     }
 }

@@ -7,7 +7,7 @@ public static class SqlCommunicator
     private const string DEFAULT_ERROR = "An error occured while trying to communicate to the database";
     private const string VALUES = "VALUES(";
     private const string OUTPUT_VALUES = "OUTPUT INSERTED.Id VALUES(";
-    
+
     private static readonly SqlConnection CONNECTION;
 
     static SqlCommunicator()
@@ -15,24 +15,21 @@ public static class SqlCommunicator
         CONNECTION = new SqlConnection(App.SETTINGS.Server.ConnectionString);
     }
 
-    
-    public static async Task<int> Insert(string query, string? error = null)
+    public static async Task<int> Insert(SqlCommand command, string? error = null)
     {
-        await using SqlCommand command = new(string.Empty, CONNECTION);
-        
         try
         {
-            if (!query.Contains(VALUES))
+            if (!command.CommandText.Contains(VALUES))
             {
-                error = $"invalid query: {query}";
+                error = $"invalid query: {command}";
                 throw new Exception();
             }
 
-            query = query.Replace(VALUES, OUTPUT_VALUES);
-            command.CommandText = query;
-            
+            command.CommandText = command.CommandText.Replace(VALUES, OUTPUT_VALUES);
+            command.Connection = CONNECTION;
+
             CONNECTION.Open();
-            int insertedID = (int)command.ExecuteScalar();
+            int insertedID = (int)(await command.ExecuteScalarAsync() ?? -1);
             CONNECTION.Close();
             return insertedID;
         }
@@ -41,16 +38,16 @@ public static class SqlCommunicator
             System.Diagnostics.Debug.WriteLine(e.Message);
             error = string.Concat(string.IsNullOrEmpty(error) ? DEFAULT_ERROR : error, Environment.NewLine, e.Message);
             CONNECTION.Close();
-            throw new PopupException(error, "DATABASE ERROR");
+            throw new PopupException(error, "sql insert error");
         }
     }
 
-    public static async Task Select(string query, Action<SqlDataReader> callback, string? error = null)
+    public static async Task Select(SqlCommand command, Action<SqlDataReader> callback, string? error = null)
     {
-        await using SqlCommand command = new(query, CONNECTION);
-        
         try
         {
+            command.Connection = CONNECTION;
+
             CONNECTION.Open();
             SqlDataReader reader = await command.ExecuteReaderAsync();
             if (reader.HasRows)
@@ -60,12 +57,14 @@ public static class SqlCommunicator
                     callback(reader);
                 }
             }
+
             CONNECTION.Close();
         }
         catch (Exception e)
         {
             System.Diagnostics.Debug.WriteLine(e.Message);
             error = string.Concat(string.IsNullOrEmpty(error) ? DEFAULT_ERROR : error, Environment.NewLine, e.Message);
+            CONNECTION.Close();
             throw new PopupException(error, "SQL select error");
         }
     }
