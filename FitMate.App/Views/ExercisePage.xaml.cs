@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using FitMate.Utils;
 using FitMate.ViewModels;
 using Syncfusion.Maui.Picker;
 
@@ -23,7 +24,7 @@ public partial class ExercisePage : ContentPage
     {
         int kgsOrMtr;
         int repsOrSecs;
-        
+
         if (ViewModel.IsInKgs)
         {
             if (string.IsNullOrEmpty(ViewModel.KgsOrMtr) || string.IsNullOrEmpty(ViewModel.Repetitions))
@@ -31,7 +32,7 @@ public partial class ExercisePage : ContentPage
                 DisplayAlert("Invalid Input", "Make sure both fields are not empty!", "OK");
                 return;
             }
-            
+
             repsOrSecs = Convert.ToInt32(ViewModel.Repetitions);
         }
         else
@@ -41,19 +42,52 @@ public partial class ExercisePage : ContentPage
                 DisplayAlert("Invalid Input", "Make sure both fields are not empty!", "OK");
                 return;
             }
+
             repsOrSecs = Convert.ToInt32(Math.Round(ViewModel.Seconds.TotalSeconds));
         }
-        
-        kgsOrMtr = Convert.ToInt32(ViewModel.KgsOrMtr);
-        string? errorMessage = Task.Run(() => ViewModel.AddExerciseAsync(kgsOrMtr, repsOrSecs)).Result;
 
-        if (string.IsNullOrEmpty(errorMessage))
+        kgsOrMtr = Convert.ToInt32(ViewModel.KgsOrMtr);
+
+        try
         {
-            ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty; 
-            ViewModel.Seconds = TimeSpan.Zero;
-            ViewModel.TimeButton = "Set Time";
+            Task.Run(() => ViewModel.InsertExerciseAsync(kgsOrMtr, repsOrSecs)).Wait();
         }
-        else { DisplayAlert("Database error", errorMessage, "OK"); }
+        catch (AggregateException ae)
+        {
+            for (int i = 0; i < ae.InnerExceptions.Count; ++i)
+            {
+                if (ae.InnerExceptions[i] is not PopupException pe)
+                {
+                    continue;
+                }
+
+                DisplayAlert(pe.Title, pe.Message, "OK");
+                return;
+            }
+
+            throw;
+        }
+
+        // try
+        // {
+        //     string? errorMessage = Task.Run(() => ViewModel.InsertExerciseAsync(kgsOrMtr, repsOrSecs)).Result;
+        // }
+        // catch (AggregateException e)
+        // {
+        //     Console.WriteLine(e);
+        //     throw;
+        // }
+        //
+        // if (string.IsNullOrEmpty(errorMessage))
+        // {
+        //     ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty;
+        //     ViewModel.Seconds = TimeSpan.Zero;
+        //     ViewModel.TimeButton = "Set Time";
+        // }
+        // else
+        // {
+        //     DisplayAlert("Database error", errorMessage, "OK");
+        // }
     }
 
     private void OnHistoryClicked(object sender, EventArgs args)
@@ -82,7 +116,7 @@ public partial class ExercisePage : ContentPage
     {
         //NOTE: the sync-fusion library does not seem to work with observable properties.
         SfTimePicker timePicker = (SfTimePicker)sender;
-        Debug.Assert(timePicker.SelectedTime != null, "timePicker.SelectedTime != null");
+        Debug.Assert(timePicker.SelectedTime != null);
         ViewModel.Seconds = timePicker.SelectedTime.Value;
         ViewModel.TimeButton = ViewModel.Seconds.ToString(@"hh\:mm\:ss");
         ViewModel.IsTimePickerOpened = false;

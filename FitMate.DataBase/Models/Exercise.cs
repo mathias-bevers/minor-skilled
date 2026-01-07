@@ -13,7 +13,7 @@ public class Exercise
     public int KgsOrMtr { get; set; }
     [Required]
     public int RepsOrSecs { get; set; }
-    [Required]
+    [NotMapped]
     public bool IsPR { get; set; }
 
     [Required]
