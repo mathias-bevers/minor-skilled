@@ -24,7 +24,7 @@ public partial class AllWorkoutsPage : ContentPage
     {
         try
         {
-            int workoutID = ViewModel.InsertWorkoutAsync().GetAwaiter().GetResult();
+            int workoutID = Task.Run(ViewModel.InsertWorkoutAsync).Result;
             ShellNavigationQueryParameters navigationParameters = new() { { "id", workoutID } };
             Shell.Current.GoToAsync("/Workout", navigationParameters);
         }

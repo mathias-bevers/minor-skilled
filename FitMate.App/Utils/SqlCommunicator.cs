@@ -5,8 +5,8 @@ namespace FitMate.Utils;
 public static class SqlCommunicator
 {
     private const string DEFAULT_ERROR = "An error occured while trying to communicate to the database";
-    private const string VALUES = "VALUES(";
-    private const string OUTPUT_VALUES = "OUTPUT INSERTED.Id VALUES(";
+    private const string VALUES = "VALUES";
+    private const string OUTPUT_VALUES = "OUTPUT INSERTED.Id VALUES";
 
     private static readonly SqlConnection CONNECTION;
 
@@ -21,8 +21,8 @@ public static class SqlCommunicator
         {
             if (!command.CommandText.Contains(VALUES))
             {
-                error = $"invalid query: {command}";
-                throw new Exception();
+                error = $"invalid query: {command.CommandText}";
+                throw new InvalidOperationException(error);
             }
 
             command.CommandText = command.CommandText.Replace(VALUES, OUTPUT_VALUES);
@@ -42,7 +42,7 @@ public static class SqlCommunicator
         }
     }
 
-    public static async Task Select(SqlCommand command, Action<SqlDataReader> callback, string? error = null)
+    public static async Task<bool> Select(SqlCommand command, Action<SqlDataReader> callback, string? error = null)
     {
         try
         {
@@ -50,7 +50,10 @@ public static class SqlCommunicator
 
             CONNECTION.Open();
             SqlDataReader reader = await command.ExecuteReaderAsync();
-            if (reader.HasRows)
+
+            bool hasRows = reader.HasRows;
+
+            if (hasRows)
             {
                 while (reader.Read())
                 {
@@ -59,6 +62,7 @@ public static class SqlCommunicator
             }
 
             CONNECTION.Close();
+            return hasRows;
         }
         catch (Exception e)
         {
