@@ -13,6 +13,8 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
     public event Action<string> UpdateTitleEvent;
     public int ExerciseTypeID { get; private set; } = -1;
     public ObservableCollection<Exercise> Exercises { get; set; } = [];
+
+    public string ExerciseTypeName { get; private set; } = null!;
     public TimeSpan Seconds { get; set; }
     private int WorkoutID { get; set; } = -1;
 
@@ -21,8 +23,6 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
     [ObservableProperty]
     private bool isTimePickerOpened;
     private CancellationTokenSource cts;
-
-    private string exerciseTypeName = null!;
     [ObservableProperty]
     private string? kgsOrMtr;
     [ObservableProperty]
@@ -45,7 +45,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
 
         if (query.TryGetValue("exercise_type_name", out object? etName))
         {
-            exerciseTypeName = Convert.ToString(etName) ?? "name not found";
+            ExerciseTypeName = Convert.ToString(etName) ?? "name not found";
         }
 
         if (query.TryGetValue("workout_id", out object? woID))
@@ -65,7 +65,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
 
     private void SelectExercises()
     {
-        UpdateTitleEvent.Invoke(exerciseTypeName);
+        UpdateTitleEvent.Invoke(ExerciseTypeName);
 
         Exercises.Clear();
 

@@ -51,7 +51,7 @@ public partial class ExercisePage : ContentPage
         try
         {
             ViewModel.InsertExercise(kgsOrMtr, repsOrSecs);
-            
+
             ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty;
             ViewModel.TimeButton = "Set Time";
         }
@@ -59,34 +59,14 @@ public partial class ExercisePage : ContentPage
         {
             DisplayAlert(pe.Title, pe.Message, "OK");
         }
-
-        // try
-        // {
-        //     string? errorMessage = Task.Run(() => ViewModel.InsertExerciseAsync(kgsOrMtr, repsOrSecs)).Result;
-        // }
-        // catch (AggregateException e)
-        // {
-        //     Console.WriteLine(e);
-        //     throw;
-        // }
-        //
-        // if (string.IsNullOrEmpty(errorMessage))
-        // {
-        //     ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty;
-        //     ViewModel.Seconds = TimeSpan.Zero;
-        //     ViewModel.TimeButton = "Set Time";
-        // }
-        // else
-        // {
-        //     DisplayAlert("Database error", errorMessage, "OK");
-        // }
     }
 
     private void OnHistoryClicked(object sender, EventArgs args)
     {
         ShellNavigationQueryParameters navigationQueryParameters = new()
         {
-            { "exercise_name", ViewModel.ExerciseTypeID }
+            { "exercise_id", ViewModel.ExerciseTypeID },
+            { "exercise_name", ViewModel.ExerciseTypeName }
         };
 
         Shell.Current.GoToAsync("/History", navigationQueryParameters);

@@ -1,7 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Data.SqlTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
+using FitMate.Utils;
 using Microsoft.Data.SqlClient;
+using Nito.AsyncEx.Synchronous;
 
 namespace FitMate.ViewModels;
 
@@ -13,74 +16,115 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
 
     [ObservableProperty]
     private Exercise personalRecord = null!;
+    private int exerciseID = -1;
     private string exerciseName = string.Empty;
 
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        if (query.TryGetValue("exercise_name", out object? value))
+        if (query.TryGetValue("exercise_id", out object? value))
+        {
+            exerciseID = Convert.ToInt32(value);
+        }
+
+        if (query.TryGetValue("exercise_name", out value))
         {
             exerciseName = Convert.ToString(value) ?? string.Empty;
         }
 
-        if (string.IsNullOrEmpty(exerciseName)) { throw new Exception("'exerciseName' cannot be null or empty!"); }
+        if (string.IsNullOrEmpty(exerciseName))
+        {
+            throw new Exception("'exerciseName' cannot be null or empty!");
+        }
 
-        Task.Run(LoadHistoryFromDB);
         UpdateTitleEvent?.Invoke($"{exerciseName}'s History");
+        SelectHistory();
     }
 
-    public async Task LoadHistoryFromDB()
+    private void SelectHistory()
     {
         List<Exercise> exercises = [];
-        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
-        await using SqlCommand command = new(GenerateHistoryQuery(), connection);
+        // await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
+        // await using SqlCommand command = new(GenerateHistoryQuery(), connection);
+        //
+        // try
+        // {
+        //     connection.Open();
+        //     SqlDataReader reader = await command.ExecuteReaderAsync();
+        //
+        //     if (!reader.HasRows)
+        //     {
+        //         connection.Close();
+        //         return;
+        //     }
+        //
+        //     while (reader.Read())
+        //     {
+        //         Exercise exercise = new()
+        //         {
+        //             KgsOrMtr = (int)reader["KgsOrMtr"],
+        //             RepsOrSecs = (int)reader["RepsOrSecs"],
+        //             IsPR = (bool)reader["IsPR"],
+        //             Date = DateTime.Parse((string)reader["CreatedOn"]),
+        //             ExerciseType = new ExerciseType
+        //             {
+        //                 Name = (string)reader["Name"],
+        //                 MeasurementTypeID = (int)reader["MeasurementTypeID"]
+        //             }
+        //         };
+        //
+        //         exercises.Add(exercise);
+        //
+        //         if (!exercise.IsPR) { continue; }
+        //
+        //         PersonalRecord = exercise;
+        //     }
+        // }
+        // catch (Exception e) { System.Diagnostics.Debug.WriteLine(e); }
+        //
+        // connection.Close();
+        //
+        // foreach (ExerciseGroup exerciseGroup in exercises.GroupBy(e => e.Date)
+        //              .Select(g => new ExerciseGroup(g.Key.ToString("dddd - dd/MM/yyyy"), g.ToList())))
+        // {
+        //     Exercises.Add(exerciseGroup);
+        // }
 
-        try
+        SqlCommand command = new("SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, w.CreatedOn, et.MeasurementTypeID " +
+                                 "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
+                                 "JOIN Workouts w ON e.WorkoutID = w.ID " + "JOIN Users u ON u.ID = @uID " +
+                                 "WHERE et.Name = @eName");
+        command.Parameters.AddWithValue("@uID", App.USER_ID);
+        command.Parameters.AddWithValue("@eName", exerciseName);
+
+        Task.Run(() => SqlCommunicator.Select(command, reader =>
         {
-            connection.Open();
-            SqlDataReader reader = await command.ExecuteReaderAsync();
-
-            if (!reader.HasRows)
+            Exercise exercise = new()
             {
-                connection.Close();
-                return;
-            }
-
-            while (reader.Read())
-            {
-                Exercise exercise = new()
+                KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
+                RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
+                Date = DateTime.Parse(Convert.ToString(reader["CreatedOn"]) ?? "null"),
+                ExerciseType = new ExerciseType
                 {
-                    KgsOrMtr = (int)reader["KgsOrMtr"],
-                    RepsOrSecs = (int)reader["RepsOrSecs"],
-                    IsPR = (bool)reader["IsPR"],
-                    Date = DateTime.Parse((string)reader["CreatedOn"]),
-                    ExerciseType = new ExerciseType
-                    {
-                        Name = (string)reader["Name"],
-                        MeasurementTypeID = (int)reader["MeasurementTypeID"]
-                    }
-                };
+                    Name = Convert.ToString(reader["Name"]) ?? throw new SqlNullValueException("etName"),
+                    MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
+                }
+            };
 
-                exercises.Add(exercise);
+            exercises.Add(exercise);
+        })).WaitAndUnwrapException();
 
-                if (!exercise.IsPR) { continue; }
-
-                PersonalRecord = exercise;
-            }
-        }
-        catch (Exception e) { System.Diagnostics.Debug.WriteLine(e); }
-        
-        connection.Close();
-        
         foreach (ExerciseGroup exerciseGroup in exercises.GroupBy(e => e.Date)
                      .Select(g => new ExerciseGroup(g.Key.ToString("dddd - dd/MM/yyyy"), g.ToList())))
         {
             Exercises.Add(exerciseGroup);
         }
+
+        //TODO: find  PR.
     }
 
-    private string GenerateHistoryQuery() =>
-        "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, w.CreatedOn, et.MeasurementTypeID FROM Exercises e " +
-        "JOIN ExerciseTypes et ON e.ExerciseTypeName  = et.Name JOIN Workouts w ON e.WorkoutID = w.ID " +
-        $"JOIN Users u ON u.ID = {App.USER_ID} WHERE et.Name = \'{exerciseName}\';";
+    // private string GenerateHistoryQuery() =>
+    //     "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, w.CreatedOn, et.MeasurementTypeID FROM Exercises e " +
+    //     "JOIN ExerciseTypes et ON e.ExerciseTypeName  = et.Name JOIN Workouts w ON e.WorkoutID = w.ID " +
+    //     $"JOIN Users u ON u.ID = {App.USER_ID} WHERE et.Name = \'{exerciseName}\';";
 }
