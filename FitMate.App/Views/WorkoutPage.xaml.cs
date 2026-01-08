@@ -19,7 +19,7 @@ public partial class WorkoutPage : ContentPage
             { "workout_id", ViewModel.WorkoutID }
         };
 
-        Task.Run(() => Shell.Current.GoToAsync("/AllExercises", navigationQueryParameters));
+        Shell.Current.GoToAsync("/AllExercises", navigationQueryParameters);
     }
 
     private void OnExerciseSelected(object sender, SelectionChangedEventArgs args)
@@ -41,7 +41,6 @@ public partial class WorkoutPage : ContentPage
         };
 
         cv.SelectedItem = null;
-
-        Task.Run(() => Shell.Current.GoToAsync("/Exercise", navigationParameters));
+        Shell.Current.GoToAsync("/Exercise", navigationParameters);
     }
 }

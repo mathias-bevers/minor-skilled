@@ -60,83 +60,35 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
                 $"Both {nameof(WorkoutID)} and {nameof(ExerciseTypeID)} are expected to be initialized!");
         }
 
-        LoadFromDb();
+        SelectExercises();
     }
 
-    private void LoadFromDb()
-    {
-        Exercises.Clear();
-        Task.Run(SelectExercisesAsync);
-    }
-
-    private async Task SelectExercisesAsync()
+    private void SelectExercises()
     {
         UpdateTitleEvent.Invoke(exerciseTypeName);
 
-        // await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
-        // connection.Open();
-        //
-        // await using SqlCommand command = new(GetExercisesQuery(), connection);
-        //
-        // SqlDataReader reader = await command.ExecuteReaderAsync();
-        //
-        // if (!reader.HasRows)
-        // {
-        //     reader.Close();
-        //
-        //     command.CommandText = "SELECT mt.ID FROM MeasurementTypes mt " +
-        //                           $"JOIN ExerciseTypes et ON mt.ID = et.MeasurementTypeID WHERE et.ID = {ExerciseTypeID}";
-        //
-        //     reader = await command.ExecuteReaderAsync();
-        //
-        //     int measurementID = -1;
-        //     while (reader.Read())
-        //     {
-        //         measurementID = Convert.ToInt32(reader["ID"]);
-        //     }
-        //
-        //     IsInKgs = measurementID == 1;
-        //
-        //     reader.Close();
-        //     connection.Close();
-        //     return;
-        // }
-        //
-        // while (reader.Read())
-        // {
-        //     Exercises.Add(new Exercise
-        //     {
-        //         KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
-        //         RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
-        //         IsPR = Convert.ToBoolean(reader["IsPR"]),
-        //         ExerciseType = new ExerciseType
-        //         {
-        //             Name = Convert.ToString(reader["Name"]) ?? throw new SqlNullValueException(),
-        //             MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
-        //         }
-        //     });
-        // }
-        //
-        // IsInKgs = Exercises[0].ExerciseType.MeasurementType == Measurement.KilosPerRepetition;
-        //
-        // reader.Close();
-        // connection.Close();
+        Exercises.Clear();
 
-        SqlCommand command = GetSelectCommand();
-        bool hasRows = await SqlCommunicator.Select(command, reader =>
+        SqlCommand command = new("SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, et.MeasurementTypeID " +
+                                 "FROM Exercises e " + "JOIN Workouts w ON e.WorkoutID = w.ID " +
+                                 "JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
+                                 "WHERE w.ID = @wID AND et.ID = @etID");
+        command.Parameters.AddWithValue("@wID", WorkoutID);
+        command.Parameters.AddWithValue("@etID", ExerciseTypeID);
+
+        bool hasRows = Task.Run(() => SqlCommunicator.Select(command, reader =>
         {
             Exercises.Add(new Exercise
             {
                 KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
                 RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
-                IsPR = Convert.ToBoolean(reader["IsPR"]),
                 ExerciseType = new ExerciseType
                 {
                     Name = Convert.ToString(reader["Name"]) ?? throw new SqlNullValueException(),
                     MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
                 }
             });
-        });
+        })).WaitAndUnwrapException();
 
         if (!hasRows)
         {
@@ -145,12 +97,13 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
             command.Parameters.AddWithValue("@etID", ExerciseTypeID);
 
             int measurementID = -1;
-            await SqlCommunicator.Select(command, reader => { measurementID = Convert.ToInt32(reader["ID"]); });
+            Task.Run(() => SqlCommunicator.Select(command, reader => { measurementID = Convert.ToInt32(reader["ID"]); })
+                .WaitAndUnwrapException());
             IsInKgs = measurementID == 1;
         }
         else
         {
-            IsInKgs = Exercises[0].ExerciseType.MeasurementType == Measurement.KilosPerRepetition + 1;
+            IsInKgs = Exercises[0].ExerciseType.MeasurementType == Measurement.KilosPerRepetition;
         }
     }
 
@@ -163,22 +116,8 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
         command.Parameters.AddWithValue("@wID", WorkoutID);
         command.Parameters.AddWithValue("@etID", ExerciseTypeID);
 
-        // SqlCommunicator.Insert(command, "Something went wrong while inserting the exercise").Wait();
         Task.Run(() => SqlCommunicator.Insert(command, "Something went wrong while inserting the exercise"))
             .WaitAndUnwrapException();
-
-        LoadFromDb();
-    }
-
-    private SqlCommand GetSelectCommand()
-    {
-        SqlCommand command = new("SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, et.MeasurementTypeID " +
-                                 "FROM Exercises e " + "JOIN Workouts w ON e.WorkoutID = w.ID " +
-                                 "JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
-                                 "WHERE w.ID = @wID AND et.ID = @etID");
-        command.Parameters.AddWithValue("@wID", WorkoutID);
-        command.Parameters.AddWithValue("@etID", ExerciseTypeID);
-
-        return command;
+        SelectExercises();
     }
 }
