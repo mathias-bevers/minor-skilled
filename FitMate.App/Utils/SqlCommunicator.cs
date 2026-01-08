@@ -19,14 +19,17 @@ public static class SqlCommunicator
     {
         try
         {
-            if (!command.CommandText.Contains(VALUES))
+            lock (command)
             {
-                error = $"invalid query: {command.CommandText}";
-                throw new InvalidOperationException(error);
-            }
+                if (!command.CommandText.Contains(VALUES))
+                {
+                    error = $"invalid query: {command.CommandText}";
+                    throw new InvalidOperationException(error);
+                }
 
-            command.CommandText = command.CommandText.Replace(VALUES, OUTPUT_VALUES);
-            command.Connection = CONNECTION;
+                command.CommandText = command.CommandText.Replace(VALUES, OUTPUT_VALUES);
+                command.Connection = CONNECTION;
+            }
 
             CONNECTION.Open();
             int insertedID = (int)(await command.ExecuteScalarAsync() ?? -1);

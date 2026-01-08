@@ -4,10 +4,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
 using FitMate.Utils;
 using Microsoft.Data.SqlClient;
+using Nito.AsyncEx.Synchronous;
 
 namespace FitMate.ViewModels;
 
-public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
+public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, IDisposable
 {
     public event Action<string> UpdateTitleEvent;
     public int ExerciseTypeID { get; private set; } = -1;
@@ -19,6 +20,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
     private bool isInKgs;
     [ObservableProperty]
     private bool isTimePickerOpened;
+    private CancellationTokenSource cts;
 
     private string exerciseTypeName = null!;
     [ObservableProperty]
@@ -27,6 +29,11 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
     private string? repetitions;
     [ObservableProperty]
     private string? timeButton = "Set Time";
+
+    public void Dispose()
+    {
+        cts.Cancel();
+    }
 
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -147,7 +154,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
         }
     }
 
-    public async Task InsertExerciseAsync(int kgsOrMtr, int repsOrSecs)
+    public void InsertExercise(int kgsOrMtr, int repsOrSecs)
     {
         SqlCommand command = new("INSERT INTO Exercises(KgsOrMtr, RepsOrSecs, WorkoutID, ExerciseTypeID) " +
                                  "VALUES(@kom, @ros, @wID, @etID)");
@@ -156,7 +163,9 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable
         command.Parameters.AddWithValue("@wID", WorkoutID);
         command.Parameters.AddWithValue("@etID", ExerciseTypeID);
 
-        await SqlCommunicator.Insert(command, "Something went wrong while inserting the exercise");
+        // SqlCommunicator.Insert(command, "Something went wrong while inserting the exercise").Wait();
+        Task.Run(() => SqlCommunicator.Insert(command, "Something went wrong while inserting the exercise"))
+            .WaitAndUnwrapException();
 
         LoadFromDb();
     }

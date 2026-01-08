@@ -50,22 +50,14 @@ public partial class ExercisePage : ContentPage
 
         try
         {
-            Task.Run(() => ViewModel.InsertExerciseAsync(kgsOrMtr, repsOrSecs)).Wait();
+            ViewModel.InsertExercise(kgsOrMtr, repsOrSecs);
+            
+            ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty;
+            ViewModel.TimeButton = "Set Time";
         }
-        catch (AggregateException ae)
+        catch (PopupException pe)
         {
-            for (int i = 0; i < ae.InnerExceptions.Count; ++i)
-            {
-                if (ae.InnerExceptions[i] is not PopupException pe)
-                {
-                    continue;
-                }
-
-                DisplayAlert(pe.Title, pe.Message, "OK");
-                return;
-            }
-
-            throw;
+            DisplayAlert(pe.Title, pe.Message, "OK");
         }
 
         // try
