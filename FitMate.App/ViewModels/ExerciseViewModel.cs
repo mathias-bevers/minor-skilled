@@ -69,7 +69,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
 
         Exercises.Clear();
 
-        SqlCommand command = new("SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, et.MeasurementTypeID " +
+        SqlCommand command = new("SELECT e.ID, e.KgsOrMtr, e.RepsOrSecs, et.Name, et.MeasurementTypeID " +
                                  "FROM Exercises e " + "JOIN Workouts w ON e.WorkoutID = w.ID " +
                                  "JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
                                  "WHERE w.ID = @wID AND et.ID = @etID");
@@ -80,6 +80,7 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
         {
             Exercises.Add(new Exercise
             {
+                ID = Convert.ToInt32(reader["ID"]),
                 KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
                 RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
                 ExerciseType = new ExerciseType
@@ -104,6 +105,17 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
         else
         {
             IsInKgs = Exercises[0].ExerciseType.MeasurementType == Measurement.KilosPerRepetition;
+            int prID = PersonalRecordFinder.FindForExerciseID(ExerciseTypeID);
+            for (int i = 0; i < Exercises.Count; ++i)
+            {
+                if (Exercises[i].ID != prID)
+                {
+                    continue;
+                }
+
+                Exercises[i].IsPR = true;
+                break;
+            }
         }
     }
 
