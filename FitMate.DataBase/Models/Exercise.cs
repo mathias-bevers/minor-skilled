@@ -40,7 +40,7 @@ public class Exercise
         {
             TimeSpan ts = TimeSpan.FromSeconds(RepsOrSecs);
             sb.Append(string.Concat(KgsOrMtr, " MTR - "));
-            sb.Append(string.Concat(Convert.ToInt32(ts.TotalMinutes), ':', ts.Seconds.ToString("00"), "MINS"));
+            sb.Append(string.Concat(Convert.ToInt32(ts.TotalMinutes), ':', ts.Seconds.ToString("00"), " MINS"));
         }
         
         return sb.ToString();
