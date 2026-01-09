@@ -44,52 +44,6 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
     private void SelectHistory()
     {
         List<Exercise> exercises = [];
-        // await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
-        // await using SqlCommand command = new(GenerateHistoryQuery(), connection);
-        //
-        // try
-        // {
-        //     connection.Open();
-        //     SqlDataReader reader = await command.ExecuteReaderAsync();
-        //
-        //     if (!reader.HasRows)
-        //     {
-        //         connection.Close();
-        //         return;
-        //     }
-        //
-        //     while (reader.Read())
-        //     {
-        //         Exercise exercise = new()
-        //         {
-        //             KgsOrMtr = (int)reader["KgsOrMtr"],
-        //             RepsOrSecs = (int)reader["RepsOrSecs"],
-        //             IsPR = (bool)reader["IsPR"],
-        //             Date = DateTime.Parse((string)reader["CreatedOn"]),
-        //             ExerciseType = new ExerciseType
-        //             {
-        //                 Name = (string)reader["Name"],
-        //                 MeasurementTypeID = (int)reader["MeasurementTypeID"]
-        //             }
-        //         };
-        //
-        //         exercises.Add(exercise);
-        //
-        //         if (!exercise.IsPR) { continue; }
-        //
-        //         PersonalRecord = exercise;
-        //     }
-        // }
-        // catch (Exception e) { System.Diagnostics.Debug.WriteLine(e); }
-        //
-        // connection.Close();
-        //
-        // foreach (ExerciseGroup exerciseGroup in exercises.GroupBy(e => e.Date)
-        //              .Select(g => new ExerciseGroup(g.Key.ToString("dddd - dd/MM/yyyy"), g.ToList())))
-        // {
-        //     Exercises.Add(exerciseGroup);
-        // }
-
         SqlCommand command = new("SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, w.CreatedOn, et.MeasurementTypeID " +
                                  "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
                                  "JOIN Workouts w ON e.WorkoutID = w.ID " + "JOIN Users u ON u.ID = @uID " +
@@ -120,11 +74,7 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
             Exercises.Add(exerciseGroup);
         }
 
-        //TODO: find  PR.
+        int prID = PersonalRecordFinder.FindForExerciseID(exerciseID);
+        System.Diagnostics.Debug.WriteLine($"found pr for {exerciseName} is id: {prID}");
     }
-
-    // private string GenerateHistoryQuery() =>
-    //     "SELECT e.KgsOrMtr, e.RepsOrSecs, e.IsPR, et.Name, w.CreatedOn, et.MeasurementTypeID FROM Exercises e " +
-    //     "JOIN ExerciseTypes et ON e.ExerciseTypeName  = et.Name JOIN Workouts w ON e.WorkoutID = w.ID " +
-    //     $"JOIN Users u ON u.ID = {App.USER_ID} WHERE et.Name = \'{exerciseName}\';";
 }
