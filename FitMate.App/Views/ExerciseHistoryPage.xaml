@@ -28,10 +28,13 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="m:Exercise">
                             <!-- NOTE: margin and padding are applied in left, top, right, bottom -->
-                            <StackLayout HorizontalOptions="Center">
-                                <Image Source="trophy_placeholder.png" IsVisible="{Binding IsPR}" HeightRequest="25" />
-                                <Label Text="{Binding .}" FontSize="14" />
-                            </StackLayout>
+                            <AbsoluteLayout>
+                                <Label Text="{Binding .}" FontSize="18" 
+                                       AbsoluteLayout.LayoutBounds="10, 0, 300, 25"/>
+                                <Image Source="trophy_placeholder.png" IsVisible="{Binding IsPR}" HeightRequest="25"
+                                       AbsoluteLayout.LayoutBounds="0.95, 0, 25, 25" 
+                                       AbsoluteLayout.LayoutFlags="PositionProportional"/>
+                            </AbsoluteLayout>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
