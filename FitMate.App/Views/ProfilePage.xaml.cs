@@ -1,4 +1,3 @@
-
 namespace FitMate.Views;
 
 public partial class ProfilePage : ContentPage
@@ -14,6 +13,6 @@ public partial class ProfilePage : ContentPage
 
     protected override void OnAppearing()
     {
-        ViewModel.LoadFromDbAsync();
+        ViewModel.LoadDataFromDB();
     }
 }

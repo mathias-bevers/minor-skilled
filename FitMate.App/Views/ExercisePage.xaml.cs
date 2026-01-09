@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using FitMate.Utils;
 using FitMate.ViewModels;
 using Syncfusion.Maui.Picker;
 
@@ -23,7 +24,7 @@ public partial class ExercisePage : ContentPage
     {
         int kgsOrMtr;
         int repsOrSecs;
-        
+
         if (ViewModel.IsInKgs)
         {
             if (string.IsNullOrEmpty(ViewModel.KgsOrMtr) || string.IsNullOrEmpty(ViewModel.Repetitions))
@@ -31,7 +32,7 @@ public partial class ExercisePage : ContentPage
                 DisplayAlert("Invalid Input", "Make sure both fields are not empty!", "OK");
                 return;
             }
-            
+
             repsOrSecs = Convert.ToInt32(ViewModel.Repetitions);
         }
         else
@@ -41,26 +42,31 @@ public partial class ExercisePage : ContentPage
                 DisplayAlert("Invalid Input", "Make sure both fields are not empty!", "OK");
                 return;
             }
+
             repsOrSecs = Convert.ToInt32(Math.Round(ViewModel.Seconds.TotalSeconds));
         }
-        
-        kgsOrMtr = Convert.ToInt32(ViewModel.KgsOrMtr);
-        string? errorMessage = Task.Run(() => ViewModel.AddExerciseAsync(kgsOrMtr, repsOrSecs)).Result;
 
-        if (string.IsNullOrEmpty(errorMessage))
+        kgsOrMtr = Convert.ToInt32(ViewModel.KgsOrMtr);
+
+        try
         {
-            ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty; 
-            ViewModel.Seconds = TimeSpan.Zero;
+            ViewModel.InsertExercise(kgsOrMtr, repsOrSecs);
+
+            ViewModel.KgsOrMtr = ViewModel.Repetitions = string.Empty;
             ViewModel.TimeButton = "Set Time";
         }
-        else { DisplayAlert("Database error", errorMessage, "OK"); }
+        catch (PopupException pe)
+        {
+            DisplayAlert(pe.Title, pe.Message, "OK");
+        }
     }
 
     private void OnHistoryClicked(object sender, EventArgs args)
     {
         ShellNavigationQueryParameters navigationQueryParameters = new()
         {
-            { "exercise_name", ViewModel.ExerciseTypeID }
+            { "exercise_id", ViewModel.ExerciseTypeID },
+            { "exercise_name", ViewModel.ExerciseTypeName }
         };
 
         Shell.Current.GoToAsync("/History", navigationQueryParameters);
@@ -82,7 +88,7 @@ public partial class ExercisePage : ContentPage
     {
         //NOTE: the sync-fusion library does not seem to work with observable properties.
         SfTimePicker timePicker = (SfTimePicker)sender;
-        Debug.Assert(timePicker.SelectedTime != null, "timePicker.SelectedTime != null");
+        Debug.Assert(timePicker.SelectedTime != null);
         ViewModel.Seconds = timePicker.SelectedTime.Value;
         ViewModel.TimeButton = ViewModel.Seconds.ToString(@"hh\:mm\:ss");
         ViewModel.IsTimePickerOpened = false;

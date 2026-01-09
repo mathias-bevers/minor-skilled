@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Data.SqlTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
+using FitMate.Utils;
 using Microsoft.Data.SqlClient;
 
 namespace FitMate.ViewModels;
@@ -13,47 +14,25 @@ public partial class ProfileViewModel : ObservableObject
     [ObservableProperty]
     private User user = new();
 
-    public void LoadFromDbAsync()
+    public void LoadDataFromDB()
     {
-        Task.Run(LoadUserAsync);
-        Task.Run(LoadPersonalRecordsAsync);
+        SelectUser();
+        SelectPersonalRecords();
     }
 
 
-    private async Task LoadPersonalRecordsAsync()
+    private void SelectPersonalRecords()
     {
         PersonalRecords.Clear();
-
-        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
-        connection.Open();
-
-        await using (SqlCommand command = new(GetPersonalRecordsQuery(), connection))
+        
+        Exercise[] prs = PersonalRecordFinder.FindAll();
+        for (int i = 0; i < prs.Length; ++i)
         {
-            SqlDataReader reader = await command.ExecuteReaderAsync();
-
-            if (reader.HasRows)
-            {
-                while (reader.Read())
-                {
-                    PersonalRecords.Add(new Exercise
-                    {
-                        KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
-                        RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
-                        ExerciseType = new ExerciseType
-                        {
-                            Name = Convert.ToString(reader["Name"]) ??
-                                   throw new SqlNullValueException("reader[\"Name\"]"),
-                            MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
-                        }
-                    });
-                }
-            }
+            PersonalRecords.Add(prs[i]);
         }
-
-        connection.Close();
     }
 
-    private async Task LoadUserAsync()
+    private async Task SelectUser()
     {
         await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
 
@@ -82,10 +61,4 @@ public partial class ProfileViewModel : ObservableObject
 
     private static string GetUserQuery() =>
         $"SELECT u.UserName, u.GenderID, u.DateOfBirth FROM Users u WHERE ID = {App.USER_ID}";
-
-    private static string GetPersonalRecordsQuery() =>
-        "SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, et.MeasurementTypeID " +
-        "FROM Exercises e JOIN Workouts w ON e.WorkoutID  = w.ID " +
-        "JOIN Users u ON u.ID = w.UserID JOIN ExerciseTypes et ON " +
-        $"e.ExerciseTypeName = et.Name WHERE u.ID = {App.USER_ID} AND e.IsPR = 1;";
 }

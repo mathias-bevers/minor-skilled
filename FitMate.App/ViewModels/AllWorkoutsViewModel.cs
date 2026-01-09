@@ -22,7 +22,7 @@ public class AllWorkoutsViewModel : ObservableObject
         Workouts.Clear();
 
         System.Text.StringBuilder sb = new("SELECT w.CreatedOn, w.ID, ");
-        sb.Append("COALESCE(STRING_AGG(MG.Name, '\\t' ), 'No Exercises logged') AS MusclesWorked ");
+        sb.Append("COALESCE(STRING_AGG(MG.Name, ', ' ), 'No Exercises logged') AS MusclesWorked ");
         sb.Append("FROM Workouts w ");
         sb.Append("LEFT JOIN (");
         sb.Append("SELECT DISTINCT mg.Name, e.WorkoutID ");
