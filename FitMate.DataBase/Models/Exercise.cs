@@ -30,12 +30,19 @@ public class Exercise
 
     public override string ToString()
     {
+        System.Text.StringBuilder sb = new();
+        
         if (ExerciseType.MeasurementType == Measurement.KilosPerRepetition)
         {
-            return $"{KgsOrMtr} KGS - {RepsOrSecs} REPS";
+            sb.Append(string.Concat(KgsOrMtr, " KGS - ", RepsOrSecs,  " REPS"));
         }
-
-        TimeSpan ts = TimeSpan.FromSeconds(RepsOrSecs);
-        return $"{KgsOrMtr} MTR - {Convert.ToInt32(ts.TotalMinutes)}:{ts.Seconds:00} MINS";
+        else
+        {
+            TimeSpan ts = TimeSpan.FromSeconds(RepsOrSecs);
+            sb.Append(string.Concat(KgsOrMtr, " MTR - "));
+            sb.Append(string.Concat(Convert.ToInt32(ts.TotalMinutes), ':', ts.Seconds.ToString("00"), "MINS"));
+        }
+        
+        return sb.ToString();
     }
 }

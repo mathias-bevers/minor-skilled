@@ -3,7 +3,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:FitMate.ViewModels"
-             xmlns:mockups="clr-namespace:FitMate.ViewModels.Mockups"
              xmlns:m="clr-namespace:FitMate.Models;assembly=FitMate.DataBase"
              x:DataType="vm:ExerciseHistoryViewModel"
              x:Class="FitMate.Views.ExerciseHistoryPage">
@@ -30,6 +29,7 @@
                         <DataTemplate x:DataType="m:Exercise">
                             <!-- NOTE: margin and padding are applied in left, top, right, bottom -->
                             <StackLayout HorizontalOptions="Center">
+                                <Image Source="trophy_placeholder.png" IsVisible="{Binding IsPR}" HeightRequest="25" />
                                 <Label Text="{Binding .}" FontSize="14" />
                             </StackLayout>
                         </DataTemplate>

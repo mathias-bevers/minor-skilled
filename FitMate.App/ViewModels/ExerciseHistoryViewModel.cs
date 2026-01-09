@@ -44,7 +44,7 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
     private void SelectHistory()
     {
         List<Exercise> exercises = [];
-        SqlCommand command = new("SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, w.CreatedOn, et.MeasurementTypeID " +
+        SqlCommand command = new("SELECT e.ID, e.KgsOrMtr, e.RepsOrSecs, et.Name, w.CreatedOn, et.MeasurementTypeID " +
                                  "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
                                  "JOIN Workouts w ON e.WorkoutID = w.ID " + "JOIN Users u ON u.ID = @uID " +
                                  "WHERE et.Name = @eName");
@@ -55,8 +55,10 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
         {
             Exercise exercise = new()
             {
+                ID = Convert.ToInt32(reader["ID"]),
                 KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
                 RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
+                IsPR = false,
                 Date = DateTime.Parse(Convert.ToString(reader["CreatedOn"]) ?? "null"),
                 ExerciseType = new ExerciseType
                 {
@@ -75,6 +77,9 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
         }
 
         int prID = PersonalRecordFinder.FindForExerciseID(exerciseID);
-        System.Diagnostics.Debug.WriteLine($"found pr for {exerciseName} is id: {prID}");
+        PersonalRecord = Exercises.Find<ExerciseGroup, Exercise>(e => e.ID == prID);
+        PersonalRecord.IsPR = true;
+
+        System.Diagnostics.Debug.WriteLine($"found pr for {exerciseName} is: {PersonalRecord.ID}");
     }
 }
