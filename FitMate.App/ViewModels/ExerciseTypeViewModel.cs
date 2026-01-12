@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Utils;
 using Microsoft.Data.SqlClient;
+using Nito.AsyncEx.Synchronous;
 
 namespace FitMate.ViewModels;
 
@@ -11,9 +12,7 @@ public partial class ExerciseTypeViewModel : ObservableObject
 {
     public ObservableCollection<string> MeasurementTypes { get; set; } = [];
     public ObservableCollection<string> MuscleTypes { get; set; } = [];
-
-    private readonly Regex regex = new(@"(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])");
-
+    
     [ObservableProperty]
     private int selectedMeasurementType = -1;
     [ObservableProperty]
@@ -21,15 +20,15 @@ public partial class ExerciseTypeViewModel : ObservableObject
     [ObservableProperty]
     private string? exerciseName;
 
-    public async Task LoadTypesFromDb()
+    public void SelectFromDB()
     {
         MuscleTypes.Clear();
-        bool hasRows = await SqlCommunicator.Select(new SqlCommand("SELECT Name FROM MuscleGroups"), reader =>
+        bool hasRows = Task.Run(() => SqlCommunicator.Select(new SqlCommand("SELECT Name FROM MuscleGroups"), reader =>
         {
             string name = Convert.ToString(reader["Name"]) ??
                           throw new SqlNullValueException("The value of [name] is null");
             MuscleTypes.Add(name);
-        });
+        })).WaitAndUnwrapException();
 
         if (!hasRows)
         {
@@ -37,12 +36,12 @@ public partial class ExerciseTypeViewModel : ObservableObject
         }
 
         MeasurementTypes.Clear();
-        hasRows = await SqlCommunicator.Select(new SqlCommand("SELECT Name FROM MeasurementTypes"), reader =>
+        hasRows = Task.Run(() => SqlCommunicator.Select(new SqlCommand("SELECT Name FROM MeasurementTypes"), reader =>
         {
-            string unsplit = Convert.ToString(reader["Name"]) ??
+            string name = Convert.ToString(reader["Name"]) ??
                              throw new SqlNullValueException("The value of [Name] is null");
-            MeasurementTypes.Add(regex.Replace(unsplit, " "));
-        });
+            MeasurementTypes.Add(name);
+        })).WaitAndUnwrapException();
 
         if (!hasRows)
         {
@@ -50,7 +49,7 @@ public partial class ExerciseTypeViewModel : ObservableObject
         }
     }
 
-    public async Task<string> InsertExerciseType()
+    public string InsertExerciseType()
     {
         SqlCommand command = new("INSERT INTO ExerciseTypes (Name, MuscleGroupID, MeasurementTypeID) " +
                                  "VALUES (@name, @mgID, @mtID)");
@@ -58,9 +57,10 @@ public partial class ExerciseTypeViewModel : ObservableObject
         command.Parameters.AddWithValue("@mgID", SelectedMuscleType + 1);
         command.Parameters.AddWithValue("@mtID", SelectedMeasurementType + 1);
 
-        await SqlCommunicator.Insert(command);
+        Task.Run(() => SqlCommunicator.Insert(command)).WaitAndUnwrapException();
+        string tmp = ExerciseName ?? "null";
         ExerciseName = string.Empty;
         SelectedMeasurementType = SelectedMuscleType = -1;
-        return $"Successfully created a new exercise preset with name '{ExerciseName}'";
+        return $"Successfully created a new exercise preset with name \'{tmp}\'";
     }
 }
