@@ -45,25 +45,4 @@ public static class ModelGroupExtensions
 
         throw new Exception("Could not find expected element in group");
     }
-
-    public static T[] FindAll<T>(this IList<ModelGroup<T>> group, Func<T, bool> comparer)
-    {
-        List<T> elements = [];
-        for (int i = 0; i < group.Count; ++i)
-        {
-            for (int ii = 0; ii < group[i].Count; ++ii)
-            {
-                T element = group[i][ii];
-
-                if (!comparer(element))
-                {
-                    continue;
-                }
-
-                elements.Add(element);
-            }
-        }
-
-        return [..elements];
-    }
 }
