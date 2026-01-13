@@ -1,13 +1,12 @@
-using CommunityToolkit.Maui.Views;
 using FitMate.Models;
 using FitMate.Utils;
-using FuzzySharp;
+using FitMate.ViewModels;
 
 namespace FitMate.Views;
 
 public partial class AllWorkoutsPage : ContentPage
 {
-    private ViewModels.AllWorkoutsViewModel ViewModel { get; } = new();
+    private AllWorkoutsViewModel ViewModel { get; } = new();
 
     public AllWorkoutsPage()
     {
@@ -21,11 +20,19 @@ public partial class AllWorkoutsPage : ContentPage
         ViewModel.OnAppearing();
     }
 
+
     private void OnCreateNewWorkout(object? sender, EventArgs args)
     {
         try
         {
-            int workoutID = Task.Run(ViewModel.InsertWorkoutAsync).Result;
+            if (AllWorkoutsViewModel.HasWorkoutForToday())
+            {
+                DisplayAlert("DOUBLE WORKOUT", "Cannot add a second workout for today!", "OK");
+                return;
+            }
+
+            int workoutID = AllWorkoutsViewModel.InsertWorkout();
+
             ShellNavigationQueryParameters navigationParameters = new() { { "id", workoutID } };
             Shell.Current.GoToAsync("/Workout", navigationParameters);
         }
