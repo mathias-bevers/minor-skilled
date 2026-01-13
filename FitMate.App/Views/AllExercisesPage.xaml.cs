@@ -42,9 +42,15 @@ public partial class AllExercisesPage : ContentPage
 
         Shell.Current.GoToAsync("/Exercise", navigationParameters);
     }
-
+    
     private void OnCreateNewExercisePreset(object sender, EventArgs args)
     {
         Shell.Current.GoToAsync("/ExerciseType");
+    }
+
+    private void OnTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        SearchBar searchBar = sender as SearchBar ?? throw new NullReferenceException();
+        list.ItemsSource = ViewModel.GetSearchResults(searchBar.Text);
     }
 }

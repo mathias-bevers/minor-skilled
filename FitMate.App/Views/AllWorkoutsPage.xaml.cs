@@ -1,6 +1,7 @@
 using CommunityToolkit.Maui.Views;
 using FitMate.Models;
 using FitMate.Utils;
+using FuzzySharp;
 
 namespace FitMate.Views;
 

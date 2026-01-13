@@ -6,14 +6,7 @@ namespace FitMate.ViewModels;
 public class ExerciseGroup(string name, List<Exercise> items) : ModelGroup<Exercise>(name, items);
 
 [ObservableObject]
-public partial class ExerciseTypeGroup(string name, List<ExerciseType> items) : ModelGroup<ExerciseType>(name, items)
-{
-    public const string DOWN = "arrow_down_placeholder.png";
-    public const string UP = "arrow_up_placeholder.png";
-    
-    [ObservableProperty]
-    private string groupIcon = UP;
-}
+public partial class ExerciseTypeGroup(string name, List<ExerciseType> items) : ModelGroup<ExerciseType>(name, items);
 
 public abstract class ModelGroup<T> : List<T>
 {
