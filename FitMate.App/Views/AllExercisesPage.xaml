@@ -22,7 +22,14 @@
                             <Label Text="{Binding Name}"
                                    FontSize="17"
                                    BackgroundColor="{StaticResource Primary}"
-                                   Padding="5" />
+                                   Padding="5"
+                                   IsVisible="{Binding IsVisible}">
+                                <Label.Triggers>
+                                    <Trigger TargetType="Label" Property="IsVisible" Value="False">
+                                        <Setter Property="HeightRequest" Value="0" />
+                                    </Trigger>
+                                </Label.Triggers>
+                                </Label>
                         </DataTemplate>
                     </CollectionView.GroupHeaderTemplate>
                     <CollectionView.ItemTemplate>

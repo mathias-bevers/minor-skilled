@@ -6,7 +6,11 @@ namespace FitMate.ViewModels;
 public class ExerciseGroup(string name, List<Exercise> items) : ModelGroup<Exercise>(name, items);
 
 [ObservableObject]
-public partial class ExerciseTypeGroup(string name, List<ExerciseType> items) : ModelGroup<ExerciseType>(name, items);
+public partial class ExerciseTypeGroup(string name, List<ExerciseType> items) : ModelGroup<ExerciseType>(name, items)
+{
+    [ObservableProperty]
+    private bool isVisible = false;
+}
 
 public abstract class ModelGroup<T> : List<T>
 {

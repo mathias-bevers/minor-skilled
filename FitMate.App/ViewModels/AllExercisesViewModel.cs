@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
 using FitMate.Utils;
@@ -28,12 +27,14 @@ public class AllExercisesViewModel : ObservableObject, IQueryAttributable
     private void SelectFromDB()
     {
         SqlCommand command = new("SELECT * FROM MuscleGroups");
+        ExerciseTypes.Clear();
         Task.Run(() => SqlCommunicator.Select(command, reader =>
         {
             ExerciseTypeGroup group = new(Convert.ToString(reader["Name"]) ?? "null", []);
             ExerciseTypes.Add(group);
         })).WaitAndUnwrapException();
 
+        exerciseTypes.Clear();
         command = new SqlCommand("SELECT et.ID, et.Name AS type_name, mg.Name AS group_name, mg.ID as group_id" +
                                  " FROM ExerciseTypes et INNER JOIN MuscleGroups mg ON et.MuscleGroupID = mg.ID");
         Task.Run(() => SqlCommunicator.Select(command, reader =>
@@ -65,7 +66,7 @@ public class AllExercisesViewModel : ObservableObject, IQueryAttributable
 
         List<ExerciseType> searchResult = [..exerciseTypes];
         searchText = searchText.ToLower();
-        
+
         for (int i = searchResult.Count - 1; i >= 0; --i)
         {
             string name = searchResult[i].Name.ToLower();
@@ -75,15 +76,15 @@ public class AllExercisesViewModel : ObservableObject, IQueryAttributable
             }
 
             int fuzzyScore = Fuzz.Ratio(searchText, name);
-            
+
             if (fuzzyScore >= 50)
             {
-                continue;    
+                continue;
             }
-            
+
             searchResult.RemoveAt(i);
         }
-        
+
         GroupExerciseTypes(searchResult);
         return ExerciseTypes.ToList();
     }
@@ -99,6 +100,11 @@ public class AllExercisesViewModel : ObservableObject, IQueryAttributable
         {
             ExerciseType exerciseType = exerciseTypes[i];
             ExerciseTypes[exerciseType.MuscleGroup.ID - 1].Add(exerciseType);
+        }
+
+        for (int i = 0; i < ExerciseTypes.Count; ++i)
+        {
+            ExerciseTypes[i].IsVisible = ExerciseTypes[i].Count > 0;
         }
     }
 }
