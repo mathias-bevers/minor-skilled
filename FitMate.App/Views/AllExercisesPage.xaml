@@ -6,23 +6,30 @@
              xmlns:m="clr-namespace:FitMate.Models;assembly=FitMate.DataBase"
              x:Class="FitMate.Views.AllExercisesPage">
     <ContentPage.Content>
-        <Grid RowDefinitions="*, Auto" RowSpacing="10" Margin="10">
+        <Grid RowDefinitions="Auto, *, Auto" RowSpacing="10" Margin="10">
             <!-- TODO: add a search bar -->
-            <ScrollView Grid.Row="0" x:DataType="vm:AllExercisesViewModel">
-                <CollectionView ItemsSource="{Binding ExerciseTypes}" IsGrouped="true" SelectionMode="Single"
+            <SearchBar Grid.Row="0"
+                       Background="{StaticResource SecondaryDarkText}"
+                       TextChanged="OnTextChanged" />
+            <ScrollView Grid.Row="1" x:DataType="vm:AllExercisesViewModel">
+                <CollectionView x:Name="list"
+                                ItemsSource="{Binding ExerciseTypes}"
+                                IsGrouped="true"
+                                SelectionMode="Single"
                                 SelectionChanged="OnExerciseSelected">
                     <CollectionView.GroupHeaderTemplate>
                         <DataTemplate x:DataType="vm:ExerciseTypeGroup">
-                            <HorizontalStackLayout Spacing="20" BackgroundColor="{StaticResource Primary}" Padding="5">
-                                <Image Source="{Binding GroupIcon}" HeightRequest="20" />
-                                <Label Text="{Binding Name}" FontSize="17" />
-                                <HorizontalStackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding Source={x:RelativeSource
-                                        AncestorType={x:Type vm:AllExercisesViewModel}}, Path=ToggleGroupDataCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </HorizontalStackLayout.GestureRecognizers>
-                            </HorizontalStackLayout>
+                            <Label Text="{Binding Name}"
+                                   FontSize="17"
+                                   BackgroundColor="{StaticResource Primary}"
+                                   Padding="5"
+                                   IsVisible="{Binding IsVisible}">
+                                <Label.Triggers>
+                                    <Trigger TargetType="Label" Property="IsVisible" Value="False">
+                                        <Setter Property="HeightRequest" Value="0" />
+                                    </Trigger>
+                                </Label.Triggers>
+                                </Label>
                         </DataTemplate>
                     </CollectionView.GroupHeaderTemplate>
                     <CollectionView.ItemTemplate>
@@ -33,7 +40,7 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </ScrollView>
-            <Button Grid.Row="1" Text="Create new exercise preset" Clicked="OnCreateNewExercisePreset" />
+            <Button Grid.Row="2" Text="Create new exercise preset" Clicked="OnCreateNewExercisePreset" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

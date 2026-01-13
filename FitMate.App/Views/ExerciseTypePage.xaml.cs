@@ -18,7 +18,7 @@ public partial class ExerciseTypePage : ContentPage
 
     protected override void OnAppearing()
     {
-        Task.Run(viewModel.LoadTypesFromDb);
+        viewModel.SelectFromDB();
     }
 
     private void OnSaveClicked(object sender, EventArgs eventArgs)
