@@ -4,20 +4,23 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
 using FitMate.Utils;
 using Microsoft.Data.SqlClient;
-using Debug = System.Diagnostics.Debug;
+using Nito.AsyncEx.Synchronous;
 
 namespace FitMate.ViewModels;
 
-public class AllWorkoutsViewModel : ObservableObject
+public partial class AllWorkoutsViewModel : ObservableObject
 {
     public ObservableCollection<Workout> Workouts { get; set; } = [];
 
+    [ObservableProperty]
+    private bool canAddNew = false;
+
     public void OnAppearing()
     {
-        Task.Run(LoadFromDbAsync);
+        SelectFromDB();
     }
 
-    private async Task LoadFromDbAsync()
+    private void SelectFromDB()
     {
         Workouts.Clear();
 
@@ -33,7 +36,7 @@ public class AllWorkoutsViewModel : ObservableObject
         sb.Append(App.USER_ID);
         sb.Append(" GROUP BY w.CreatedOn, w.ID");
 
-        await SqlCommunicator.Select(new SqlCommand(sb.ToString()), reader =>
+        Task.Run(() => SqlCommunicator.Select(new SqlCommand(sb.ToString()), reader =>
         {
             Workout workout = new()
             {
@@ -46,16 +49,32 @@ public class AllWorkoutsViewModel : ObservableObject
 
             workout.MusclesWorked = "Muscles Worked: " + workout.MusclesWorked;
             Workouts.Add(workout);
-        });
+        })).WaitAndUnwrapException();
+
+        CanAddNew = true;
     }
 
-    public async Task<int> InsertWorkoutAsync()
+    public static bool HasWorkoutForToday()
     {
-        SqlCommand command = new("INSERT INTO Workouts (CreatedOn, UserID) VALUES(@date, @userID)");
-        command.Parameters.AddWithValue("@date", DateTime.Now.ToString("yyyy-MM-dd"));
-        command.Parameters.AddWithValue("@userID", App.USER_ID);
-        
-        int workoutID = await SqlCommunicator.Insert(command, "could not create workout");
+        string dateString = DateTime.Now.ToString("yyyy-MM-dd");
+        SqlCommand select = new("SELECT TOP 1 id FROM Workouts w WHERE w.UserID = @user_id and w.CreatedOn = @date");
+        select.Parameters.AddWithValue("@date", dateString);
+        select.Parameters.AddWithValue("@user_id", App.USER_ID);
+
+        bool exists = Task.Run(() => SqlCommunicator.Select(select, _ => { })).WaitAndUnwrapException();
+        return exists;
+    }
+
+    
+    public static int InsertWorkout(bool force = false)
+    {
+        string dateString = DateTime.Now.ToString("yyyy-MM-dd");
+        SqlCommand insert = new("INSERT INTO Workouts (CreatedOn, UserID) VALUES(@date, @user_id)");
+        insert.Parameters.AddWithValue("@date", dateString);
+        insert.Parameters.AddWithValue("@user_id", App.USER_ID);
+
+        int workoutID = Task.Run(() => SqlCommunicator.Insert(insert, "could not create workout"))
+            .WaitAndUnwrapException();
         return workoutID;
     }
 }

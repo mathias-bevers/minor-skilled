@@ -4,11 +4,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:FitMate.ViewModels"
              xmlns:m="clr-namespace:FitMate.Models;assembly=FitMate.DataBase"
-             x:Class="FitMate.Views.AllWorkoutsPage">
+             x:Class="FitMate.Views.AllWorkoutsPage"
+             x:DataType="vm:AllWorkoutsViewModel">
     <ContentPage.Content>
         <Grid Margin="10" RowDefinitions="Auto, *" RowSpacing="10">
             <!-- TODO: Enable this button when data can be added to DB -->
-            <Button Grid.Row="0" Text="Create a new workout" Clicked="OnCreateNewWorkout" />
+            <Button Grid.Row="0"
+                    Text="Create a new workout"
+                    Clicked="OnCreateNewWorkout"
+                    IsEnabled="{Binding CanAddNew}" />
             <ScrollView Grid.Row="1" x:DataType="vm:AllWorkoutsViewModel">
                 <CollectionView ItemsSource="{Binding Workouts}"
                                 SelectionMode="Single"
