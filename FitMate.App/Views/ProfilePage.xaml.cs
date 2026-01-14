@@ -13,8 +13,16 @@ public partial class ProfilePage : ContentPage
 
     protected override void OnAppearing()
     {
-        ViewModel.SelectUser();
-        ViewModel.SelectPersonalRecords();
+        if (ViewModel.HasBeenSet)
+        {
+            ViewModel.HasBeenSet = false;
+        }
+        else
+        {
+            ViewModel.SelectUser();
+            ViewModel.SelectPersonalRecords(true);
+        }
+
         base.OnAppearing();
     }
 }
