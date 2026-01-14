@@ -17,8 +17,9 @@ public class User
     [ForeignKey("GenderID")]
     public int GenderID { get; set; }
     public Gender Gender { get; set; } = null!; //TODO: look at if this is necessary.
-    public ICollection<Workout> Workouts { get; } = null!;
-    //public ICollection<User> Friends  { get; } //TODO: search generate collection for friends.
+    public ICollection<Workout> Workouts { get; } = [];
+    
+    public ICollection<Follow> Following { get; } = [];
 
     [NotMapped]
     public GenderType GenderType
