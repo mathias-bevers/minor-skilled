@@ -98,8 +98,16 @@ public partial class ExerciseViewModel : ObservableObject, IQueryAttributable, I
             command.Parameters.AddWithValue("@etID", ExerciseTypeID);
 
             int measurementID = -1;
-            Task.Run(() => SqlCommunicator.Select(command, reader => { measurementID = Convert.ToInt32(reader["ID"]); })
-                .WaitAndUnwrapException());
+            Task.Run(async () =>
+                    await SqlCommunicator.Select(command, reader => { measurementID = Convert.ToInt32(reader["ID"]); }))
+                .WaitAndUnwrapException();
+
+            if (measurementID < 0)
+            {
+                throw new PopupException("Could not find measurement type for exercise type id: " + ExerciseTypeID,
+                    "SELECT ERROR");
+            }
+
             IsInKgs = measurementID == 1;
         }
         else

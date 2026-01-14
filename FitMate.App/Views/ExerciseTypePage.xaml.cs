@@ -18,7 +18,15 @@ public partial class ExerciseTypePage : ContentPage
 
     protected override void OnAppearing()
     {
-        viewModel.SelectFromDB();
+        try
+        {
+            viewModel.SelectFromDB();
+        }
+        catch (PopupException e)
+        {
+            System.Diagnostics.Debug.WriteLine(e.Message);
+            DisplayAlert(e.Title, e.Message, "OK");
+        }
     }
 
     private void OnSaveClicked(object sender, EventArgs eventArgs)
@@ -41,6 +49,9 @@ public partial class ExerciseTypePage : ContentPage
             string result = Task.Run(viewModel.InsertExerciseType).Result;
             DisplayAlert("Success", result, "OK");
         }
-        catch (PopupException exception) { DisplayAlert(exception.Title, exception.Message, "OK"); }
+        catch (PopupException exception)
+        {
+            DisplayAlert(exception.Title, exception.Message, "OK");
+        }
     }
 }
