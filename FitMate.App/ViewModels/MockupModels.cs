@@ -3,39 +3,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace FitMate.ViewModels.Mockups;
 
 
-public struct UserMockup
-{
-    public string Username { get; set; }
-    public int Age { get; set; }
-    public string Gender { get; set; }
-}
-
 public struct PersonalRecordMockup
 {
     public string Name { get; set; }
     public ExerciseSet ExerciseSet { get; set; }
-}
-
-public struct ExerciseMockup
-{
-    public string Name { get; set; }
-    public ExerciseSet ExerciseSet { get; set; }
-    public bool IsPersonalRecord { get; set; }
-}
-
-//TODO: write a wrapper to generate groups from a list of exercises.
-[ObservableObject]
-public partial class ExerciseGroupMockup : List<ExerciseMockup>
-{
-    public string Name { get; set; }
-
-    [ObservableProperty]
-    private string groupIcon = "arrow_down_placeholder.png";
-    
-    public ExerciseGroupMockup(string name, List<ExerciseMockup> exercises) : base(exercises)
-    {
-        Name = name;
-    }
 }
 
 public struct ExerciseSet : IComparable<ExerciseSet>

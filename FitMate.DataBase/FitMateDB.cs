@@ -39,6 +39,12 @@ public class FitMateDB : DbContext
             .IsRequired();
         builder.Entity<Exercise>().HasOne(e => e.ExerciseType).WithMany().HasForeignKey(e => e.ExerciseTypeID)
             .IsRequired();
+        
+        // follow relation table
+        builder.Entity<Follow>().HasKey(f => new { f.FollowerID, f.FolloweeID });
+        builder.Entity<Follow>().HasOne(f => f.Follower).WithMany(u => u.Following).HasForeignKey(f => f.FollowerID)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<Follow>().HasOne(f => f.Followee).WithMany().HasForeignKey(f => f.FolloweeID);
 
         base.OnModelCreating(builder);
     }

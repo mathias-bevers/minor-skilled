@@ -13,6 +13,8 @@ public partial class ProfilePage : ContentPage
 
     protected override void OnAppearing()
     {
-        ViewModel.LoadDataFromDB();
+        ViewModel.SelectUser();
+        ViewModel.SelectPersonalRecords();
+        base.OnAppearing();
     }
 }

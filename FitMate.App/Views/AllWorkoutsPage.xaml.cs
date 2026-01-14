@@ -42,7 +42,7 @@ public partial class AllWorkoutsPage : ContentPage
         }
     }
 
-    private async void OnWorkoutSelected(object sender, SelectionChangedEventArgs args)
+    private void OnWorkoutSelected(object sender, SelectionChangedEventArgs args)
     {
         CollectionView cv = (CollectionView)sender;
 
@@ -57,6 +57,6 @@ public partial class AllWorkoutsPage : ContentPage
 
         cv.SelectedItem = null;
 
-        await Shell.Current.GoToAsync("/Workout", navigationParameters);
+        Shell.Current.GoToAsync("/Workout", navigationParameters);
     }
 }

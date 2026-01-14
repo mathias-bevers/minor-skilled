@@ -2,30 +2,32 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:mockups="clr-namespace:FitMate.ViewModels.Mockups"
+             xmlns:models="clr-namespace:FitMate.Models;assembly=FitMate.DataBase"
+             xmlns:viewModels="clr-namespace:FitMate.ViewModels"
              x:Class="FitMate.Views.FriendsPage">
     <ContentPage.Content>
-        <Grid RowDefinitions="Auto, *" Margin="10" RowSpacing="20">
-            <Border Grid.Column="0" Style="{StaticResource EntryBorder}">
+        <Grid RowDefinitions="Auto, *" Margin="10" RowSpacing="20" x:DataType="viewModels:FriendsViewModel">
+            <Border Grid.Column="0" Style="{StaticResource EntryBorder}" IsEnabled="False">
                 <Entry x:Name="friendsEntry" Placeholder="Enter a username to add a friend..."
                        ReturnType="Search" Completed="OnFriendSearch" />
             </Border>
             <ScrollView Grid.Row="1">
-                <CollectionView ItemsSource="{Binding Friends}">
+                <CollectionView ItemsSource="{Binding Following}" 
+                                SelectionMode="Single" 
+                                SelectionChanged="OnFolloweeSelected">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
                     </CollectionView.ItemsLayout>
 
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="mockups:UserMockup">
+                        <DataTemplate x:DataType="models:User">
                             <Border Style="{StaticResource CardBorder}">
                                 <StackLayout Style="{StaticResource Card}" Orientation="Horizontal" Spacing="25">
-                                    <Frame HeightRequest="60" WidthRequest="60" CornerRadius="30"
-                                           IsClippedToBounds="True">
+                                    <Border HeightRequest="60" WidthRequest="60">
                                         <Image Aspect="AspectFit" HeightRequest="60" WidthRequest="60"
                                                Source="user_placeholder.png" />
-                                    </Frame>
-                                    <Label Text="{Binding Username}" VerticalOptions="Center" FontSize="16" />
+                                    </Border>
+                                    <Label Text="{Binding UserName}" VerticalOptions="Center" FontSize="16" />
                                 </StackLayout>
                             </Border>
                         </DataTemplate>

@@ -1,64 +1,55 @@
 using System.Collections.ObjectModel;
-using System.Data.SqlTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
 using FitMate.Utils;
 using Microsoft.Data.SqlClient;
+using Nito.AsyncEx.Synchronous;
 
 namespace FitMate.ViewModels;
 
-public partial class ProfileViewModel : ObservableObject
+public partial class ProfileViewModel : ObservableObject, IQueryAttributable
 {
     public ObservableCollection<Exercise> PersonalRecords { get; set; } = [];
+    private int userID = App.USER_ID;
 
     [ObservableProperty]
     private User user = new();
 
-    public void LoadDataFromDB()
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
+        if (query.TryGetValue("user_id", out object? value))
+        {
+            userID = Convert.ToInt32(value);
+        }
+        
         SelectUser();
         SelectPersonalRecords();
     }
-
-
-    private void SelectPersonalRecords()
+    
+    public void SelectPersonalRecords()
     {
         PersonalRecords.Clear();
-        
-        Exercise[] prs = PersonalRecordFinder.FindAll();
+
+        Exercise[] prs = PersonalRecordFinder.FindAll(userID);
         for (int i = 0; i < prs.Length; ++i)
         {
             PersonalRecords.Add(prs[i]);
         }
     }
 
-    private async Task SelectUser()
+    public void SelectUser()
     {
-        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
+        SqlCommand select = new("SELECT u.UserName, u.GenderID, u.DateOfBirth FROM Users u WHERE ID = @user_id");
+        select.Parameters.AddWithValue("@user_id", userID);
 
-        connection.Open();
-
-        await using (SqlCommand command = new(GetUserQuery(), connection))
+        Task.Run(() => SqlCommunicator.Select(select, reader =>
         {
-            SqlDataReader reader = await command.ExecuteReaderAsync();
-
-            if (reader.HasRows)
+            User = new User
             {
-                while (reader.Read())
-                {
-                    User = new User
-                    {
-                        UserName = reader["UserName"].ToString() ?? "ERROR",
-                        GenderID = (int)reader["GenderID"],
-                        DateOfBirth = reader["DateOfBirth"].ToString() ?? "ERROR"
-                    };
-                }
-            }
-        }
-
-        connection.Close();
+                UserName = Convert.ToString(reader["UserName"]) ?? "null",
+                GenderID = Convert.ToInt32(reader["GenderID"]),
+                DateOfBirth = Convert.ToString(reader["DateOfBirth"]) ?? "null"
+            };
+        })).WaitAndUnwrapException();
     }
-
-    private static string GetUserQuery() =>
-        $"SELECT u.UserName, u.GenderID, u.DateOfBirth FROM Users u WHERE ID = {App.USER_ID}";
 }
