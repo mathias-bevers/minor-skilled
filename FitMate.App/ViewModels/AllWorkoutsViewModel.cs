@@ -32,24 +32,30 @@ public partial class AllWorkoutsViewModel : ObservableObject
         sb.Append("FROM Exercises e ");
         sb.Append("JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID ");
         sb.Append("JOIN MuscleGroups mg ON et.MuscleGroupID = mg.ID) MG ON MG.WorkoutID = w.ID ");
-        sb.Append("WHERE w.UserID = ");
-        sb.Append(App.USER_ID);
-        sb.Append(" GROUP BY w.CreatedOn, w.ID");
+        sb.Append("WHERE w.UserID = @user_id ");
+        sb.Append("GROUP BY w.CreatedOn, w.ID ");
+        sb.Append("ORDER BY w.ID DESC");
 
-        Task.Run(() => SqlCommunicator.Select(new SqlCommand(sb.ToString()), reader =>
+        SqlCommand select = new(sb.ToString());
+        select.Parameters.AddWithValue("@user_id", App.USER_ID);
+
+        Task.Run(() =>
         {
-            Workout workout = new()
+            return SqlCommunicator.Select(select, reader =>
             {
-                CreatedOn = Convert.ToString(reader["CreatedOn"]) ??
-                            throw new SqlNullValueException("reader[\"CreatedOn\"]"),
-                ID = Convert.ToInt32(reader["ID"]),
-                MusclesWorked = Convert.ToString(reader["MusclesWorked"]) ??
-                                throw new SqlNullValueException("reader[\"MusclesWorked\"]")
-            };
+                Workout workout = new()
+                {
+                    CreatedOn = Convert.ToString(reader["CreatedOn"]) ??
+                                throw new SqlNullValueException("reader[\"CreatedOn\"]"),
+                    ID = Convert.ToInt32(reader["ID"]),
+                    MusclesWorked = Convert.ToString(reader["MusclesWorked"]) ??
+                                    throw new SqlNullValueException("reader[\"MusclesWorked\"]")
+                };
 
-            workout.MusclesWorked = "Muscles Worked: " + workout.MusclesWorked;
-            Workouts.Add(workout);
-        })).WaitAndUnwrapException();
+                workout.MusclesWorked = "Muscles Worked: " + workout.MusclesWorked;
+                Workouts.Add(workout);
+            });
+        }).WaitAndUnwrapException();
 
         CanAddNew = true;
     }
@@ -65,7 +71,7 @@ public partial class AllWorkoutsViewModel : ObservableObject
         return exists;
     }
 
-    
+
     public static int InsertWorkout(bool force = false)
     {
         string dateString = DateTime.Now.ToString("yyyy-MM-dd");

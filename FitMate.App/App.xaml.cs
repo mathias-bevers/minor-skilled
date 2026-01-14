@@ -34,7 +34,8 @@ public partial class App : Application
             //TODO: Remove and login 
             File.WriteAllText(filePath, "1");
         }
-        
+
+        // return 4;
         return int.Parse(File.ReadAllText(filePath));
     }
 
