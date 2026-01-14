@@ -64,10 +64,10 @@ public static class PersonalRecordFinder
         return id > 0 ? id : throw new PopupException($"No PR id for exercise with id: {exerciseID}", "PR NOT FOUND");
     }
 
-    public static Exercise[] FindAll()
+    public static Exercise[] FindAll(int userID)
     {
         SqlCommand command = new(ALL_IDS);
-        command.Parameters.AddWithValue("@user_id", App.USER_ID);
+        command.Parameters.AddWithValue("@user_id", userID);
         
         List<Exercise> prs = [];
 

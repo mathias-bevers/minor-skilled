@@ -22,6 +22,7 @@ public partial class App : Application
         Routing.RegisterRoute("AllWorkouts/Workout/Exercise/History", typeof(ExerciseHistoryPage));
         Routing.RegisterRoute("AllWorkouts/Workout/Exercise/LeaderBoard", typeof(ExerciseLeaderboardPage));
         Routing.RegisterRoute("AllWorkouts/Workout/AllExercises/ExerciseType", typeof(ExerciseTypePage));
+        Routing.RegisterRoute("Friends/Profile", typeof(ProfilePage));
     }
 
     private static int GetUserId()
