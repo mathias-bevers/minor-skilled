@@ -40,11 +40,13 @@
                     <Label Grid.Row="2" Grid.Column="1" Text="{Binding User.GenderType}"
                            Style="{StaticResource ProfileText }" />
 
-                    <Label Grid.Row="3" Grid.Column="0" Text="Share PRs" Style="{StaticResource ProfileTitleText}" />
+                    <Label Grid.Row="3" Grid.Column="0" Text="Share PRs" VerticalTextAlignment="Center" Style="{StaticResource ProfileTitleText}" 
+                           IsVisible="{Binding IsOwnProfile}"/>
                     <CheckBox Grid.Row="3" Grid.Column="1" 
                               IsChecked="{Binding User.SharePR}"
-                              IsEnabled="{Binding IsOwnProfile}"
-                              CheckedChanged="OnShowPRToggle"/>
+                              IsVisible="{Binding IsOwnProfile}"
+                              CheckedChanged="OnShowPRToggle" 
+                              HorizontalOptions="Start" />
                 </Grid>
             </Grid>
             <BoxView Grid.Row="1" Color="{StaticResource Primary}" HeightRequest="2" />
