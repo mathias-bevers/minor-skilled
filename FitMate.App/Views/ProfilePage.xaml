@@ -12,9 +12,8 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        
         <Grid RowDefinitions="Auto, Auto, Auto, *" Margin="10" RowSpacing="10">
-            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="20">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, *" ColumnSpacing="20">
                 <Border Grid.Column="0" HeightRequest="125" WidthRequest="125">
                     <Image Aspect="AspectFit" Source="user_placeholder.png" HeightRequest="125" WidthRequest="125" />
                 </Border>
@@ -23,25 +22,31 @@
                         <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Label Grid.Row="0" Grid.Column="0" Text="Username"
-                           Style="{StaticResource ProfileTitleText }" />
+                    <Label Grid.Row="0" Grid.Column="0" Text="Username" Style="{StaticResource ProfileTitleText }" />
                     <Label Grid.Row="0" Grid.Column="1" Text="{Binding User.UserName}"
                            Style="{StaticResource ProfileText }" />
 
-                    <Label Grid.Row="1" Grid.Column="0" Text="Age"
-                           Style="{StaticResource ProfileTitleText }" />
+                    <Label Grid.Row="1" Grid.Column="0" Text="Age" Style="{StaticResource ProfileTitleText }" />
                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding User.Age}"
                            Style="{StaticResource ProfileText }" />
 
-                    <Label Grid.Row="2" Grid.Column="0" Text="Gender"
-                           Style="{StaticResource ProfileTitleText}" />
+                    <Label Grid.Row="2" Grid.Column="0" Text="Gender" Style="{StaticResource ProfileTitleText}" />
                     <Label Grid.Row="2" Grid.Column="1" Text="{Binding User.GenderType}"
                            Style="{StaticResource ProfileText }" />
+
+                    <Label Grid.Row="3" Grid.Column="0" Text="Share PRs" VerticalTextAlignment="Center" Style="{StaticResource ProfileTitleText}" 
+                           IsVisible="{Binding IsOwnProfile}"/>
+                    <CheckBox Grid.Row="3" Grid.Column="1" 
+                              IsChecked="{Binding User.SharePR}"
+                              IsVisible="{Binding IsOwnProfile}"
+                              CheckedChanged="OnShowPRToggle" 
+                              HorizontalOptions="Start" />
                 </Grid>
             </Grid>
             <BoxView Grid.Row="1" Color="{StaticResource Primary}" HeightRequest="2" />
@@ -63,12 +68,12 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
             </ScrollView>
-            <Label Grid.Row="3" 
+            <Label Grid.Row="3"
                    Text="This person is not sharing their personal records"
                    FontSize="18"
                    HorizontalTextAlignment="Center"
                    VerticalTextAlignment="Center"
-                   IsVisible="{Binding IsSharingPR, Converter={StaticResource InvertedBoolConverter}}"/>
+                   IsVisible="{Binding IsSharingPR, Converter={StaticResource InvertedBoolConverter}}" />
         </Grid>
     </ContentPage.Content>
 </ContentPage>

@@ -75,4 +75,25 @@ public static class SqlCommunicator
             throw new PopupException(error, "SQL select error");
         }
     }
+
+    public static async Task<int> Update(SqlCommand command, string? error = null)
+    {
+        try
+        {
+            command.Connection = CONNECTION;
+
+            CONNECTION.Open();
+            int updatedRows = await command.ExecuteNonQueryAsync();
+            CONNECTION.Close();
+
+            return updatedRows >= 1 ? updatedRows : throw new Exception("no rows have been updated");
+        }
+        catch (Exception e)
+        {
+            System.Diagnostics.Debug.WriteLine(e.Message);
+            error = string.Concat(string.IsNullOrEmpty(error) ? DEFAULT_ERROR : error, Environment.NewLine, e.Message);
+            CONNECTION.Close();
+            throw new PopupException(error, "SQL update error");
+        }
+    }
 }
