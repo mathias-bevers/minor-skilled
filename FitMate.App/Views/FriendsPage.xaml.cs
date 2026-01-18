@@ -19,7 +19,7 @@ public partial class FriendsPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        viewModel.SelectFollowsFromDB(App.USER_ID);
+        viewModel.SelectFollowsFromDB(App.UserID);
     }
 
     private void OnFriendSearch(object sender, EventArgs e)

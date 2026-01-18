@@ -37,7 +37,7 @@ public partial class AllWorkoutsViewModel : ObservableObject
         sb.Append("ORDER BY w.ID DESC");
 
         SqlCommand select = new(sb.ToString());
-        select.Parameters.AddWithValue("@user_id", App.USER_ID);
+        select.Parameters.AddWithValue("@user_id", App.UserID);
 
         Task.Run(() =>
         {
@@ -65,7 +65,7 @@ public partial class AllWorkoutsViewModel : ObservableObject
         string dateString = DateTime.Now.ToString("yyyy-MM-dd");
         SqlCommand select = new("SELECT TOP 1 id FROM Workouts w WHERE w.UserID = @user_id and w.CreatedOn = @date");
         select.Parameters.AddWithValue("@date", dateString);
-        select.Parameters.AddWithValue("@user_id", App.USER_ID);
+        select.Parameters.AddWithValue("@user_id", App.UserID);
 
         bool exists = Task.Run(() => SqlCommunicator.Select(select, _ => { })).WaitAndUnwrapException();
         return exists;
@@ -77,7 +77,7 @@ public partial class AllWorkoutsViewModel : ObservableObject
         string dateString = DateTime.Now.ToString("yyyy-MM-dd");
         SqlCommand insert = new("INSERT INTO Workouts (CreatedOn, UserID) VALUES(@date, @user_id)");
         insert.Parameters.AddWithValue("@date", dateString);
-        insert.Parameters.AddWithValue("@user_id", App.USER_ID);
+        insert.Parameters.AddWithValue("@user_id", App.UserID);
 
         int workoutID = Task.Run(() => SqlCommunicator.Insert(insert, "could not create workout"))
             .WaitAndUnwrapException();

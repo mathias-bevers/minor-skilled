@@ -46,6 +46,9 @@ public class FitMateDB : DbContext
             .OnDelete(DeleteBehavior.Restrict);
         builder.Entity<Follow>().HasOne(f => f.Followee).WithMany().HasForeignKey(f => f.FolloweeID);
 
+        // set additional data contains
+        builder.Entity<User>().HasIndex(u => u.UserName).IsUnique();
+            
         base.OnModelCreating(builder);
     }
 }

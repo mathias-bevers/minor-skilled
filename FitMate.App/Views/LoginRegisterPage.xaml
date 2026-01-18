@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FitMate.ViewModels"
+             x:Class="FitMate.Views.LoginRegisterPage" 
+             x:DataType="vm:LoginViewModel">
+    <ContentPage.Content>
+        <Grid RowDefinitions="auto, auto, auto" Padding="50, 0" VerticalOptions="Center"  RowSpacing="10">
+            <Entry Grid.Row="0" Placeholder="Enter user name..." Text="{Binding UserName}"/>
+            <Entry Grid.Row="1" Placeholder="Enter password ..." Text="{Binding Password}" IsPassword="True"/>
+            <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="50">
+                <Button Grid.Column="0" Text="Login" Clicked="OnLoginClicked"/>
+                <Button Grid.Column="1" Text="Register" Clicked="OnRegisterClicked" IsEnabled="False"/>
+            </Grid>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

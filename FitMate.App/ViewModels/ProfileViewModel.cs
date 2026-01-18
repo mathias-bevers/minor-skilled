@@ -44,7 +44,7 @@ public partial class ProfileViewModel : ObservableObject, IQueryAttributable
             return;
         }
 
-        userID = App.USER_ID;
+        userID = App.UserID;
 
         SelectUser(userID);
         SelectPersonalRecords(true);
@@ -84,7 +84,7 @@ public partial class ProfileViewModel : ObservableObject, IQueryAttributable
             };
         })).WaitAndUnwrapException();
 
-        IsOwnProfile = userID == App.USER_ID;
+        IsOwnProfile = userID == App.UserID;
     }
 
     public void UpdateShowPR(bool value)

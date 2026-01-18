@@ -5,7 +5,7 @@ namespace FitMate;
 
 public partial class App : Application
 {
-    public static readonly int USER_ID = GetUserId();
+    public static int UserID { get; private set; }
     internal static Settings SETTINGS { get; set; } = new();
 
     public App(IConfiguration configuration)
@@ -15,7 +15,7 @@ public partial class App : Application
         SetSettings(configuration);
 
         Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(SETTINGS.SyncfusionAPI);
-        
+
         Routing.RegisterRoute("AllWorkouts/Workout", typeof(WorkoutPage));
         Routing.RegisterRoute("AllWorkouts/Workout/AllExercises", typeof(AllExercisesPage));
         Routing.RegisterRoute("AllWorkouts/Workout/Exercise", typeof(ExercisePage));
@@ -25,18 +25,43 @@ public partial class App : Application
         Routing.RegisterRoute("Friends/Profile", typeof(ProfilePage));
     }
 
-    private static int GetUserId()
+    public static void DeleteUserID()
+    {
+        string filePath = Path.Combine(FileSystem.AppDataDirectory, "tasks.json");
+        if (!File.Exists(filePath))
+        {
+            return;
+        }
+
+        File.Delete(filePath);
+    }
+
+    public static void SetUserID(int id = -1)
     {
         string filePath = Path.Combine(FileSystem.AppDataDirectory, "tasks.json");
 
         if (!File.Exists(filePath))
         {
-            //TODO: Remove and login 
-            File.WriteAllText(filePath, "1");
+            File.WriteAllText(filePath, string.Empty);
         }
 
-        // return 4;
-        return int.Parse(File.ReadAllText(filePath));
+        if (id >= 0)
+        {
+            File.WriteAllText(filePath, id.ToString());
+            UserID = id;
+        }
+        else
+        {
+            string fileContent = File.ReadAllText(filePath);
+
+            if (string.IsNullOrEmpty(fileContent))
+            {
+                UserID = -1;
+                return;
+            }
+
+            UserID = int.Parse(fileContent);
+        }
     }
 
     protected override Window CreateWindow(IActivationState? activationState) => new(new AppShell());

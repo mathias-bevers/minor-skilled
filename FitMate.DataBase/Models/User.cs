@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Cryptography;
 
 namespace FitMate.Models;
 
@@ -15,6 +16,8 @@ public class User
     public string DateOfBirth { get; set; }
     [Required]
     public bool SharePR { get; set; }= false;
+    [Required]
+    public string Password { get; set; } = string.Empty;
 
     [ForeignKey("GenderID")]
     public int GenderID { get; set; }
