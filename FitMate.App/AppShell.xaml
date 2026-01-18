@@ -12,4 +12,6 @@
     <ShellContent Title="Workout History" ContentTemplate="{DataTemplate local:AllWorkoutsPage}" Route="AllWorkouts" />
     <ShellContent Title="Profile" ContentTemplate="{DataTemplate local:ProfilePage}" Route="Profile" />
     <ShellContent Title="Friends" ContentTemplate="{DataTemplate local:FriendsPage}" Route="Friends" />
+    <ShellContent Title="Login / Register" ContentTemplate="{DataTemplate local:LoginRegisterPage}" Route="Login"
+                  FlyoutItemIsVisible="False" Shell.NavBarIsVisible="False"/>
 </Shell>

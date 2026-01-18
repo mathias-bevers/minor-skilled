@@ -1,33 +1,67 @@
+using Encrypt.Library;
 using FitMate.Models;
+using FitMate.Utils;
+using FitMate.ViewModels;
 
 namespace FitMate.Views;
 
 public partial class AllWorkoutsPage : ContentPage
 {
-    private ViewModels.AllWorkoutsViewModel ViewModel { get; } = new();
+    private AllWorkoutsViewModel ViewModel { get; } = new();
 
     public AllWorkoutsPage()
     {
         BindingContext = ViewModel;
         InitializeComponent();
+        
+        App.SetUserID();
+        if (App.UserID == -1)
+        {
+            Shell.Current.GoToAsync("//Login");
+        }
     }
 
     protected override void OnAppearing()
     {
-        ViewModel.OnAppearing();
         base.OnAppearing();
+        ViewModel.OnAppearing();
     }
 
     private void OnCreateNewWorkout(object? sender, EventArgs args)
     {
-        Shell.Current.GoToAsync("/Workout"); //TODO: create a new workout entry.
+        try
+        {
+            if (AllWorkoutsViewModel.HasWorkoutForToday())
+            {
+                DisplayAlert("DOUBLE WORKOUT", "Cannot add a second workout for today!", "OK");
+                return;
+            }
+
+            int workoutID = AllWorkoutsViewModel.InsertWorkout();
+
+            ShellNavigationQueryParameters navigationParameters = new() { { "id", workoutID } };
+            Shell.Current.GoToAsync("/Workout", navigationParameters);
+        }
+        catch (PopupException e)
+        {
+            DisplayAlert(e.Title, e.Message, "OK!");
+        }
     }
 
-    private async void OnWorkoutSelected(object sender, SelectionChangedEventArgs args)
+    private void OnLogout(object? sender, EventArgs args)
+    {
+        App.DeleteUserID();
+        Shell.Current.GoToAsync("//Login");
+    }
+
+    private void OnWorkoutSelected(object sender, SelectionChangedEventArgs args)
     {
         CollectionView cv = (CollectionView)sender;
 
-        if (args.CurrentSelection.Count == 0 || ReferenceEquals(null, cv.SelectedItem)) { return; }
+        if (args.CurrentSelection.Count == 0 || ReferenceEquals(null, cv.SelectedItem))
+        {
+            return;
+        }
 
         int workoutID = ((Workout)cv.SelectedItem).ID;
 
@@ -35,6 +69,6 @@ public partial class AllWorkoutsPage : ContentPage
 
         cv.SelectedItem = null;
 
-        await Shell.Current.GoToAsync($"/Workout", navigationParameters);
+        Shell.Current.GoToAsync("/Workout", navigationParameters);
     }
 }

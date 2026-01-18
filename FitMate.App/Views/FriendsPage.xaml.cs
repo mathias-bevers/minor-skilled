@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace FitMate.Views;
@@ -6,24 +5,28 @@ namespace FitMate.Views;
 public partial class FriendsPage : ContentPage
 {
     public const string USERNAME_REGEX = "^[a-zA-Z0-9_.-]+$";
-    
-    private ViewModels.FriendsViewModel viewModel { get; }
+
+    private readonly ViewModels.FriendsViewModel viewModel = new();
 
     public FriendsPage()
     {
         InitializeComponent();
 
         Title = "Friends";
-
-        viewModel = new ViewModels.FriendsViewModel();
         BindingContext = viewModel;
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        viewModel.SelectFollowsFromDB(App.UserID);
     }
 
     private void OnFriendSearch(object sender, EventArgs e)
     {
         Entry entry = (Entry)sender;
         string input = entry.Text;
-        
+
         if (string.IsNullOrEmpty(input))
         {
             DisplayAlert("Invalid Input", "Please enter a name", "OK");
@@ -41,8 +44,23 @@ public partial class FriendsPage : ContentPage
             DisplayAlert("Unknown User", $"There is no user with username \'{input}\'", "OK");
             return;
         }
-        
+
         DisplayAlert("Friend Request Sent", $"A friend request was sent to \'{input}\'", "OK");
         entry.Text = string.Empty;
+    }
+
+    private void OnFolloweeSelected(object sender, SelectionChangedEventArgs args)
+    {
+        CollectionView cv = (CollectionView)sender;
+
+        if (args.CurrentSelection.Count == 0 || ReferenceEquals(null, cv.SelectedItem))
+        {
+            return;
+        }
+
+        int userID = ((Models.User)cv.SelectedItem).ID;
+        ShellNavigationQueryParameters navigationParameters = new() { { "user_id", userID } };
+
+        Shell.Current.GoToAsync("/Profile", navigationParameters);
     }
 }

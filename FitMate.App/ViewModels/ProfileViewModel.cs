@@ -1,91 +1,105 @@
 using System.Collections.ObjectModel;
-using System.Data.SqlTypes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using FitMate.Models;
+using FitMate.Utils;
 using Microsoft.Data.SqlClient;
+using Nito.AsyncEx.Synchronous;
 
 namespace FitMate.ViewModels;
 
-public partial class ProfileViewModel : ObservableObject
+public partial class ProfileViewModel : ObservableObject, IQueryAttributable
 {
     public ObservableCollection<Exercise> PersonalRecords { get; set; } = [];
 
+    private bool fromQuery = false;
+    private bool hasBeenInitialized = false; 
+    [ObservableProperty]
+    private bool isOwnProfile = false;
+
+    [ObservableProperty]
+    private bool isSharingPR = false;
+    
+    private int userID = -1;
     [ObservableProperty]
     private User user = new();
 
-    public void LoadFromDbAsync()
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
-        Task.Run(LoadUserAsync);
-        Task.Run(LoadPersonalRecordsAsync);
+        userID = -1;
+        if (query.TryGetValue("user_id", out object? value))
+        {
+            userID = Convert.ToInt32(value);
+        }
+
+        SelectUser(userID);
+        SelectPersonalRecords(User.SharePR);
+        fromQuery = true;
     }
 
+    public void OnAppearing()
+    {
+        if (fromQuery)
+        {
+            fromQuery = false;
+            return;
+        }
 
-    private async Task LoadPersonalRecordsAsync()
+        userID = App.UserID;
+
+        SelectUser(userID);
+        SelectPersonalRecords(true);
+    }
+
+    private void SelectPersonalRecords(bool showPRs)
     {
         PersonalRecords.Clear();
+        IsSharingPR = showPRs || IsOwnProfile;
 
-        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
-        connection.Open();
-
-        await using (SqlCommand command = new(GetPersonalRecordsQuery(), connection))
+        if (!IsSharingPR)
         {
-            SqlDataReader reader = await command.ExecuteReaderAsync();
-
-            if (reader.HasRows)
-            {
-                while (reader.Read())
-                {
-                    PersonalRecords.Add(new Exercise
-                    {
-                        KgsOrMtr = Convert.ToInt32(reader["KgsOrMtr"]),
-                        RepsOrSecs = Convert.ToInt32(reader["RepsOrSecs"]),
-                        ExerciseType = new ExerciseType
-                        {
-                            Name = Convert.ToString(reader["Name"]) ??
-                                   throw new SqlNullValueException("reader[\"Name\"]"),
-                            MeasurementTypeID = Convert.ToInt32(reader["MeasurementTypeID"])
-                        }
-                    });
-                }
-            }
+            return;
         }
 
-        connection.Close();
+        Exercise[] prs = PersonalRecordFinder.FindAll(userID);
+        for (int i = 0; i < prs.Length; ++i)
+        {
+            PersonalRecords.Add(prs[i]);
+        }
     }
 
-    private async Task LoadUserAsync()
+    private void SelectUser(int userID)
     {
-        await using SqlConnection connection = new(App.SETTINGS.Server.ConnectionString);
+        SqlCommand select = new("SELECT u.UserName, u.GenderID, u.DateOfBirth, u.SharePR " +
+                                "FROM Users u WHERE ID = @user_id");
+        select.Parameters.AddWithValue("@user_id", userID);
 
-        connection.Open();
-
-        await using (SqlCommand command = new(GetUserQuery(), connection))
+        Task.Run(() => SqlCommunicator.Select(select, reader =>
         {
-            SqlDataReader reader = await command.ExecuteReaderAsync();
-
-            if (reader.HasRows)
+            User = new User
             {
-                while (reader.Read())
-                {
-                    User = new User
-                    {
-                        UserName = reader["UserName"].ToString() ?? "ERROR",
-                        GenderID = (int)reader["GenderID"],
-                        DateOfBirth = reader["DateOfBirth"].ToString() ?? "ERROR"
-                    };
-                }
-            }
-        }
+                UserName = Convert.ToString(reader["UserName"]) ?? "null",
+                GenderID = Convert.ToInt32(reader["GenderID"]),
+                DateOfBirth = Convert.ToString(reader["DateOfBirth"]) ?? "null",
+                SharePR = Convert.ToBoolean(reader["SharePR"])
+            };
+        })).WaitAndUnwrapException();
 
-        connection.Close();
+        IsOwnProfile = userID == App.UserID;
     }
 
-    private static string GetUserQuery() =>
-        $"SELECT u.UserName, u.GenderID, u.DateOfBirth FROM Users u WHERE ID = {App.USER_ID}";
+    public void UpdateShowPR(bool value)
+    {
+        if (!hasBeenInitialized)
+        {
+            hasBeenInitialized = true;
+            return;
+        }
+        
+        SqlCommand update = new("UPDATE Users SET SharePR = @share_pr WHERE ID = @user_id");
+        update.Parameters.AddWithValue("@share_pr", Convert.ToInt32(value));
+        update.Parameters.AddWithValue("@user_id", userID);
 
-    private static string GetPersonalRecordsQuery() =>
-        "SELECT e.KgsOrMtr, e.RepsOrSecs, et.Name, et.MeasurementTypeID " +
-        "FROM Exercises e JOIN Workouts w ON e.WorkoutID  = w.ID " +
-        "JOIN Users u ON u.ID = w.UserID JOIN ExerciseTypes et ON " +
-        $"e.ExerciseTypeName = et.Name WHERE u.ID = {App.USER_ID} AND e.IsPR = 1;";
+        Task.Run(() => SqlCommunicator.Update(update)).WaitAndUnwrapException();
+        SelectUser(userID);
+    }
 }

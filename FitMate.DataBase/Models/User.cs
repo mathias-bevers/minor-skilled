@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Cryptography;
 
 namespace FitMate.Models;
 
@@ -13,12 +14,18 @@ public class User
     public string UserName { get; set; }
     [Required]
     public string DateOfBirth { get; set; }
+    [Required]
+    public bool SharePR { get; set; }= false;
+    [Required]
+    public string Password { get; set; } = string.Empty;
 
     [ForeignKey("GenderID")]
     public int GenderID { get; set; }
     public Gender Gender { get; set; } = null!; //TODO: look at if this is necessary.
-    public ICollection<Workout> Workouts { get; } = null!;
-    //public ICollection<User> Friends  { get; } //TODO: search generate collection for friends.
+  
+    public ICollection<Workout> Workouts { get; } = [];
+    
+    public ICollection<Follow> Following { get; } = [];
 
     [NotMapped]
     public GenderType GenderType

@@ -3,6 +3,7 @@ using FitMate.DataBase;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitMate.DataBase.Migrations
 {
     [DbContext(typeof(FitMateDB))]
-    partial class AppContextModelSnapshot : ModelSnapshot
+    [Migration("20250912094213_RemovedIsPrColumn")]
+    partial class RemovedIsPrColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,21 +78,6 @@ namespace FitMate.DataBase.Migrations
                     b.HasIndex("MuscleGroupID");
 
                     b.ToTable("ExerciseTypes");
-                });
-
-            modelBuilder.Entity("FitMate.Models.Follow", b =>
-                {
-                    b.Property<int>("FollowerID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("FolloweeID")
-                        .HasColumnType("int");
-
-                    b.HasKey("FollowerID", "FolloweeID");
-
-                    b.HasIndex("FolloweeID");
-
-                    b.ToTable("Follow");
                 });
 
             modelBuilder.Entity("FitMate.Models.Gender", b =>
@@ -158,23 +146,13 @@ namespace FitMate.DataBase.Migrations
                     b.Property<int>("GenderID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("SharePR")
-                        .HasColumnType("bit");
-
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
                     b.HasIndex("GenderID");
-
-                    b.HasIndex("UserName")
-                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -239,25 +217,6 @@ namespace FitMate.DataBase.Migrations
                     b.Navigation("MuscleGroup");
                 });
 
-            modelBuilder.Entity("FitMate.Models.Follow", b =>
-                {
-                    b.HasOne("FitMate.Models.User", "Followee")
-                        .WithMany()
-                        .HasForeignKey("FolloweeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FitMate.Models.User", "Follower")
-                        .WithMany("Following")
-                        .HasForeignKey("FollowerID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Followee");
-
-                    b.Navigation("Follower");
-                });
-
             modelBuilder.Entity("FitMate.Models.User", b =>
                 {
                     b.HasOne("FitMate.Models.Gender", "Gender")
@@ -282,8 +241,6 @@ namespace FitMate.DataBase.Migrations
 
             modelBuilder.Entity("FitMate.Models.User", b =>
                 {
-                    b.Navigation("Following");
-
                     b.Navigation("Workouts");
                 });
 
