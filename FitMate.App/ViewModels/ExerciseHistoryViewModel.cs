@@ -48,7 +48,7 @@ public partial class ExerciseHistoryViewModel : ObservableObject, IQueryAttribut
                                  "FROM Exercises e JOIN ExerciseTypes et ON e.ExerciseTypeID = et.ID " +
                                  "JOIN Workouts w ON e.WorkoutID = w.ID " + "JOIN Users u ON u.ID = @uID " +
                                  "WHERE et.Name = @eName");
-        command.Parameters.AddWithValue("@uID", App.USER_ID);
+        command.Parameters.AddWithValue("@uID", App.UserID);
         command.Parameters.AddWithValue("@eName", exerciseName);
 
         Task.Run(() => SqlCommunicator.Select(command, reader =>

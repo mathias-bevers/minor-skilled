@@ -13,6 +13,12 @@ public partial class AllWorkoutsPage : ContentPage
     {
         BindingContext = ViewModel;
         InitializeComponent();
+        
+        App.SetUserID();
+        if (App.UserID == -1)
+        {
+            Shell.Current.GoToAsync("//Login");
+        }
     }
 
     protected override void OnAppearing()
@@ -40,6 +46,12 @@ public partial class AllWorkoutsPage : ContentPage
         {
             DisplayAlert(e.Title, e.Message, "OK!");
         }
+    }
+
+    private void OnLogout(object? sender, EventArgs args)
+    {
+        App.DeleteUserID();
+        Shell.Current.GoToAsync("//Login");
     }
 
     private void OnWorkoutSelected(object sender, SelectionChangedEventArgs args)

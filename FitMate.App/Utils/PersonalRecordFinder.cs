@@ -54,7 +54,7 @@ public static class PersonalRecordFinder
     public static int FindForExerciseID(int exerciseID)
     {
         SqlCommand command = new(SINGLE_ID);
-        command.Parameters.AddWithValue("@user_id", App.USER_ID);
+        command.Parameters.AddWithValue("@user_id", App.UserID);
         command.Parameters.AddWithValue("@exercise_type", exerciseID);
         int id = -1;
 
