@@ -1,3 +1,4 @@
+using Encrypt.Library;
 using FitMate.Models;
 using FitMate.Utils;
 using FitMate.ViewModels;
@@ -19,7 +20,6 @@ public partial class AllWorkoutsPage : ContentPage
         base.OnAppearing();
         ViewModel.OnAppearing();
     }
-
 
     private void OnCreateNewWorkout(object? sender, EventArgs args)
     {

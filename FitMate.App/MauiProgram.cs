@@ -41,6 +41,7 @@ internal class Settings
 {
     public ServerSettings Server { get; set; } = null!;
     public string SyncfusionAPI { get; set; } = null!;
+    public string EncryptionKey { get; set; } = null!;
 }
 
 internal class ServerSettings
